@@ -1,0 +1,21 @@
+<!-- Modal Component -->
+<div class="modal" id="exampleModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal__backdrop" aria-hidden="true"></div>
+  <div class="modal__content" role="document">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modalTitle">Modal Title</h2>
+      <button class="modal__close" aria-label="Close modal">
+        <svg class="modal__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal__body">
+      <p>Modal content goes here. This is a reusable modal component that can be used throughout the application.</p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary" data-modal-close>Cancel</button>
+      <button class="btn btn--primary">Confirm</button>
+    </div>
+  </div>
+</div>
