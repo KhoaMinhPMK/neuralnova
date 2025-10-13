@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Xác nhận email - Nhập mã - NeuralNova">
+  <title>Xác nhận email - NeuralNova</title>
+
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
+
+  <link rel="icon" type="image/x-icon" href="../assets/images/logo.ico">
+
+  <style>
+    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--space-8); }
+    .auth-card { width: 100%; max-width: 520px; background: var(--color-surface, #fff); border: 1px solid var(--color-border-light, #e5e7eb); border-radius: var(--radius-lg, 12px); box-shadow: 0 8px 24px rgba(0,0,0,.06); padding: var(--space-8); }
+    .auth-header { text-align: center; margin-bottom: var(--space-6); }
+    .auth-title { margin: 0 0 var(--space-2); font-size: clamp(1.25rem, 1.1rem + 1vw, 1.75rem); }
+    .auth-subtitle { color: var(--color-text-secondary, #6b7280); }
+    .form-row { margin-bottom: var(--space-4); }
+    .form-label { display: block; margin-bottom: var(--space-2); font-weight: 600; }
+    .code-grid { display:grid; grid-template-columns: repeat(6, 48px); justify-content: center; gap:10px; max-width:100%; margin:0 auto; }
+    .code-input { width:48px; height:48px; line-height:48px; text-align:center; font-size:1.25rem; font-variant-numeric: tabular-nums; padding:0; box-sizing:border-box; border:1px solid var(--color-border,#d1d5db); border-radius: var(--radius-md,10px); }
+    .code-input:focus { outline:none; border-color: var(--color-primary,#3b82f6); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary,#3b82f6) 20%, transparent); }
+    @media (max-width: 360px) {
+      .code-grid { grid-template-columns: repeat(6, 40px); gap:8px; }
+      .code-input { width:40px; height:44px; line-height:44px; }
+    }
+    .form-actions { margin-top: var(--space-6); display:flex; flex-direction:column; gap: var(--space-3); }
+    .btn-primary { width: 100%; padding: .85rem 1rem; background: var(--color-primary, #3b82f6); color: #fff; border: none; border-radius: var(--radius-md, 10px); font-weight: 600; cursor: pointer; }
+    .helper { text-align:center; color: var(--color-text-secondary,#6b7280); }
+    .toast { display:none; border-radius: var(--radius-md,10px); padding:.75rem .9rem; font-size:.95rem; }
+    .toast.success { display:block; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+    .toast.error { display:block; background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+  </style>
+</head>
+<body>
+  <main class="auth-container">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <a class="brand" href="../index.html" style="display:flex; align-items:center; gap:.6rem; justify-content:center; text-decoration:none; color:inherit; margin-bottom:var(--space-4);">
+        <img src="../assets/images/logo.png" alt="NeuralNova" style="width:28px; height:28px;">
+        <strong style="letter-spacing:.3px; white-space:nowrap;">NeuralNova</strong>
+      </a>
+      <header class="auth-header">
+        <h1 id="auth-title" class="auth-title">Xác nhận email</h1>
+        <p class="auth-subtitle">Nhập mã 6 chữ số đã gửi tới email của bạn</p>
+      </header>
+
+      <div id="vcToast" class="toast" role="alert" aria-live="polite"></div>
+
+      <form id="verifyForm" novalidate>
+        <div class="form-row">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="ban@vidu.com" autocomplete="email" required aria-required="true" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="code-1">Mã xác nhận</label>
+          <div class="code-grid">
+            <input id="code-1" class="code-input" inputmode="numeric" maxlength="1" />
+            <input id="code-2" class="code-input" inputmode="numeric" maxlength="1" />
+            <input id="code-3" class="code-input" inputmode="numeric" maxlength="1" />
+            <input id="code-4" class="code-input" inputmode="numeric" maxlength="1" />
+            <input id="code-5" class="code-input" inputmode="numeric" maxlength="1" />
+            <input id="code-6" class="code-input" inputmode="numeric" maxlength="1" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="btnVerify" class="btn-primary" type="submit">Xác nhận</button>
+          <p class="helper">Chưa nhận được email? <a href="./forgot-password.html">Gửi lại</a></p>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    const el = (s) => document.querySelector(s);
+    const els = (s) => Array.from(document.querySelectorAll(s));
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    const showToast = (m,t='success') => { const x=el('#vcToast'); x.className = `toast ${t}`; x.textContent = m; };
+
+    const getCode = () => els('.code-input').map(i=>i.value.trim()).join('');
+    const simulateVerify = ({email, code}) => new Promise((resolve, reject) => {
+      setTimeout(()=>{
+        if (!emailRegex.test(email)) return reject(new Error('Email không hợp lệ'));
+        if (code !== '123456') return reject(new Error('Mã xác nhận không đúng'));
+        resolve(true);
+      }, 700);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputs = els('.code-input');
+      // Tự động focus/di chuyển giữa các ô mã
+      inputs.forEach((inp, idx) => {
+        inp.addEventListener('input', () => {
+          inp.value = inp.value.replace(/[^0-9]/g,'').slice(0,1);
+          if (inp.value && idx < inputs.length - 1) inputs[idx+1].focus();
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx-1].focus();
+        });
+      });
+
+      const form = el('#verifyForm');
+      const btn = el('#btnVerify');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        showToast('', '');
+        const email = el('#email').value.trim();
+        const code = getCode();
+        if (!emailRegex.test(email)) { showToast('Email không hợp lệ.', 'error'); return; }
+        if (code.length !== 6) { showToast('Vui lòng nhập đủ 6 số.', 'error'); return; }
+
+        const original = btn.textContent; btn.textContent = 'Đang xác nhận...'; btn.disabled = true;
+        try {
+          await simulateVerify({email, code});
+          showToast('Xác nhận thành công! Bạn có thể đặt lại mật khẩu.', 'success');
+        } catch (err) {
+          showToast(err.message || 'Xác nhận thất bại.', 'error');
+        } finally {
+          btn.textContent = original; btn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
