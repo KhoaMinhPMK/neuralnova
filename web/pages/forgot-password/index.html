@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quên mật khẩu - NeuralNova">
+  <title>Quên mật khẩu - NeuralNova</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/layout.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico">
+</head>
+<body>
+  <!-- Video Background -->
+  <video autoplay muted loop playsinline class="video-background">
+    <source src="../../assets/images/bg.mp4#t=10" type="video/mp4">
+  </video>
+  
+  <main class="auth-split">
+    <aside class="auth-left">
+      <div class="left-content">
+        <a class="brand" href="../../index.html">
+          <img src="../../assets/images/logo.png" alt="NeuralNova">
+          <strong style="letter-spacing:.3px; white-space:nowrap;">NeuralNova</strong>
+        </a>
+        <h2 class="left-slogan">RESET YOUR <em>PASSWORD!</em></h2>
+      </div>
+    </aside>
+    <section class="auth-right">
+      <div class="auth-card" aria-labelledby="auth-title">
+        <a href="../../index.html" class="back-home">
+          <i class="fas fa-arrow-left"></i>
+          <span>Về trang chủ</span>
+        </a>
+        
+        <header class="auth-header">
+          <h1 id="auth-title" class="auth-title">FORGOT PASSWORD</h1>
+          <p class="auth-subtitle">Enter your email to receive reset link</p>
+        </header>
+
+        <div id="fpToast" class="toast" role="alert" aria-live="polite"></div>
+
+        <form id="forgotForm" novalidate>
+          <div class="form-row" id="row-email">
+            <label class="form-label" for="email">
+              <i class="fas fa-envelope"></i>
+              Email
+            </label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope input-icon"></i>
+              <input class="form-input" type="email" id="email" name="email" placeholder="yourname@gmail.com" autocomplete="email" required aria-required="true" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button id="btnSubmitForgot" class="btn-primary" type="submit">Send reset link</button>
+            <p class="helper">Nhớ mật khẩu rồi? <a href="../auth/index.html">Đăng nhập</a></p>
+            <p class="helper">Đã nhận email? <a href="../verify-code/index.html">Nhập mã xác nhận</a></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

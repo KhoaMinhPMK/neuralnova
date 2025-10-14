@@ -5,7 +5,7 @@ html {
 }
 
 body {
-  font-family: var(--font-family-sans);
+  font-family: var(--font-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
@@ -16,9 +16,17 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   margin-bottom: var(--space-4);
+}
+
+/* Display text - sử dụng font nghệ thuật */
+.display-text,
+.hero-title,
+.section-title {
+  font-family: var(--font-display);
 }
 
 h1 {
