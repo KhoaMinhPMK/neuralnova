@@ -813,3 +813,39 @@ form.sign-in-form {
     left: 50%;
   }
 }
+
+/* Route transition overlay (fog/blur effect) */
+.route-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 700ms ease, backdrop-filter 700ms ease;
+  background:
+    radial-gradient(1200px 800px at 30% 20%, rgba(255,255,255,0.08), transparent 60%),
+    radial-gradient(1000px 700px at 70% 80%, rgba(255,255,255,0.06), transparent 60%),
+    linear-gradient(0deg, rgba(15,10,31,0.25), rgba(15,10,31,0.25));
+  backdrop-filter: blur(0px) saturate(110%);
+  -webkit-backdrop-filter: blur(0px) saturate(110%);
+}
+
+.route-transition.active {
+  opacity: 1;
+  visibility: visible;
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+/* Subtle blur/scale on container while transitioning */
+.container.route-blur {
+  transition: filter 450ms ease, transform 450ms ease;
+  filter: blur(4px) brightness(0.92);
+  transform: scale(0.985);
+}
+
+/* Optional: video fade-out helper */
+.video-background.fade-out {
+  opacity: 0 !important;
+}

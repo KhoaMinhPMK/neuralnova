@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html class="page-verify" lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,14 +15,14 @@
   <link rel="stylesheet" href="../../assets/css/components.css">
   <link rel="stylesheet" href="../../assets/css/layout.css">
   <link rel="stylesheet" href="../../assets/css/responsive.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 
   <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico">
 </head>
-<body>
+<body class="page-verify">
   <!-- Video Background -->
   <video autoplay muted loop playsinline class="video-background">
-    <source src="../../assets/images/bg.mp4#t=10" type="video/mp4">
+    <source src="../../assets/video/Galaxy%20Motion%20graphic.mp4" type="video/mp4">
   </video>
   
   <main class="auth-split">
@@ -50,7 +50,7 @@
         <div id="vcToast" class="toast" role="alert" aria-live="polite"></div>
 
         <form id="verifyForm" novalidate>
-          <div class="form-row">
+          <div class="form-row code-row">
             <label class="form-label" for="email">
               <i class="fas fa-envelope"></i>
               Email
@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row code-row">
             <label class="form-label" for="code-1">
               <i class="fas fa-key"></i>
               Mã xác nhận
@@ -88,3 +88,4 @@
   <script src="app.js" type="module"></script>
 </body>
 </html>
+

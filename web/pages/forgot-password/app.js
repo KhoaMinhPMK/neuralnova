@@ -1,98 +1,157 @@
 const el = (s) => document.querySelector(s);
+const els = (s) => Array.from(document.querySelectorAll(s));
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
-const showToast = (msg, type = 'success') => { 
-  const t = el('#fpToast'); 
-  t.className = `toast ${type}`; 
-  t.textContent = msg; 
+const toast = (id, msg, type = 'success') => {
+  const t = el(id);
+  if (!t) return;
+  t.className = `toast ${type}`;
+  t.textContent = msg;
 };
 
 const simulateSend = (email) => new Promise((resolve, reject) => {
-  setTimeout(() => { 
-    email.toLowerCase().includes('fail') 
-      ? reject(new Error('Không tìm thấy tài khoản')) 
-      : resolve(true); 
+  setTimeout(() => {
+    email.toLowerCase().includes('fail') ? reject(new Error('Không tìm thấy tài khoản')) : resolve(true);
+  }, 700);
+});
+
+const simulateVerify = ({ email, code }) => new Promise((resolve, reject) => {
+  setTimeout(() => {
+    if (!emailRegex.test(email)) return reject(new Error('Email không hợp lệ'));
+    if (code !== '123456') return reject(new Error('Mã xác nhận không đúng'));
+    resolve(true);
   }, 700);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const form = el('#forgotForm');
-  const btn = el('#btnSubmitForgot');
-  
-  form.addEventListener('submit', async (e) => {
+  // Page enter overlay to smoothly reveal the screen
+  const enterOverlay = document.createElement('div');
+  enterOverlay.className = 'page-enter-overlay';
+  document.body.appendChild(enterOverlay);
+  requestAnimationFrame(() => enterOverlay.classList.add('hide'));
+  enterOverlay.addEventListener('transitionend', () => enterOverlay.remove());
+
+  // Elements
+  const formForgot = el('#forgotForm');
+  const btnForgot = el('#btnSubmitForgot');
+  const cardVerify = el('.auth-card--verify');
+  const linkGoVerify = el('#linkGoVerify');
+  const linkGoForgot = el('#linkGoForgot');
+
+  const toVerify = () => {
+    const email = (el('#email')?.value || '').trim();
+    if (email && el('#emailVerify')) el('#emailVerify').value = email;
+    if (cardVerify) cardVerify.hidden = false;
+    document.body.classList.add('is-verify');
+    try { history.pushState({ step: 'verify' }, '', '?step=verify'); } catch {}
+    setTimeout(() => el('#code-1')?.focus(), 220);
+  };
+
+  const toForgot = () => {
+    document.body.classList.remove('is-verify');
+    try { history.pushState({ step: 'forgot' }, '', location.pathname); } catch {}
+    setTimeout(() => el('#email')?.focus(), 180);
+  };
+
+  linkGoVerify?.addEventListener('click', (e) => { e.preventDefault(); toVerify(); });
+  linkGoForgot?.addEventListener('click', (e) => { e.preventDefault(); toForgot(); });
+
+  // Forgot submit → transition to verify
+  formForgot?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showToast('', '');
-    
+    toast('#fpToast', '', '');
+
     const email = el('#email').value.trim();
-    if (!emailRegex.test(email)) { 
-      showToast('Email không hợp lệ.', 'error'); 
-      return; 
-    }
-    
-    const original = btn.textContent; 
-    btn.textContent = 'Đang gửi...'; 
-    btn.disabled = true;
-    
+    if (!emailRegex.test(email)) { toast('#fpToast', 'Email không hợp lệ.', 'error'); return; }
+
+    const original = btnForgot.textContent;
+    btnForgot.textContent = 'Đang gửi...';
+    btnForgot.disabled = true;
     try {
       await simulateSend(email);
-      showToast('Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email.', 'success');
-      setTimeout(() => {
-        window.location.href = '../verify-code/index.html';
-      }, 2000);
+      toast('#fpToast', 'Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email.', 'success');
+      setTimeout(() => toVerify(), 600);
     } catch (err) {
-      showToast(err.message || 'Có lỗi xảy ra.', 'error');
+      toast('#fpToast', err.message || 'Có lỗi xảy ra.', 'error');
     } finally {
-      btn.textContent = original; 
-      btn.disabled = false;
+      btnForgot.textContent = original;
+      btnForgot.disabled = false;
     }
   });
-  
-  // Video fade loop smooth transition
-  const videoBackground = document.querySelector('.video-background');
-  if (videoBackground) {
-    // Đặt video bắt đầu từ giây thứ 10
-    videoBackground.currentTime = 10;
-    
-    videoBackground.addEventListener('timeupdate', function() {
-      const duration = this.duration;
-      const currentTime = this.currentTime;
-      const timeLeft = duration - currentTime;
-      
-      // Fade out ở 1.5 giây cuối
-      if (timeLeft <= 1.5 && timeLeft > 0) {
-        this.style.opacity = timeLeft / 1.5;
-      }
-      // Fade in ở 1.5 giây đầu (từ giây 10-11.5)
-      else if (currentTime >= 10 && currentTime <= 11.5) {
-        this.style.opacity = (currentTime - 10) / 1.5;
-      }
-      // Opacity bình thường
-      else {
-        this.style.opacity = 1;
+
+  // Verify code inputs behavior
+  const inputs = els('.code-input');
+  inputs.forEach((inp, idx) => {
+    inp.addEventListener('input', () => {
+      inp.value = inp.value.replace(/[^0-9]/g, '').slice(0, 1);
+      if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
+      if (e.key === 'ArrowLeft' && idx > 0) inputs[idx - 1].focus();
+      if (e.key === 'ArrowRight' && idx < inputs.length - 1) inputs[idx + 1].focus();
+    });
+    inp.addEventListener('paste', (e) => {
+      const paste = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+      if (paste.length === 6) {
+        e.preventDefault();
+        inputs.forEach((input, i) => input.value = paste[i] || '');
+        inputs[inputs.length - 1].focus();
       }
     });
-    
-    // Đảm bảo fade in khi video load
-    videoBackground.addEventListener('loadeddata', function() {
-      this.currentTime = 10;
+  });
+
+  const vForm = el('#verifyForm');
+  const vBtn = el('#btnVerify');
+  vForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    toast('#vcToast', '', '');
+    const email = el('#emailVerify')?.value.trim() || '';
+    const code = inputs.map(i => i.value.trim()).join('');
+    if (!emailRegex.test(email)) { toast('#vcToast', 'Email không hợp lệ.', 'error'); return; }
+    if (code.length !== 6) { toast('#vcToast', 'Vui lòng nhập đủ 6 số.', 'error'); return; }
+    const original = vBtn.textContent;
+    vBtn.textContent = 'Đang xác nhận...';
+    vBtn.disabled = true;
+    try {
+      await simulateVerify({ email, code });
+      toast('#vcToast', 'Xác nhận thành công! Bạn có thể đăng nhập.', 'success');
+      setTimeout(() => { window.location.href = '../auth/index.html'; }, 1200);
+    } catch (err) {
+      toast('#vcToast', err.message || 'Xác nhận thất bại.', 'error');
+    } finally {
+      vBtn.textContent = original;
+      vBtn.disabled = false;
+    }
+  });
+
+  // URL state restore
+  if (location.search.includes('step=verify')) {
+    if (cardVerify) cardVerify.hidden = false;
+    document.body.classList.add('is-verify');
+    setTimeout(() => el('#code-1')?.focus(), 250);
+  }
+
+  // Video background fade (generic)
+  const videoBackground = document.querySelector('.video-background');
+  if (videoBackground) {
+    const FADE_WINDOW = 1.5;
+    videoBackground.addEventListener('timeupdate', function () {
+      const duration = this.duration || 0;
+      const currentTime = this.currentTime || 0;
+      if (!duration) return;
+      const timeLeft = duration - currentTime;
+      if (timeLeft <= FADE_WINDOW && timeLeft > 0) this.style.opacity = Math.max(0, timeLeft / FADE_WINDOW);
+      else if (currentTime <= FADE_WINDOW) this.style.opacity = Math.min(1, currentTime / FADE_WINDOW);
+      else this.style.opacity = 1;
+    });
+    videoBackground.addEventListener('loadeddata', function () {
       this.style.opacity = 0;
       this.style.transition = 'opacity 1.5s ease-in-out';
     });
-    
-    // Khi video kết thúc, quay về giây thứ 10
-    videoBackground.addEventListener('ended', function() {
-      this.currentTime = 10;
-      this.play();
-    });
-    
-    // Fade in khi video bắt đầu play
-    videoBackground.addEventListener('play', function() {
-      if (this.currentTime < 10.5) {
-        this.style.opacity = 0;
-        setTimeout(() => {
-          this.style.opacity = 1;
-        }, 50);
-      }
+    videoBackground.addEventListener('play', function () {
+      if (this.currentTime <= 0.1) { this.style.opacity = 0; requestAnimationFrame(() => { this.style.opacity = 1; }); }
     });
   }
 });
+

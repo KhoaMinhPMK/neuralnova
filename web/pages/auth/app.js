@@ -10,6 +10,39 @@ sign_in_btn.addEventListener("click", () => {
   container.classList.remove("sign-up-mode");
 });
 
+// Foggy transition to Forgot Password
+const forgotLink = document.querySelector('.forgot-password a');
+if (forgotLink) {
+  forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const href = forgotLink.getAttribute('href');
+
+    // Create a fog/blur overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'route-transition';
+    document.body.appendChild(overlay);
+
+    // Subtle blur/scale on the main container
+    container?.classList.add('route-blur');
+
+    // Fade out video a bit sooner for crossfade feel
+    const vid = document.querySelector('.video-background');
+    if (vid) {
+      vid.classList.add('fade-out');
+    }
+
+    // Force reflow then activate transition
+    // eslint-disable-next-line no-unused-expressions
+    overlay.offsetHeight;
+    overlay.classList.add('active');
+
+    // Navigate after transition
+    setTimeout(() => {
+      window.location.href = href;
+    }, 700);
+  });
+}
+
 // Video fade loop smooth transition
 const videoBackground = document.querySelector('.video-background');
 if (videoBackground) {

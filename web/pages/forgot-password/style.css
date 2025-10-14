@@ -28,10 +28,30 @@
   z-index: 0;
   opacity: 1;
   transition: opacity 1.5s ease-in-out;
+  pointer-events: none;
+}
+
+/* Image Background (acts like video background) */
+.image-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 1;
+  transition: opacity 1.5s ease-in-out, transform 16s ease-in-out;
+  transform: scale(1.02);
+  animation: kenburnsBg 16s ease-in-out infinite alternate;
+}
+
+html, body {
+  background: transparent !important;
 }
 
 body { 
-  background: #000000;
+  background: transparent !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
@@ -42,7 +62,8 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 10, 31, 0.6);
+  /* Remove global scrim to avoid any light wash */
+  background: transparent;
   z-index: 0;
   pointer-events: none;
 }
@@ -52,33 +73,32 @@ h1, h2, h3 {
 }
 
 .auth-split { 
-  min-height: 100vh; 
+  min-height: 100dvh; 
   display: grid; 
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1fr !important; /* single-column layout */
+  place-items: center; /* robust centering */
   position: relative;
   z-index: 1;
 }
 
 .auth-left { 
-  position: relative; 
-  overflow: hidden; 
-  display: flex; 
-  align-items: flex-end; 
+  display: none !important; /* remove left column */
 }
 
 .auth-left::before { 
   content: ""; 
   position: absolute; 
   inset: 0; 
-  background: url('../../assets/images/Background Image.png') center/cover no-repeat; 
-  filter: saturate(110%); 
+  /* Remove static image so the video behind is visible */
+  background: none; 
 }
 
 .auth-left::after { 
   content: ""; 
   position: absolute; 
   inset: 0; 
-  background: linear-gradient(90deg, rgba(15,10,31,.85), rgba(15,10,31,.35)); 
+  /* Remove side overlay to avoid split screen */
+  background: none; 
 }
 
 .left-content { 
@@ -100,17 +120,131 @@ h1, h2, h3 {
 
 .auth-right { 
   display: flex; 
+  flex-direction: column;
   align-items: center; 
   justify-content: center; 
   padding: 6vh 6vw; 
-  background: linear-gradient(180deg, rgba(27,18,51,.9), rgba(27,18,51,.9)); 
+  /* Make panel transparent so video is the main background */
+  background: transparent !important; 
+  width: 100%;
+  grid-column: 1 / -1; /* ensure spans full grid */
+}
+
+/* Ensure the grid wrapper has no background */
+.auth-split {
+  background: transparent !important;
 }
 
 .auth-card { 
   width: 100%; 
-  max-width: 420px; 
+  max-width: 460px; 
+  margin-inline: auto;
   color: var(--login-text);
   position: relative;
+  /* Dark translucent glass that matches video palette */
+  background: linear-gradient(180deg, rgba(10,7,22,0.38), rgba(10,7,22,0.28));
+  backdrop-filter: blur(14px) saturate(110%);
+  -webkit-backdrop-filter: blur(14px) saturate(110%);
+  /* Milky white border around the card */
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  padding: 32px 28px 26px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 48px rgba(124, 58, 237, 0.14),
+    0 0 36px rgba(34, 211, 238, 0.10);
+}
+
+/* Subtle gradient gloss inside the glass card */
+/* Subtle colored glow to harmonize with galaxy video (no white) */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  background:
+    radial-gradient(600px 320px at 18% 0%, rgba(124, 58, 237, 0.12), transparent 62%),
+    radial-gradient(520px 300px at 100% 85%, rgba(34, 211, 238, 0.10), transparent 62%);
+}
+
+/* Subtle inner highlight for extra definition */
+.auth-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Multi-step inline transition (Forgot -> Verify) */
+.auth-card--forgot,
+.auth-card--verify {
+  transition: opacity 420ms ease, transform 420ms ease, filter 420ms ease;
+}
+
+.auth-card--verify {
+  opacity: 0;
+  transform: translateY(8px) scale(0.985);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+body.is-verify .auth-card--forgot {
+  opacity: 0;
+  transform: scale(0.985);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+body.is-verify .auth-card--verify {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  pointer-events: auto;
+}
+
+/* Verify code inputs */
+.code-group {
+  display: grid;
+  grid-template-columns: repeat(6, 48px);
+  gap: 10px;
+  justify-content: center;
+  /* Center the entire group within the form column */
+  margin: 16px auto 8px;
+}
+
+.code-input {
+  width: 48px;
+  height: 54px;
+  text-align: center;
+  font-size: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  background: rgba(10, 7, 22, 0.22);
+  color: #fff;
+  outline: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.code-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 420px) {
+  .code-group {
+    grid-template-columns: repeat(6, 42px);
+    gap: 8px;
+  }
+  .code-input {
+    width: 42px;
+    height: 50px;
+  }
 }
 
 .brand { 
@@ -129,9 +263,9 @@ h1, h2, h3 {
 
 /* Back to Home Button */
 .back-home {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  position: fixed;
+  top: calc(20px + env(safe-area-inset-top));
+  left: calc(20px + env(safe-area-inset-left));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -145,9 +279,11 @@ h1, h2, h3 {
   font-size: 0.9rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  z-index: 10;
+  z-index: 1000;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
+/* No extra override needed now that it is placed outside the card */
 
 .back-home:hover {
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(34, 211, 238, 0.2) 100%);
@@ -201,6 +337,37 @@ h1, h2, h3 {
   width: 100%;
 }
 
+/* Emphasize the email input block */
+#row-email .input-wrapper {
+  /* Dark translucent glass to avoid any white tint */
+  background: rgba(10, 7, 22, 0.18);
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  border-radius: 32px;
+  box-shadow:
+    0 12px 28px rgba(124, 58, 237, 0.18),
+    0 4px 14px rgba(34, 211, 238, 0.16);
+}
+
+#row-email .input-wrapper:focus-within {
+  border-color: transparent;
+  box-shadow:
+    0 0 0 2px rgba(124, 58, 237, 0.75),
+    0 12px 32px rgba(124, 58, 237, 0.4),
+    0 4px 18px rgba(34, 211, 238, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.18);
+}
+
+#row-email .form-input {
+  background: transparent;
+  border: none;
+}
+
+#row-email .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 .input-icon {
   position: absolute;
   left: 16px;
@@ -224,14 +391,13 @@ h1, h2, h3 {
 .form-input { 
   width: 100%; 
   padding: 14px 14px 14px 48px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: transparent !important;
+  border: none !important;
   border-radius: 28px; 
   color: var(--login-text); 
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  box-shadow: none !important;
   position: relative;
 }
 
@@ -241,12 +407,8 @@ h1, h2, h3 {
 
 .form-input:focus { 
   outline: none; 
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(34, 211, 238, 0.15) 100%);
-  border: 2px solid #7c3aed;
-  box-shadow: 
-    0 0 20px rgba(124, 58, 237, 0.5),
-    0 8px 30px rgba(124, 58, 237, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  background: transparent !important;
+  box-shadow: none !important;
   transform: translateY(-2px);
 }
 
@@ -338,4 +500,73 @@ h1, h2, h3 {
   .auth-left { 
     min-height: 36vh; 
   } 
+}
+
+/* Fixed back-home positioning (viewport) */
+.auth-card .back-home {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: calc(12px + env(safe-area-inset-left));
+  z-index: 1000;
+}
+
+@media (min-width: 768px) {
+  .auth-card .back-home {
+    top: calc(20px + env(safe-area-inset-top));
+    left: calc(20px + env(safe-area-inset-left));
+  }
+}
+
+@media (max-width: 570px) {
+  .auth-card .back-home {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+  }
+}
+
+/* Page enter fog overlay for smooth reveal */
+.page-enter-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 700ms ease;
+  background:
+    radial-gradient(1200px 800px at 30% 20%, rgba(255,255,255,0.08), transparent 60%),
+    radial-gradient(1000px 700px at 70% 80%, rgba(255,255,255,0.06), transparent 60%),
+    linear-gradient(0deg, rgba(15,10,31,0.25), rgba(15,10,31,0.25));
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+.page-enter-overlay.hide {
+  opacity: 0;
+}
+
+/* Gentle background motion for forgot-password */
+@keyframes kenburnsBg {
+  0% { transform: scale(1.02) translate3d(0, 0, 0); }
+  100% { transform: scale(1.06) translate3d(1.5%, 1.5%, 0); }
+}
+
+.video-background {
+  animation: kenburnsBg 16s ease-in-out infinite alternate;
+}
+
+/* Subtle drift on the left artwork background */
+@keyframes bgDrift {
+  0% { background-position: 50% 50%; }
+  100% { background-position: 52% 48%; }
+}
+
+.auth-left::before {
+  animation: bgDrift 20s ease-in-out infinite alternate;
+}
+/* Lift content for shorter viewports (e.g., many 15" laptops) */
+/* For Forgot Password, keep card centered even on shorter viewports */
+@media (max-height: 900px) {
+  .page-forgot .auth-split { place-items: center; }
+  .page-forgot .auth-right { justify-content: center; padding-top: 0; padding-bottom: 0; }
+  .page-forgot .auth-card { margin-top: 0; }
 }
