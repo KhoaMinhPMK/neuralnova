@@ -37,6 +37,184 @@
             background-attachment: fixed;
         }
         
+        /* Preloader / Loading Screen */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f0f14 0%, #1a1a24 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader-content {
+            text-align: center;
+            position: relative;
+        }
+        
+        .preloader-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            z-index: 10;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-5px); }
+        }
+        
+        .preloader-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.4));
+        }
+        
+        /* Crazy Stunt Loading Animation */
+        .preloader-spinner {
+            width: 128px;
+            height: 128px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .sp {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .sp__ring {
+            stroke: hsla(223, 90%, 95%, 0.05);
+            transition: stroke 0.3s;
+        }
+        
+        .sp__worm1,
+        .sp__worm2,
+        .sp__worm2-1 {
+            animation: worm1 5s ease-in infinite;
+        }
+        
+        .sp__worm1 {
+            transform-origin: 64px 64px;
+        }
+        
+        .sp__worm2,
+        .sp__worm2-1 {
+            transform-origin: 22px 22px;
+        }
+        
+        .sp__worm2 {
+            animation-name: worm2;
+            animation-timing-function: linear;
+        }
+        
+        .sp__worm2-1 {
+            animation-name: worm2-1;
+            stroke-dashoffset: 175.92;
+        }
+        
+        @keyframes worm1 {
+            from,
+            to {
+                stroke-dashoffset: 0;
+            }
+            12.5% {
+                animation-timing-function: ease-out;
+                stroke-dashoffset: -175.91;
+            }
+            25% {
+                animation-timing-function: cubic-bezier(0, 0, 0.43, 1);
+                stroke-dashoffset: -307.88;
+            }
+            50% {
+                animation-timing-function: ease-in;
+                stroke-dashoffset: -483.8;
+            }
+            62.5% {
+                animation-timing-function: ease-out;
+                stroke-dashoffset: -307.88;
+            }
+            75% {
+                animation-timing-function: cubic-bezier(0, 0, 0.43, 1);
+                stroke-dashoffset: -175.91;
+            }
+        }
+        
+        @keyframes worm2 {
+            from,
+            12.5%,
+            75%,
+            to {
+                transform: rotate(0) translate(-42px, 0);
+            }
+            25%,
+            62.5% {
+                transform: rotate(0.5turn) translate(-42px, 0);
+            }
+        }
+        
+        @keyframes worm2-1 {
+            from {
+                stroke-dashoffset: 175.91;
+                transform: rotate(0);
+            }
+            12.5% {
+                animation-timing-function: cubic-bezier(0, 0, 0.42, 1);
+                stroke-dashoffset: 0;
+                transform: rotate(0);
+            }
+            25% {
+                animation-timing-function: linear;
+                stroke-dashoffset: 0;
+                transform: rotate(1.5turn);
+            }
+            37.5%,
+            50% {
+                stroke-dashoffset: -175.91;
+                transform: rotate(1.5turn);
+            }
+            62.5% {
+                animation-timing-function: cubic-bezier(0, 0, 0.42, 1);
+                stroke-dashoffset: 0;
+                transform: rotate(1.5turn);
+            }
+            75% {
+                animation-timing-function: linear;
+                stroke-dashoffset: 0;
+                transform: rotate(0);
+            }
+            87.5%,
+            to {
+                stroke-dashoffset: 175.92;
+                transform: rotate(0);
+            }
+        }
+        
+        /* Hide main content during loading */
+        body.loading .header,
+        body.loading .banner,
+        body.loading .about-section,
+        body.loading .tech-section,
+        body.loading .video-section,
+        body.loading .brands-section,
+        body.loading .download-section {
+            visibility: hidden;
+        }
+        
         /* iOS Style Header - Premium Design */
         .header {
             position: fixed;
@@ -516,6 +694,7 @@
             animation: bgZoomOut 4s ease-in-out 1 forwards;
             z-index: -1;
             pointer-events: none;
+            transition: transform 1s ease-out;
         }
         
         @keyframes bgZoomIn {
@@ -1992,7 +2171,70 @@
         }
     </style>
 </head>
-<body>
+<body class="loading">
+    <!-- Preloader / Loading Screen -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-spinner">
+                <svg class="sp" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#000" />
+                            <stop offset="40%" stop-color="#fff" />
+                            <stop offset="100%" stop-color="#fff" />
+                        </linearGradient>
+                        <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#000" />
+                            <stop offset="60%" stop-color="#000" />
+                            <stop offset="100%" stop-color="#fff" />
+                        </linearGradient>
+                        <linearGradient id="pastelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#a8e6cf;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#88d5e9;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#c5b3e6;stop-opacity:1" />
+                        </linearGradient>
+                        <mask id="mask1">
+                            <rect x="0" y="0" width="128" height="128" fill="url(#grad1)" />
+                        </mask>
+                        <mask id="mask2">
+                            <rect x="0" y="0" width="128" height="128" fill="url(#grad2)" />
+                        </mask>
+                    </defs>
+                    <g fill="none" stroke-linecap="round" stroke-width="16">
+                        <circle class="sp__ring" r="56" cx="64" cy="64" stroke="#222" />
+                        <g stroke="url(#pastelGradient)">
+                            <path class="sp__worm1" d="M120,64c0,30.928-25.072,56-56,56S8,94.928,8,64" stroke="url(#pastelGradient)" stroke-dasharray="43.98 307.87" />
+                            <g transform="translate(42,42)">
+                                <g class="sp__worm2" transform="translate(-42,0)">
+                                    <path class="sp__worm2-1" d="M8,22c0-7.732,6.268-14,14-14s14,6.268,14,14" stroke-dasharray="43.98 175.92" />
+                                </g>
+                            </g>
+                        </g>
+                        <g stroke="url(#pastelGradient)" mask="url(#mask1)">
+                            <path class="sp__worm1" d="M120,64c0,30.928-25.072,56-56,56S8,94.928,8,64" stroke-dasharray="43.98 307.87" />
+                            <g transform="translate(42,42)">
+                                <g class="sp__worm2" transform="translate(-42,0)">
+                                    <path class="sp__worm2-1" d="M8,22c0-7.732,6.268-14,14-14s14,6.268,14,14" stroke-dasharray="43.98 175.92" />
+                                </g>
+                            </g>
+                        </g>
+                        <g stroke="url(#pastelGradient)" mask="url(#mask2)">
+                            <path class="sp__worm1" d="M120,64c0,30.928-25.072,56-56,56S8,94.928,8,64" stroke-dasharray="43.98 307.87" />
+                            <g transform="translate(42,42)">
+                                <g class="sp__worm2" transform="translate(-42,0)">
+                                    <path class="sp__worm2-1" d="M8,22c0-7.732,6.268-14,14-14s14,6.268,14,14" stroke-dasharray="43.98 175.92" />
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div class="preloader-logo">
+                <img src="assets/images/logo.png" alt="NeuralNova">
+            </div>
+        </div>
+    </div>
+    
     <!-- Premium iOS Style Header -->
     <header class="header">
         <nav class="navbar">
@@ -2737,31 +2979,143 @@
     
     <!-- JavaScript -->
     <script>
+        // Preloader - Load all resources
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            
+            // List of all resources to preload
+            const resources = [
+                // Images
+                'assets/images/logo.png',
+                'assets/images/logo.ico',
+                'assets/images/bg.jpg',
+                'assets/images/human2.png',
+                'assets/images/model.png',
+                'assets/images/nature1.jpg',
+                'assets/images/nature2.jpg',
+                'assets/images/nature3.jpg',
+                'assets/images/a.png',
+                'assets/images/thumnail.jpg',
+                // Videos
+                'assets/images/bg2.mp4',
+                'assets/images/intro.mp4'
+            ];
+            
+            let loadedCount = 0;
+            const totalResources = resources.length;
+            let allResourcesLoaded = false;
+            const minLoadTime = 5000; // 5 seconds minimum
+            const startTime = Date.now();
+            
+            function updateProgress() {
+                loadedCount++;
+                
+                // When all resources loaded
+                if (loadedCount === totalResources) {
+                    allResourcesLoaded = true;
+                    checkAndHidePreloader();
+                }
+            }
+            
+            function checkAndHidePreloader() {
+                if (!allResourcesLoaded) return;
+                
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = minLoadTime - elapsedTime;
+                
+                if (remainingTime > 0) {
+                    // Wait for remaining time
+                    setTimeout(() => {
+                        hidePreloader();
+                    }, remainingTime);
+                } else {
+                    // Already exceeded min time, hide immediately
+                    hidePreloader();
+                }
+            }
+            
+            function hidePreloader() {
+                preloader.classList.add('hidden');
+                document.body.classList.remove('loading');
+                
+                // Re-trigger scroll effect after preloader is hidden
+                setTimeout(() => {
+                    window.scrollTo(0, 0); // Reset scroll position
+                    
+                    // Remove initial animations after they complete
+                    const banner = document.querySelector('.banner');
+                    const title = document.querySelector('.title');
+                    if (banner && title) {
+                        // Wait for initial animations to complete (4s)
+                        setTimeout(() => {
+                            banner.style.animation = 'none';
+                            title.style.animation = 'none';
+                            const afterElement = window.getComputedStyle(banner, '::after');
+                            // Force reflow
+                            void banner.offsetWidth;
+                        }, 4500);
+                    }
+                    
+                    window.dispatchEvent(new Event('scroll')); // Trigger scroll event
+                }, 100);
+            }
+            
+            // Preload images
+            resources.forEach(src => {
+                if (src.endsWith('.mp4')) {
+                    // Preload video
+                    const video = document.createElement('video');
+                    video.onloadeddata = updateProgress;
+                    video.onerror = updateProgress; // Continue even if error
+                    video.src = src;
+                    video.preload = 'auto';
+                } else {
+                    // Preload image
+                    const img = new Image();
+                    img.onload = updateProgress;
+                    img.onerror = updateProgress; // Continue even if error
+                    img.src = src;
+                }
+            });
+        });
+        
         // Initialize Lucide Icons
         lucide.createIcons();
         
-        // Header scroll effect
-        const header = document.querySelector('.header');
-        const banner = document.querySelector('.banner');
+        // Initialize scroll effects
+        const initScrollEffects = () => {
+            const header = document.querySelector('.header');
+            const banner = document.querySelector('.banner');
+            
+            if (!header || !banner) return;
+            
+            const handleScroll = () => {
+                const scrollY = window.scrollY;
+                const bannerHeight = banner.offsetHeight;
+                
+                // Header scroll effect
+                if (scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                
+                // Banner zoom out effect when scrolling
+                if (scrollY > bannerHeight * 0.3) {
+                    banner.classList.add('zoom-out');
+                } else {
+                    banner.classList.remove('zoom-out');
+                }
+            };
+            
+            window.addEventListener('scroll', handleScroll);
+            
+            // Trigger once to check initial state
+            handleScroll();
+        };
         
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const bannerHeight = banner.offsetHeight;
-            
-            // Header scroll effect
-            if (scrollY > 100) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-            
-            // Banner zoom out effect when scrolling
-            if (scrollY > bannerHeight * 0.3) {
-                banner.classList.add('zoom-out');
-            } else {
-                banner.classList.remove('zoom-out');
-            }
-        });
+        // Initialize scroll effects immediately
+        initScrollEffects();
         
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
