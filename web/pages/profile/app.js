@@ -129,6 +129,7 @@
     data.interests = $('#interests').value.trim();
     data.country = $('#countrySel').value || data.country || '';
     data.gps = $('#introCoords').value || '';
+    data.blur = $('#blurLoc')?.checked || false;
     save(keyProfile, data); toast('Đã lưu Giới thiệu');
   });
   $('#updateGPSIntro')?.addEventListener('click', ()=>{
@@ -174,12 +175,13 @@
   });
   // Post feed with like/comment
   const posts2 = load(keyPosts, []); renderFeed();
+  computeBadgesAndStats(); renderTimeline();
   $('#pPublish')?.addEventListener('click', ()=>{
     const sp=$('#pSpecies').value; const reg=$('#pRegion').value; const win=$('#pBloomWin').value; const info=$('#pInfo').value;
     const coords=$('#pCoords').value.trim(); const date=$('#pDate').value; const cap=$('#pCaption').value.trim();
     const f=$('#pMedia').files[0];
     const add=(src,isVideo)=>{
-      posts2.push({ id:'POST_'+Date.now(), sp, reg, win, info, coords, date, cap, media:src||'', isVideo: !!isVideo, likes:0, comments:[] , at:new Date().toISOString()});
+      posts2.push({ id:'POST_'+Date.now(), sp, reg, win, info, coords, date, cap, media:src||'', isVideo: !!isVideo, likes:0, reactions:{like:0,heart:0,flower:0,wow:0}, comments:[] , at:new Date().toISOString()});
       save(keyPosts, posts2); renderFeed(); toast('Đã đăng');
       $('#pCaption').value=''; $('#pMedia').value='';
     };
@@ -187,20 +189,28 @@
   });
   function renderFeed(){
     const box=$('#postFeed'); if (!box) return;
+    const useBlur = !!(load(keyProfile, {}).blur);
     box.innerHTML = posts2.slice().reverse().map(p=>{
       const media = p.media ? (p.isVideo?`<video src="${p.media}" controls></video>`:`<img src="${p.media}" alt="media">`) : '';
+      const coords = p.coords||'—';
+      const coordsShown = useBlur && coords.includes(',') ? `${Number(coords.split(',')[0]).toFixed(2)}, ${Number(coords.split(',')[1]).toFixed(2)} (~km)` : coords;
       return `<div class="card">
         <div class="head"><img src="${avatarSrc}" alt="av"><div><div class="name">${prof.username||'User'}</div><div class="sub">${new Date(p.at).toLocaleString('vi-VN')}</div></div></div>
         <div class="body">
           <div><strong>${(speciesInfo[p.sp]||{}).name||p.sp}</strong> • ${regionLabels[p.reg]||p.reg}</div>
           <div>Cửa sổ nở: ${p.win||'—'}</div>
           <div>${p.info||''}</div>
-          <div>Toạ độ: ${p.coords||'—'} ${p.date?('• Ngày: '+p.date):''}</div>
+          <div>Toạ độ: ${coordsShown} ${p.date?('• Ngày: '+p.date):''}</div>
           <div class="media">${media}</div>
           <div>${p.cap||''}</div>
         </div>
         <div class="actions">
-          <button class="chip-btn" data-act="like" data-id="${p.id}">👍 Thích (${p.likes||0})</button>
+          <div class="reacts">
+            <button class="react-btn" data-act="react" data-type="like" data-id="${p.id}"><i data-lucide="thumbs-up"></i><span>${(p.reactions?.like ?? p.likes) || 0}</span></button>
+            <button class="react-btn" data-act="react" data-type="heart" data-id="${p.id}"><i data-lucide="heart"></i><span>${p.reactions?.heart||0}</span></button>
+            <button class="react-btn" data-act="react" data-type="flower" data-id="${p.id}"><i data-lucide="flower-2"></i><span>${p.reactions?.flower||0}</span></button>
+            <button class="react-btn" data-act="react" data-type="wow" data-id="${p.id}"><i data-lucide="sparkles"></i><span>${p.reactions?.wow||0}</span></button>
+          </div>
           <button class="chip-btn" data-act="cmt" data-id="${p.id}">💬 Bình luận</button>
           <button class="chip-btn" data-act="share" data-id="${p.id}">↗ Chia sẻ</button>
         </div>
@@ -211,6 +221,7 @@
       </div>`;
     }).join('') || '<div class="checkin-card">Chưa có bài viết</div>';
     // wire actions
+    if (window.lucide) lucide.createIcons();
     $$('.chip-btn', box).forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const id = btn.dataset.id; const act = btn.dataset.act; const idx = posts2.findIndex(x=>x.id===id); if (idx<0) return;
@@ -220,6 +231,54 @@
         if (act==='send'){ const inp=$('#i_'+id); const txt=(inp.value||'').trim(); if(!txt) return; posts2[idx].comments = posts2[idx].comments||[]; posts2[idx].comments.push(txt); save(keyPosts, posts2); renderFeed(); }
       });
     });
+    $$('.react-btn', box).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id; const type = btn.dataset.type; const idx = posts2.findIndex(x=>x.id===id); if (idx<0) return;
+        posts2[idx].reactions = posts2[idx].reactions || {like:0,heart:0,flower:0,wow:0};
+        posts2[idx].reactions[type] = (posts2[idx].reactions[type]||0) + 1;
+        // keep legacy likes in sync if type is like
+        if (type==='like') posts2[idx].likes = (posts2[idx].likes||0) + 1;
+        save(keyPosts, posts2); renderFeed();
+      });
+    });
+  }
+
+  // Badges, stats, timeline helpers
+  function computeBadgesAndStats(){
+    const set = new Set(); const regs = new Set(); let within=0, total=0;
+    posts2.forEach(p=>{ set.add(p.sp); regs.add(p.reg); if (p.win && p.date) { total++; if (isDateWithinWindow(p.date, p.win)) within++; } });
+    const badges = [];
+    if (set.size>=3) badges.push(['Explorer','map-pin']);
+    if (regs.size>=3) badges.push(['Regional','globe']);
+    if (within>=3) badges.push(['Bloom Master','flower']);
+    const box=$('#badges'); if (box) box.innerHTML = badges.map(([t,icon])=>`<span class="badge"><i data-lucide="${icon}"></i>${t}</span>`).join('');
+    if (window.lucide) lucide.createIcons();
+    // Stats
+    const st=$('#stats'); if (st) st.innerHTML = `
+      <div class="stat">Loài đã ghi: <strong>${set.size}</strong></div>
+      <div class="stat">Vùng đã ghé: <strong>${regs.size}</strong></div>
+      <div class="stat">Bài viết: <strong>${posts2.length}</strong></div>
+      <div class="stat">Độ chính xác dự báo: <strong>${total?Math.round(within*100/total):0}%</strong></div>
+    `;
+  }
+  function isDateWithinWindow(dateStr, win){
+    // win format: "MM-MM" or "Quanh năm"
+    if (!win || win==='—' || win==='Quanh năm') return win==='Quanh năm';
+    const [m1,m2] = win.split('-').map(x=>parseInt(x,10)); const m = (new Date(dateStr)).getMonth()+1;
+    if (m1<=m2) return m>=m1 && m<=m2; // e.g., 03-04
+    return m>=m1 || m<=m2; // cross-year windows (e.g., 12-02)
+  }
+  function renderTimeline(){
+    const box=$('#timeline'); if (!box) return;
+    const items = posts2.slice().sort((a,b)=> new Date(a.date||a.at) - new Date(b.date||b.at));
+    box.innerHTML = items.map(p=>{
+      const ok = p.win && p.date && isDateWithinWindow(p.date, p.win);
+      return `<div class="tl-item ${ok?'ok':'miss'}">
+        <div><strong>${(speciesInfo[p.sp]||{}).name||p.sp}</strong> • ${regionLabels[p.reg]||p.reg}</div>
+        <div>Ngày quan sát: ${p.date||'—'} • Cửa sổ dự báo: ${p.win||'—'}</div>
+        <div>${ok?'Khớp dự báo ✅':'Ngoài cửa sổ dự báo ⚠'}</div>
+      </div>`;
+    }).join('') || '<div class="tl-item">Chưa có dữ liệu. Hãy đăng một bài viết có ngày và loài.</div>';
   }
 
   // Check-in feature removed; now part of Posts via coordinates/date/media
