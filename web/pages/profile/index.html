@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hồ sơ người dùng | NeuralNova</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="p-header">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/images/logo.png" alt="NeuralNova" />
+      <span>NeuralNova</span>
+    </a>
+    <nav class="actions">
+      <a href="../checkout/index.html" class="btn">Thanh toán</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Facebook-like hero -->
+    <section class="hero">
+      <div class="cover">
+        <img id="cover" src="../../assets/images/nature1.jpg" alt="Cover" />
+        <label class="btn tiny change-cover">
+          <input id="coverInput" type="file" accept="image/*" hidden />Đổi ảnh bìa
+        </label>
+      </div>
+      <div class="hero-main">
+        <div class="hero-avatar">
+          <img id="avatarHero" src="" alt="Avatar" />
+          <label class="btn tiny overlap"><input id="avatarInputHero" type="file" accept="image/*" hidden />Cập nhật ảnh</label>
+        </div>
+        <div class="hero-info">
+          <h1 id="displayName">User</h1>
+          <div class="sub">@<span id="uid">—</span> • IP: <span id="ipShort">—</span></div>
+        </div>
+        <div class="hero-actions">
+          <a href="#" class="btn">Chỉnh sửa hồ sơ</a>
+        </div>
+      </div>
+      <div class="hero-tabs">
+        <button class="h-tab active" data-k="intro">Giới thiệu</button>
+        <button class="h-tab" data-k="posts">Bài viết</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <!-- Left column: Profile card -->
+      <aside class="profile">
+        <div class="avatar-wrap">
+          <img id="avatar" src="" alt="Avatar" />
+          <label class="btn tiny"><input id="avatarInput" type="file" accept="image/*" hidden />Cập nhật ảnh</label>
+        </div>
+        <div class="field">
+          <label>Tên người dùng</label>
+          <input id="username" placeholder="Tên hiển thị" />
+        </div>
+        <div class="field">
+          <label>User ID</label>
+          <input id="userId" placeholder="Tự nhập hoặc để hệ thống tạo" />
+        </div>
+        <div class="field">
+          <label>Địa chỉ IP</label>
+          <div class="ip-row">
+            <select id="ipRegion">
+              <option value="auto">Tự động (nếu cho phép)</option>
+              <option value="na">Bắc Mỹ</option>
+              <option value="sa">Nam Mỹ</option>
+              <option value="eu">Châu Âu</option>
+              <option value="af">Châu Phi</option>
+              <option value="as">Châu Á</option>
+              <option value="oc">Châu Đại Dương</option>
+            </select>
+            <button id="detectIp" class="btn tiny">Phát hiện</button>
+          </div>
+          <div class="ip-info">
+            <span>IP hiển thị:</span>
+            <strong id="ipDisplay">—</strong>
+          </div>
+        </div>
+        <button id="saveProfile" class="btn primary full">Lưu hồ sơ</button>
+      </aside>
+
+      <!-- Right column: Tabs and content -->
+      <section class="content">
+        <!-- Hidden legacy tabs; using hero tabs instead -->
+        <div class="tabs" style="display:none"></div>
+
+        <!-- Intro (Giới thiệu) -->
+        <div id="intro" class="panel">
+          <div class="field">
+            <label>Giới thiệu bản thân</label>
+            <textarea id="bio" placeholder="Viết đôi dòng về bạn..." rows="3" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(8,8,12,.85);color:#fff"></textarea>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Sở thích</label>
+              <input id="interests" placeholder="hoa, du lịch, chụp ảnh, ... (phân cách bằng dấu phẩy)" />
+            </div>
+            <div class="field">
+              <label>Quốc gia (IP)</label>
+              <div class="ip-row">
+                <select id="countrySel">
+                  <option value="">— Chọn quốc gia —</option>
+                  <option value="VN">Vietnam</option>
+                  <option value="US">United States</option>
+                  <option value="JP">Japan</option>
+                  <option value="KR">Korea</option>
+                  <option value="FR">France</option>
+                  <option value="DE">Germany</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="AU">Australia</option>
+                </select>
+                <button id="detectCountry" class="btn tiny" type="button">Phát hiện</button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Vị trí hiện tại (GPS)</label>
+              <input id="introCoords" placeholder="Chưa xác định" readonly />
+            </div>
+            <div class="field" style="display:flex;align-items:end;gap:8px">
+              <button id="updateGPSIntro" class="btn" type="button">Cập nhật GPS</button>
+              <button id="saveIntro" class="btn primary" type="button">Lưu Giới thiệu</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Posts (Bài viết) với gợi ý loài/vùng và dự đoán nở hoa -->
+        <div id="posts" class="panel" hidden>
+          <div class="row">
+            <div class="field">
+              <label>Loài hoa</label>
+              <select id="pSpecies">
+                <option value="sakura">Anh đào (Sakura)</option>
+                <option value="lotus">Sen (Lotus)</option>
+                <option value="sunflower">Hướng dương</option>
+                <option value="lavender">Oải hương</option>
+                <option value="orchid">Lan</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Vùng sinh sống (gợi ý)</label>
+              <select id="pRegion"></select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Cửa sổ nở hoa (ước tính)</label>
+              <input id="pBloomWin" readonly placeholder="—" />
+            </div>
+            <div class="field">
+              <label>Thông tin loài</label>
+              <input id="pInfo" readonly placeholder="—" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Toạ độ</label>
+              <input id="pCoords" placeholder="lat, lng" />
+            </div>
+            <div class="field" style="display:flex;gap:8px;align-items:end">
+              <button id="pGetLoc" class="btn" type="button">Tự định vị</button>
+              <input id="pDate" type="date" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Ảnh/Video</label>
+              <input id="pMedia" type="file" accept="image/*,video/*" />
+            </div>
+            <div class="field">
+              <label>Mô tả</label>
+              <input id="pCaption" placeholder="Cảm nhận, địa điểm..." />
+            </div>
+          </div>
+          <button id="pPublish" class="btn primary">Đăng bài</button>
+          <div id="postFeed" class="feed"></div>
+        </div>
+
+        
+
+        
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
