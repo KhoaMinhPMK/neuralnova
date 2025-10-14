@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanh toán thành công | NeuralNova</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0a1f;--panel:rgba(15,15,20,.7);--border:rgba(255,255,255,.06);--text:#e6e6f0;--muted:#a3a3b2;--primary:#7c3aed;--ok:#10b981}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;color:var(--text);background:radial-gradient(1000px 700px at 10% -10%,rgba(124,58,237,.35),transparent),radial-gradient(900px 600px at 110% 0,rgba(34,211,238,.25),transparent),var(--bg) url('../../assets/images/bg.jpg') center/cover fixed no-repeat;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .wrap{min-height:100%;display:grid;place-items:center;padding:24px}
+    .card{width:min(680px,92vw);background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .badge{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3)}
+    h1{margin:0;font-size:24px}
+    .sub{color:var(--muted);margin:2px 0 10px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+    .box{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .box h3{margin:0 0 8px;font-size:14px;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .btn{padding:10px 12px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:#fff;font-weight:700;background:rgba(255,255,255,.05)}
+    .btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--primary),#6d28d9 45%,#22d3ee)}
+    .muted{color:var(--muted);font-size:13px;margin-top:8px}
+    @media (max-width: 760px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="badge" aria-hidden="true">✅</div>
+        <div>
+          <h1>Thanh toán thành công</h1>
+          <div class="sub" id="desc">Cảm ơn bạn đã tin tưởng NeuralNova.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="box">
+          <h3>Đơn hàng</h3>
+          <div id="itemName">Gói NeuralNova</div>
+        </div>
+        <div class="box">
+          <h3>Tổng cộng</h3>
+          <div id="total">0₫</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="box">
+          <h3>Phương thức</h3>
+          <div id="method">—</div>
+        </div>
+        <div class="box">
+          <h3>Mã giao dịch</h3>
+          <div id="txid">—</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="../../index.html">Về trang chủ</a>
+        <a class="btn" href="index.html">Thanh toán khác</a>
+      </div>
+      <div class="muted">Bạn sẽ nhận được email xác nhận trong ít phút.</div>
+    </div>
+  </div>
+  <script>
+    const p = new URLSearchParams(location.search);
+    const name = p.get('name') || 'Gói NeuralNova';
+    const method = p.get('method') || 'CARD';
+    const last4 = p.get('last4');
+    const total = Number(p.get('total') || 0);
+    const fmt = (n)=> new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n);
+    document.getElementById('itemName').textContent = name;
+    document.getElementById('total').textContent = fmt(total);
+    let methodText = '—';
+    if (method === 'CARD') methodText = `Thẻ (**** ${last4||'••••'})`;
+    else if (method === 'BANK') methodText = 'Chuyển khoản ngân hàng';
+    else if (method === 'WALLET') methodText = 'Ví NeuralNova';
+    document.getElementById('method').textContent = methodText;
+    const tx = 'PAY_' + Date.now();
+    document.getElementById('txid').textContent = tx;
+    document.getElementById('desc').textContent = `Đơn hàng "${name}" đã được xử lý.`;
+  </script>
+</body>
+<!-- Keep styles co-located for this simple static page -->
+</html>

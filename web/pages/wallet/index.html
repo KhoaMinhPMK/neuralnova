@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ví NeuralNova - Nạp tiền bằng QR</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Attempt to load QR generator from CDN (optional); app.js has a fallback UI -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="wallet-header">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/images/logo.png" alt="NeuralNova" />
+      <span>NeuralNova</span>
+    </a>
+    <nav class="actions">
+      <a href="../checkout/index.html" class="btn">Thanh toán</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div class="wallet">
+        <div class="wallet-top">
+          <div>
+            <h1>Ví NeuralNova</h1>
+            <p class="muted">Nạp tiền bằng QR (MoMo, VNPay, Alipay) và dùng số dư để thanh toán trong web. Không chuyển thẳng về tài khoản công ty.</p>
+          </div>
+          <div class="balance">
+            <span>Số dư</span>
+            <strong id="balance">0₫</strong>
+          </div>
+        </div>
+
+        <div class="amounts">
+          <button class="chip" data-amount="50000">50.000₫</button>
+          <button class="chip" data-amount="100000">100.000₫</button>
+          <button class="chip" data-amount="200000">200.000₫</button>
+          <button class="chip" data-amount="500000">500.000₫</button>
+          <div class="custom">
+            <input id="customAmount" placeholder="Nhập số tiền (VND)" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="providers" role="tablist">
+          <button class="provider active" data-provider="momo">
+            <img src="logopay/MoMo_Logo.png" alt="MoMo" />
+            <span>MoMo</span>
+          </button>
+          <button class="provider" data-provider="vnpay">
+            <img src="logopay/vnpay%20logo.png" alt="VNPay" />
+            <span>VNPay</span>
+          </button>
+          
+        </div>
+
+        <div class="qr-wrap">
+          <div id="qr" class="qr"></div>
+          <div class="qr-fallback" id="qrFallback" hidden>
+            <div class="qr-placeholder">QR sẽ hiển thị tại đây</div>
+          </div>
+          <div class="payload">
+            <label>Nội dung mã (demo)</label>
+            <textarea id="payload" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="genBtn" class="btn primary">Tạo mã QR</button>
+          <button id="confirmBtn" class="btn success">Tôi đã thanh toán</button>
+          <button id="copyBtn" class="btn">Sao chép nội dung</button>
+        </div>
+
+        <p class="hint">Lưu ý: Đây là demo client-side. Tích hợp thực tế với MoMo/VNPay/Alipay cần backend để tạo phiên thanh toán, ký và xác minh webhook. Sau khi xác nhận, số dư được cộng vào ví và bạn có thể thanh toán trong web bằng Ví NeuralNova.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

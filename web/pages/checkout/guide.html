@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng dẫn thanh toán | NeuralNova</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <style>
+    /* Higher-contrast palette for readability on dark bg */
+    :root{--bg:#0f0a1f;--panel:rgba(15,15,20,.88);--border:rgba(255,255,255,.12);--text:#f5f7ff;--muted:#c7c9d9;--primary:#7c3aed;--cyan:#22d3ee}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;color:var(--text);line-height:1.65;letter-spacing:.1px;background:radial-gradient(1200px 800px at 20% -10%, rgba(124,58,237,.35), transparent),radial-gradient(1000px 700px at 100% 0, rgba(34,211,238,.25), transparent),var(--bg) url('../../assets/images/bg.jpg') center/cover fixed no-repeat;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:linear-gradient(180deg, rgba(10,10,16,.85), rgba(10,10,16,.45));backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+    .brand img{width:28px;height:28px;object-fit:contain}
+    .container{max-width:980px;margin:24px auto;padding:0 16px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.35)}
+    h1{margin:0 0 10px;font-size:26px}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns: 230px 1fr;gap:20px}
+    .toc{position:sticky;top:90px;background:rgba(22,22,30,.9);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+    .toc a{display:block;color:#e8eaff;text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .toc a:hover{background:rgba(255,255,255,.08)}
+    section{background:linear-gradient(180deg, rgba(30,30,44,.98), rgba(20,20,30,.94));border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.28)}
+    .content > section{margin-bottom:16px}
+    .content > section:last-child{margin-bottom:0}
+    h2{margin:0 0 10px;font-size:20px;color:#ffffff}
+    .steps{list-style:none;padding-left:0;margin:0}
+    .steps li{display:flex;gap:12px;margin:10px 0}
+    .steps i{width:18px;height:18px;color:#b7b9cc}
+    .note{color:var(--muted);font-size:14px}
+    code,.kbd{background:rgba(255,255,255,.1);border:1px solid var(--border);padding:0 6px;border-radius:6px;color:#fff}
+    .methods{display:flex;flex-wrap:wrap;gap:8px}
+    .method{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:rgba(255,255,255,.07);padding:8px 10px;border-radius:10px}
+    .method img{height:18px;width:auto;border-radius:4px}
+    a{color:#a5b4fc}
+    @media (max-width: 900px){.grid{grid-template-columns: 1fr}}
+    /* Make Top-up box more compact and not overly wide */
+    #topup{max-width:760px;padding:12px}
+    #topup .methods{gap:6px}
+    #topup .method{padding:6px 8px}
+    #topup .steps li{margin:6px 0}
+    #topup .note{margin-top:8px}
+    /* Wrapper to ensure the dark frame ends after FAQ */
+    .guide-box{background:linear-gradient(180deg, rgba(18,18,30,.92), rgba(12,12,20,.88));border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 20px 48px rgba(0,0,0,.35);margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/images/logo.png" alt="NeuralNova" />
+      <strong>NeuralNova</strong>
+    </a>
+    <a class="brand" href="../checkout/index.html">
+      <i data-lucide="credit-card"></i>
+      <span>Về Thanh toán</span>
+    </a>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>Hướng dẫn thanh toán</h1>
+      <div class="muted">Cách nạp tiền vào Ví NeuralNova, dùng các phương thức thanh toán và kiểm tra giao dịch.</div>
+    </div>
+
+    <div class="guide-box">
+      <div class="grid">
+        <nav class="toc">
+        <a href="#topup">Nạp tiền vào ví</a>
+        <a href="#wallet-pay">Thanh toán bằng Ví</a>
+        <a href="#card-pay">Thanh toán bằng thẻ</a>
+        <a href="#history">Kiểm tra lịch sử</a>
+        <a href="#faq">Câu hỏi thường gặp</a>
+        </nav>
+
+        <div class="content">
+        <section id="topup">
+          <h2>Nạp tiền vào Ví NeuralNova</h2>
+          <div class="methods" style="margin-bottom:8px">
+            <div class="method"><img src="../wallet/logopay/MoMo_Logo.png" alt="MoMo"/>MoMo</div>
+            <div class="method"><img src="../wallet/logopay/zalopay-logo.png" alt="ZaloPay"/>ZaloPay</div>
+            <div class="method"><img src="../wallet/logopay/vnpay%20logo.png" alt="VNPay"/>VNPay</div>
+            <div class="method"><img src="../wallet/logopay/paypal%20logo.png" alt="PayPal"/>PayPal</div>
+            <div class="method"><img src="../../assets/images/payments/bank.svg" alt="Bank"/>Chuyển khoản</div>
+          </div>
+          <p class="note">Cần thanh toán qua Alipay? Sử dụng trang nhập chi tiết riêng: <a href="method.html?provider=alipay" target="_blank">Nhập thông tin Alipay</a>.</p>
+          <ol class="steps">
+            <li><i data-lucide="wallet"></i><div>Mở <a href="../checkout/index.html#wallet">Thanh toán → Ví NeuralNova</a> và chọn tab <strong>Nạp tiền</strong>.</div></li>
+            <li><i data-lucide="list"></i><div>Chọn phương thức mong muốn (MoMo, VNPay, ZaloPay, Alipay, PayPal, Payoneer hoặc Chuyển khoản).</div></li>
+            <li><i data-lucide="circle-dollar-sign"></i><div>Nhập <strong>Số tiền</strong> và <strong>Ghi chú</strong> (nếu có), nhấn <strong>Tạo mã QR</strong> để hiển thị/saok chép payload.</div></li>
+            <li><i data-lucide="scan-line"></i><div>Mở app thanh toán để quét QR hoặc bấm vào liên kết deeplink nếu được hỗ trợ.</div></li>
+            <li><i data-lucide="check"></i><div>Sau khi thanh toán xong, nhấn <strong>Tôi đã thanh toán</strong> để cộng tiền vào ví (demo). Với bản triển khai thực, ví sẽ được cộng tự động khi hệ thống nhận <em>webhook</em>.</div></li>
+          </ol>
+          <p class="note">Lưu ý: Đây là bản demo client-side. Tích hợp thật cần backend tạo phiên thanh toán, ký/kiểm tra và xử lý webhook.</p>
+        </section>
+
+        <section id="wallet-pay">
+          <h2>Thanh toán đơn hàng bằng Ví</h2>
+          <ol class="steps">
+            <li><i data-lucide="credit-card"></i><div>Vào <a href="../checkout/index.html">Trang Thanh toán</a> và chọn tab <strong>Ví NeuralNova</strong>.</div></li>
+            <li><i data-lucide="eye"></i><div>Kiểm tra <strong>Số dư hiện tại</strong>. Nếu chưa đủ, chuyển sang tab <strong>Nạp tiền</strong> để nạp thêm.</div></li>
+            <li><i data-lucide="badge-check"></i><div>Nhấn <strong>Thanh toán bằng Ví</strong>. Số dư ví sẽ bị trừ tương ứng và chuyển đến trang xác nhận.</div></li>
+          </ol>
+        </section>
+
+        <section id="card-pay">
+          <h2>Thanh toán bằng thẻ (tín dụng/ghi nợ)</h2>
+          <ol class="steps">
+            <li><i data-lucide="credit-card"></i><div>Ở trang Thanh toán, chọn tab <strong>Thẻ</strong> và nhập họ tên, email, số thẻ, hạn, CVC.</div></li>
+            <li><i data-lucide="lock"></i><div>Thông tin thẻ được kiểm tra cơ bản (Luhn, định dạng). Triển khai thật cần dùng cổng hỗ trợ PCI/3DS.</div></li>
+            <li><i data-lucide="check-circle"></i><div>Nhấn <strong>Thanh toán</strong> để hoàn tất. Bạn sẽ được chuyển đến trang xác nhận.</div></li>
+          </ol>
+        </section>
+
+        <section id="history">
+          <h2>Kiểm tra lịch sử giao dịch</h2>
+          <ol class="steps">
+            <li><i data-lucide="history"></i><div>Mở <a href="../checkout/index.html#wallet">Thanh toán → Ví NeuralNova</a> và chọn tab <strong>Lịch sử</strong>.</div></li>
+            <li><i data-lucide="list"></i><div>Xem danh sách các giao dịch nạp tiền: thời gian, phương thức, số tiền, trạng thái.</div></li>
+          </ol>
+          <p class="note">Trong demo, lịch sử được lưu trên trình duyệt qua <code>localStorage</code>. Ở môi trường thật, dữ liệu sẽ từ máy chủ theo tài khoản người dùng.</p>
+        </section>
+
+        <section id="faq">
+          <h2>Câu hỏi thường gặp</h2>
+          <ul class="steps">
+            <li><i data-lucide="help-circle"></i><div><strong>Không hiện QR?</strong> Hãy nhấn lại “Tạo mã QR” hoặc thử dùng trình duyệt khác, tắt cache bằng Ctrl+F5.</div></li>
+            <li><i data-lucide="alert-triangle"></i><div><strong>Đã thanh toán nhưng ví chưa cộng?</strong> Bản demo không có webhook. Bản thật sẽ cập nhật tự động khi ngân hàng/cổng gọi về hệ thống.</div></li>
+            <li><i data-lucide="mail"></i><div>Liên hệ hỗ trợ: <a href="mailto:support@neuralnova.local">support@neuralnova.local</a></div></li>
+          </ul>
+        </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { if (window.lucide && lucide.createIcons) lucide.createIcons(); });
+  </script>
+</body>
+</html>

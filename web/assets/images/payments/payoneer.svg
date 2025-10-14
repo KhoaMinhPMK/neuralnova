@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Payoneer">
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="#f97316"/>
+  <path d="M16 44c10-14 22-22 32-26" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="20" cy="40" r="5" fill="#fff"/>
+</svg>
+

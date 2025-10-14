@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết phương thức thanh toán</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0a1f;--panel:rgba(15,15,20,.72);--border:rgba(255,255,255,.08);--text:#e6e6f0;--muted:#a3a3b2;--primary:#7c3aed;--ok:#10b981}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;color:var(--text);background:radial-gradient(1200px 800px at 20% -10%, rgba(124,58,237,.35), transparent),radial-gradient(1000px 700px at 100% 0, rgba(34,211,238,.25), transparent),var(--bg) url('../../assets/images/bg.jpg') center/cover fixed no-repeat;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:linear-gradient(180deg, rgba(10,10,16,.75), rgba(10,10,16,.35));backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    a.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+    a.brand img{height:28px;width:auto}
+    .container{max-width:980px;margin:24px auto;padding:0 16px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .muted{color:var(--muted)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field label{display:block;color:var(--muted);font-size:12px;margin:8px 0 6px}
+    .field input,.field select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(8,8,12,.8);color:#fff}
+    .banks{display:flex;gap:8px;overflow:auto;padding:8px 6px}
+    .bank{white-space:nowrap;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);color:#fff;cursor:pointer;font-weight:600;transition:background .18s,border-color .18s,box-shadow .18s,transform .06s}
+    .bank:hover{background:rgba(255,255,255,.14)}
+    .bank:active{transform:translateY(1px)}
+    .bank:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(124,58,237,.35)}
+    .bank.active{background:linear-gradient(180deg, rgba(124,58,237,.35), rgba(124,58,237,.18));border-color:rgba(124,58,237,.7);box-shadow:0 0 0 3px rgba(124,58,237,.35)}
+    .banks{scrollbar-width:none}
+    .banks::-webkit-scrollbar{display:none}
+    .bank-slider{position:relative;margin:8px 0}
+    .arrow{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.45);cursor:pointer}
+    .arrow:hover{background:rgba(124,58,237,.4)}
+    .arrow[disabled]{opacity:.4;pointer-events:none}
+    .arrow.left{left:-6px}
+    .arrow.right{right:-6px}
+    /* Vertical layout variant */
+    .bank-vertical .banks{flex-direction:column;max-height:360px;padding:6px}
+    .bank-vertical .bank{width:100%; text-align:left}
+    .bank-vertical .arrow{display:none}
+    .btn{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-weight:700;cursor:pointer}
+    .btn.tiny{padding:6px 8px;font-size:12px}
+    .btn.primary{border-color:transparent;background:linear-gradient(135deg, var(--primary), #6d28d9 45%, #22d3ee)}
+    .grid{display:grid;grid-template-columns: 220px 1fr;gap:12px}
+    .qr{width:220px;height:220px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;background:#0c0c13;color:var(--muted)}
+    textarea{width:100%;min-height:210px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:#fff;padding:10px}
+    @media (max-width: 900px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="../../index.html"><img src="../../assets/images/logo.png" alt="NeuralNova"/><strong>NeuralNova</strong></a>
+    <a id="backLink" class="brand" href="index.html#wallet">⬅ Quay lại thanh toán</a>
+  </header>
+  <main class="container">
+    <div class="card">
+      <h1 id="title">Phương thức</h1>
+      <div class="muted" id="desc">Nhập thông tin theo phương thức bạn chọn để tạo mã QR và nạp tiền vào ví.</div>
+    </div>
+
+    <section class="card" style="margin-top:12px">
+      <div id="bankBlock" hidden>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div class="muted">Chọn ngân hàng của bạn (Việt Nam):</div>
+          <button id="toggleLayout" class="btn tiny" type="button">Hiển thị dọc</button>
+        </div>
+        <div class="bank-slider" id="bankSlider">
+          <button class="arrow left" id="bankPrev" aria-label="Lùi">‹</button>
+          <div class="banks" id="bankList"></div>
+          <button class="arrow right" id="bankNext" aria-label="Tiến">›</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <div class="field" id="f-recipient">
+          <label id="lab-recipient">Người nhận</label>
+          <input id="recipient" placeholder="SĐT/email/ID nhận" />
+        </div>
+        <div class="field" id="f-account" hidden>
+          <label>Số tài khoản</label>
+          <input id="account" placeholder="Nhập số tài khoản" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" id="f-name" hidden>
+          <label>Họ và tên chủ tài khoản</label>
+          <input id="fullname" placeholder="Nguyễn Văn A" />
+        </div>
+        <div class="field">
+          <label>Số tiền (VND)</label>
+          <input id="amount" inputmode="numeric" placeholder="100000" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Ghi chú/Nội dung</label>
+        <input id="note" placeholder="nap_vi_user123" />
+      </div>
+
+      <div class="grid">
+        <div id="qr" class="qr">QR sẽ hiển thị tại đây</div>
+        <div>
+          <label class="muted" style="display:block;margin-bottom:6px">Payload (demo)</label>
+          <textarea id="payload" readonly></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="gen" class="btn">Tạo mã QR</button>
+            <button id="confirm" class="btn primary">Tôi đã thanh toán</button>
+            <button id="copy" class="btn">Sao chép</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const $ = (s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
+    const p = new URLSearchParams(location.search);
+    const provider = (p.get('provider')||'momo').toLowerCase();
+    const layoutParam = (p.get('layout')||'').toLowerCase();
+    const ret = p.get('return') || 'index.html#wallet';
+    $('#backLink').href = ret;
+    const fmt=(n)=> new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(Number(n||0));
+
+    const BANKS = [
+      {code:'VCB',name:'Vietcombank'}, {code:'CTG',name:'VietinBank'}, {code:'BIDV',name:'BIDV'}, {code:'AGR',name:'Agribank'},
+      {code:'TCB',name:'Techcombank'}, {code:'ACB',name:'ACB'}, {code:'STB',name:'Sacombank'}, {code:'MBB',name:'MB Bank'},
+      {code:'VPB',name:'VPBank'}, {code:'TPB',name:'TPBank'}, {code:'SHB',name:'SHB'}, {code:'VIB',name:'VIB'},
+      {code:'HDB',name:'HDBank'}, {code:'MSB',name:'MSB'}, {code:'OCB',name:'OCB'}, {code:'SCB',name:'SCB'},
+      {code:'EIB',name:'Eximbank'}, {code:'SGB',name:'SaigonBank'}, {code:'KLB',name:'KienLongBank'}, {code:'NAB',name:'Nam A Bank'},
+      {code:'LPB',name:'LienVietPostBank'}, {code:'BAB',name:'Bac A Bank'}, {code:'ABB',name:'ABBank'}, {code:'VAB',name:'VietABank'},
+      {code:'VBB',name:'VietBank'}, {code:'BVB',name:'BaoViet Bank'}, {code:'PGB',name:'PGBank'}, {code:'PVCB',name:'PVcomBank'},
+      {code:'SEAB',name:'SeABank'}, {code:'NCB',name:'NCB'}, {code:'OJB',name:'OceanBank'}, {code:'DAB',name:'DongA Bank'},
+      {code:'MSBVN',name:'Maritime Bank'}, {code:'UOB',name:'UOB'}, {code:'HSBC',name:'HSBC'}, {code:'SCVN',name:'Standard Chartered'},
+      {code:'SHBVN',name:'Shinhan Bank'}, {code:'WOORI',name:'Woori Bank'}, {code:'HLB',name:'Hong Leong Bank'}, {code:'PBVN',name:'Public Bank'}
+    ];
+    let selectedBank = BANKS[0].code;
+
+    function setupUI() {
+      const title = $('#title');
+      const desc = $('#desc');
+      const bankBlock = $('#bankBlock');
+      const fRecipient = $('#f-recipient');
+      const fAccount = $('#f-account');
+      const fName = $('#f-name');
+      const labRecipient = $('#lab-recipient');
+
+      const names = {momo:'MoMo', zalopay:'ZaloPay', vnpay:'VNPay', alipay:'Alipay', paypal:'PayPal', payoneer:'Payoneer', bank:'Chuyển khoản ngân hàng'};
+      title.textContent = 'Chi tiết • ' + (names[provider] || provider.toUpperCase());
+
+      if (provider === 'bank') {
+        desc.textContent = 'Chọn ngân hàng và nhập thông tin tài khoản để tạo mã mà bạn dùng để chuyển khoản nạp ví.';
+        bankBlock.hidden = false; fAccount.hidden = false; fName.hidden = true; fRecipient.hidden = true;
+        const list = $('#bankList');
+        list.innerHTML = BANKS.map(b=>`<button class="bank ${b.code===selectedBank?'active':''}" data-code="${b.code}">${b.name}</button>`).join('');
+        $$('.bank', list).forEach(btn=>btn.addEventListener('click',()=>{ $$('.bank', list).forEach(x=>x.classList.remove('active')); btn.classList.add('active'); selectedBank = btn.dataset.code; }));
+        const prev = $('#bankPrev'); const next = $('#bankNext');
+        const scroller = list; const sliderWrap = $('#bankSlider');
+        const updateArrows = () => {
+          const max = scroller.scrollWidth - scroller.clientWidth - 2;
+          prev.disabled = scroller.scrollLeft <= 0; next.disabled = scroller.scrollLeft >= max;
+        };
+        prev.addEventListener('click', ()=>{ scroller.scrollBy({left: -240, behavior: 'smooth'}); setTimeout(updateArrows, 260); });
+        next.addEventListener('click', ()=>{ scroller.scrollBy({left: 240, behavior: 'smooth'}); setTimeout(updateArrows, 260); });
+        scroller.addEventListener('scroll', updateArrows); updateArrows();
+
+        // Vertical layout support + toggle
+        const toggleBtn = $('#toggleLayout');
+        const applyLayout = (vertical) => {
+          sliderWrap.classList.toggle('bank-vertical', vertical);
+          if (toggleBtn) toggleBtn.textContent = vertical ? 'Hiển thị ngang' : 'Hiển thị dọc';
+        };
+        applyLayout(layoutParam === 'vertical');
+        if (toggleBtn) toggleBtn.addEventListener('click', ()=>{
+          const v = !sliderWrap.classList.contains('bank-vertical');
+          applyLayout(v);
+        });
+      } else {
+        bankBlock.hidden = true; fAccount.hidden = true; fName.hidden = false; fRecipient.hidden = false;
+        if (provider==='momo' || provider==='zalopay') labRecipient.textContent = 'Số điện thoại ví';
+        else if (provider==='paypal' || provider==='payoneer' || provider==='alipay') labRecipient.textContent = 'Email/ID người nhận';
+        else if (provider==='vnpay') labRecipient.textContent = 'Mã/ID thanh toán';
+      }
+    }
+
+    function buildPayload() {
+      const amount = Number($('#amount').value.replace(/[^\d]/g,''))||0;
+      const note = ($('#note').value||'').trim();
+      if (provider==='bank') {
+        const acc = ($('#account').value||'').trim();
+        const name = ($('#fullname').value||'').trim();
+        return `bank://transfer?bank=${selectedBank}&account=${encodeURIComponent(acc)}&name=${encodeURIComponent(name)}&amount=${amount}&desc=${encodeURIComponent(note)}`;
+      }
+      const recipient = ($('#recipient').value||'').trim();
+      if (provider==='momo') return `momo://pay?to=${encodeURIComponent(recipient)}&amount=${amount}&note=${encodeURIComponent(note)}`;
+      if (provider==='zalopay') return `zalopay://pay?to=${encodeURIComponent(recipient)}&amount=${amount}&note=${encodeURIComponent(note)}`;
+      if (provider==='vnpay') return `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${amount*100}&vnp_TxnRef=TOPUP_${Date.now()}&vnp_OrderInfo=${encodeURIComponent(note||'Nap vi')}`;
+      if (provider==='alipay') return `alipayqr://platformapi/startapp?saId=10000007&qrcode=${encodeURIComponent('https://pay.neuralnova.local/topup?amt='+amount)}&note=${encodeURIComponent(note)}`;
+      if (provider==='paypal') return `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${encodeURIComponent(recipient)}&amount=${amount}&currency_code=USD&item_name=Topup%20Wallet`;
+      if (provider==='payoneer') return `payoneer://pay?to=${encodeURIComponent(recipient)}&amount=${amount}&note=${encodeURIComponent(note)}`;
+      return `nnwallet:topup?amount=${amount}`;
+    }
+
+    $('#gen').addEventListener('click',()=>{
+      const payload = buildPayload();
+      $('#payload').value = payload; $('#qr').textContent = 'QR đã sẵn sàng (demo)';
+    });
+    $('#copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#payload').value||''); alert('Đã sao chép'); }catch{ alert('Không thể sao chép'); } });
+    $('#confirm').addEventListener('click',()=>{
+      const amount = Number($('#amount').value.replace(/[^\d]/g,''))||0;
+      if (amount < 1000) { alert('Số tiền tối thiểu 1.000₫'); return; }
+      try { const b = Number(localStorage.getItem('nn_wallet_balance')||0); localStorage.setItem('nn_wallet_balance', String(b+amount)); } catch {}
+      try { const key='nn_wallet_tx'; const cur=JSON.parse(localStorage.getItem(key)||'[]'); cur.push({id:'TX_'+Date.now(), type:'TOPUP', provider, amount, at:new Date().toISOString()}); localStorage.setItem(key, JSON.stringify(cur)); } catch {}
+      location.href = ret;
+    });
+
+    setupUI();
+  </script>
+</body>
+</html>
