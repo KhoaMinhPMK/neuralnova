@@ -31,6 +31,16 @@
   pointer-events: none;
 }
 
+/* Override global styles để trang này không bị ảnh hưởng */
+.page-forgot * {
+  margin: 0;
+}
+
+.page-forgot section {
+  padding: 0 !important;
+  background-color: transparent !important;
+}
+
 /* Image Background (acts like video background) */
 .image-background {
   position: fixed;
@@ -48,6 +58,11 @@
 
 html, body {
   background: transparent !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Ngăn cuộn trên desktop */
+  height: 100vh;
+  width: 100vw;
 }
 
 body { 
@@ -73,62 +88,23 @@ h1, h2, h3 {
 }
 
 .auth-split { 
-  min-height: 100dvh; 
-  display: grid; 
-  grid-template-columns: 1fr !important; /* single-column layout */
-  place-items: center; /* robust centering */
-  position: relative;
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed; /* Fixed để chiếm toàn bộ viewport */
+  top: 0;
+  left: 0;
   z-index: 1;
+  overflow: hidden; /* Ngăn cuộn */
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
 }
 
-.auth-left { 
-  display: none !important; /* remove left column */
-}
-
-.auth-left::before { 
-  content: ""; 
-  position: absolute; 
-  inset: 0; 
-  /* Remove static image so the video behind is visible */
-  background: none; 
-}
-
-.auth-left::after { 
-  content: ""; 
-  position: absolute; 
-  inset: 0; 
-  /* Remove side overlay to avoid split screen */
-  background: none; 
-}
-
-.left-content { 
-  position: relative; 
-  color: #fff; 
-  padding: 6vh 6vw; 
-}
-
-.left-slogan { 
-  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2.2rem); 
-  font-weight: 800; 
-  letter-spacing: .4px; 
-}
-
-.left-slogan em { 
-  color: var(--login-primary-2); 
-  font-style: normal; 
-}
-
-.auth-right { 
-  display: flex; 
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
-  padding: 6vh 6vw; 
-  /* Make panel transparent so video is the main background */
-  background: transparent !important; 
-  width: 100%;
-  grid-column: 1 / -1; /* ensure spans full grid */
-}
+/* Không cần các style cho auth-left và auth-right nữa vì đã xóa khỏi HTML */
 
 /* Ensure the grid wrapper has no background */
 .auth-split {
@@ -148,11 +124,13 @@ h1, h2, h3 {
   /* Milky white border around the card */
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 28px;
-  padding: 32px 28px 26px;
+  padding: 28px 28px 24px; /* Giảm padding để vừa viewport */
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.55),
     0 0 48px rgba(124, 58, 237, 0.14),
     0 0 36px rgba(34, 211, 238, 0.10);
+  max-height: 90vh; /* Giới hạn chiều cao */
+  overflow-y: auto; /* Cho phép cuộn nội dung card nếu cần trên màn hình nhỏ */
 }
 
 /* Subtle gradient gloss inside the glass card */
@@ -182,6 +160,7 @@ h1, h2, h3 {
 .auth-card--forgot,
 .auth-card--verify {
   transition: opacity 420ms ease, transform 420ms ease, filter 420ms ease;
+  position: absolute; /* Absolute để cả 2 card nằm cùng vị trí, chồng lên nhau */
 }
 
 .auth-card--verify {
@@ -566,7 +545,43 @@ body.is-verify .auth-card--verify {
 /* Lift content for shorter viewports (e.g., many 15" laptops) */
 /* For Forgot Password, keep card centered even on shorter viewports */
 @media (max-height: 900px) {
-  .page-forgot .auth-split { place-items: center; }
-  .page-forgot .auth-right { justify-content: center; padding-top: 0; padding-bottom: 0; }
-  .page-forgot .auth-card { margin-top: 0; }
+  .page-forgot .auth-split { 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .page-forgot .auth-card { 
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-split {
+    position: relative; /* Đổi lại relative cho mobile */
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 1.5rem !important; /* Thêm padding cho mobile */
+  }
+  
+  .auth-card {
+    padding: 24px 20px 20px;
+    position: relative; /* Relative trên mobile */
+  }
+  
+  /* Cho phép cuộn trên mobile */
+  html, body {
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-split {
+    padding: 1rem !important;
+  }
+  
+  .auth-card {
+    max-width: 100%;
+    padding: 20px 16px 18px;
+  }
 }

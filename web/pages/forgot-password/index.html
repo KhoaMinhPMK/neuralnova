@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="QuÃªn máº­t kháº©u - NeuralNova">
-  <title>QuÃªn máº­t kháº©u - NeuralNova</title>
+  <title>Quên mật khẩu - NeuralNova</title>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -26,84 +26,74 @@
   </video>
   
   <main class="auth-split">
-    <aside class="auth-left">
-      <div class="left-content">
-        <a class="brand" href="../../index.html">
-          <img src="../../assets/images/logo.png" alt="NeuralNova">
-          <strong style="letter-spacing:.3px; white-space:nowrap;">NeuralNova</strong>
-        </a>
-        <h2 class="left-slogan">RESET YOUR <em>PASSWORD!</em></h2>
-      </div>
-    </aside>
-    <section class="auth-right">
-      <a href="../../index.html" class="back-home"><i class="fas fa-arrow-left"></i><span>Về trang chủ</span></a>
-      <!-- Forgot Password Card -->
-      <div class="auth-card auth-card--forgot" aria-labelledby="auth-title">
-        
-        <header class="auth-header">
-          <h1 id="auth-title" class="auth-title">FORGOT PASSWORD</h1>
-          <p class="auth-subtitle">Enter your email to receive reset link</p>
-        </header>
+    <!-- Back to Home Button -->
+    <a href="../../index.html" class="back-home"><i class="fas fa-arrow-left"></i><span>Về trang chủ</span></a>
+    
+    <!-- Forgot Password Card - đặt trực tiếp trong main -->
+    <div class="auth-card auth-card--forgot" aria-labelledby="auth-title">
+      <header class="auth-header">
+        <h1 id="auth-title" class="auth-title">FORGOT PASSWORD</h1>
+        <p class="auth-subtitle">Enter your email to receive reset link</p>
+      </header>
 
-        <div id="fpToast" class="toast" role="alert" aria-live="polite"></div>
+      <div id="fpToast" class="toast" role="alert" aria-live="polite"></div>
 
-        <form id="forgotForm" novalidate>
-          <div class="form-row" id="row-email">
-            <label class="form-label" for="email">
-              <i class="fas fa-envelope"></i>
-              Email
-            </label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope input-icon"></i>
-              <input class="form-input" type="email" id="email" name="email" placeholder="yourname@gmail.com" autocomplete="email" required aria-required="true" />
-            </div>
+      <form id="forgotForm" novalidate>
+        <div class="form-row" id="row-email">
+          <label class="form-label" for="email">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input class="form-input" type="email" id="email" name="email" placeholder="yourname@gmail.com" autocomplete="email" required aria-required="true" />
           </div>
+        </div>
 
-          <div class="form-actions">
-            <button id="btnSubmitForgot" class="btn-primary" type="submit">Send reset link</button>
-            <p class="helper">Nhớ mật khẩu rồi? <a href="../auth/index.html">Đăng nhập</a></p>
-            <p class="helper">Đã nhận email? <a id="linkGoVerify" href="#">Nhập mã xác nhận</a></p>
+        <div class="form-actions">
+          <button id="btnSubmitForgot" class="btn-primary" type="submit">Send reset link</button>
+          <p class="helper">Nhớ mật khẩu rồi? <a href="../auth/index.html">Đăng nhập</a></p>
+          <p class="helper">Đã nhận email? <a id="linkGoVerify" href="#">Nhập mã xác nhận</a></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Verify Code Card - đặt trực tiếp trong main -->
+    <div class="auth-card auth-card--verify" aria-labelledby="verify-title" hidden>
+      <header class="auth-header">
+        <h1 id="verify-title" class="auth-title">VERIFY CODE</h1>
+        <p class="auth-subtitle">Nhập mã xác nhận gồm 6 số đã gửi qua email</p>
+      </header>
+
+      <div id="vcToast" class="toast" role="alert" aria-live="polite"></div>
+
+      <form id="verifyForm" novalidate>
+        <div class="form-row">
+          <label class="form-label" for="emailVerify">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input class="form-input" type="email" id="emailVerify" name="email" placeholder="yourname@gmail.com" autocomplete="email" required aria-required="true" />
           </div>
-        </form>
-      </div>
+        </div>
 
-      <!-- Verify Code Card (inline transition) -->
-      <div class="auth-card auth-card--verify" aria-labelledby="verify-title" hidden>
-        <header class="auth-header">
-          <h1 id="verify-title" class="auth-title">VERIFY CODE</h1>
-          <p class="auth-subtitle">Nhập mã xác nhận gồm 6 số đã gửi qua email</p>
-        </header>
+        <div class="code-group" aria-label="6 digit code input">
+          <input id="code-1" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 1" />
+          <input id="code-2" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 2" />
+          <input id="code-3" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 3" />
+          <input id="code-4" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 4" />
+          <input id="code-5" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 5" />
+          <input id="code-6" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 6" />
+        </div>
 
-        <div id="vcToast" class="toast" role="alert" aria-live="polite"></div>
-
-        <form id="verifyForm" novalidate>
-          <div class="form-row">
-            <label class="form-label" for="emailVerify">
-              <i class="fas fa-envelope"></i>
-              Email
-            </label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope input-icon"></i>
-              <input class="form-input" type="email" id="emailVerify" name="email" placeholder="yourname@gmail.com" autocomplete="email" required aria-required="true" />
-            </div>
-          </div>
-
-          <div class="code-group" aria-label="6 digit code input">
-            <input id="code-1" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 1" />
-            <input id="code-2" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 2" />
-            <input id="code-3" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 3" />
-            <input id="code-4" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 4" />
-            <input id="code-5" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 5" />
-            <input id="code-6" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 6" />
-          </div>
-
-          <div class="form-actions">
-            <button id="btnVerify" class="btn-primary" type="submit">Verify</button>
-            <p class="helper">Sai email? <a id="linkGoForgot" href="#">Quay lại</a></p>
-          </div>
-        </form>
-      </div>
-    </section>
+        <div class="form-actions">
+          <button id="btnVerify" class="btn-primary" type="submit">Verify</button>
+          <p class="helper">Sai email? <a id="linkGoForgot" href="#">Quay lại</a></p>
+        </div>
+      </form>
+    </div>
   </main>
 
   <script src="app.js" type="module"></script>
