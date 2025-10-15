@@ -164,16 +164,28 @@
     // Load posts from backend
     async function loadPosts() {
         try {
+            console.log('🔄 Fetching posts from:', `${API_BASE}/posts/feed.php`);
+            
             const res = await fetch(`${API_BASE}/posts/feed.php?limit=20&offset=0`, {
                 credentials: 'include'
             });
+            
+            console.log('📡 Response status:', res.status);
+            console.log('📡 Response headers:', res.headers.get('content-type'));
             
             // Check if response is JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await res.text();
-                console.error('❌ Backend returned HTML instead of JSON:', text.substring(0, 500));
-                throw new Error('Backend error - check server logs');
+                console.error('❌ BACKEND ERROR - Returned HTML instead of JSON:');
+                console.error('━'.repeat(80));
+                console.error(text.substring(0, 1000)); // Show first 1000 chars
+                console.error('━'.repeat(80));
+                
+                postsData = [];
+                renderPosts();
+                toast('Backend error - check Console for details', true);
+                return;
             }
             
             const data = await res.json();
@@ -198,7 +210,8 @@
             }
         } catch (error) {
             // Network or parsing error
-            console.error('❌ Network error loading posts:', error);
+            console.error('❌ Exception while loading posts:', error);
+            console.error('Stack trace:', error.stack);
             postsData = [];
             renderPosts();
             toast('Failed to connect to server', true);
