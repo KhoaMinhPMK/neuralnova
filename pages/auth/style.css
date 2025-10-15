@@ -227,6 +227,8 @@ form.sign-in-form {
   backdrop-filter: blur(15px);
   margin: 12px 0;
   height: 58px;
+  min-height: 58px;
+  max-height: 58px;
   border-radius: 28px;
   display: flex;
   align-items: center;
@@ -1068,18 +1070,18 @@ form.sign-in-form {
   }
   
   .input-field {
-    height: 55px;
+    /* Height locked at 58px - no changes */
     margin: 12px 0;
     padding: 0 18px;
     gap: 10px;
   }
   
   .input-field i {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   
   input {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
   
   .btn {
