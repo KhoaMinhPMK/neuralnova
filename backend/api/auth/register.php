@@ -117,7 +117,7 @@ try {
             'status' => 'active',
             'email_verified' => false
         ],
-        'redirect' => '/web/index.html' // Redirect to home page
+        'redirect' => '../dashboard/index.html' // Redirect to dashboard
     ], 201);
     
 } catch (PDOException $e) {

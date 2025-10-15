@@ -119,7 +119,7 @@ try {
             'status' => $user['status'],
             'email_verified' => (bool)$user['email_verified']
         ],
-        'redirect' => '/web/index.html' // Redirect to home page
+        'redirect' => '../dashboard/index.html' // Redirect to dashboard
     ], 200);
     
 } catch (PDOException $e) {
