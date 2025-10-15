@@ -101,34 +101,8 @@ try {
     
     // Process each post
     foreach ($posts as &$post) {
-        // Convert media path to URL
-        if ($post['media_url']) {
-            $post['media_url'] = getFileUrl($post['media_url']);
-        }
-        
-        // Convert author avatar to URL
-        if ($post['author_avatar']) {
-            $post['author_avatar'] = getFileUrl($post['author_avatar']);
-        }
-        
-        // Parse GPS coordinates
-        if ($post['coordinates']) {
-            $coords = explode(',', $post['coordinates']);
-            $post['gps'] = [
-                'lat' => floatval(trim($coords[0])),
-                'lng' => floatval(trim($coords[1]))
-            ];
-            
-            // Blur if requested
-            if ($post['blur_location']) {
-                $post['gps']['lat'] = round($post['gps']['lat'], 1);
-                $post['gps']['lng'] = round($post['gps']['lng'], 1);
-            }
-        } else {
-            $post['gps'] = null;
-        }
-        
-        unset($post['coordinates']);
+        // GPS is already null from query (no coordinates selected)
+        $post['gps'] = null;
         
         // Get reaction counts
         $reactionsStmt = $pdo->prepare("
