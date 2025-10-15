@@ -68,10 +68,15 @@ try {
     // Get comments with author info
     $stmt = $pdo->prepare("
         SELECT 
-            c.*,
-            u.full_name AS author_name,
-            u.avatar_url AS author_avatar,
-            u.custom_user_id AS author_username
+            c.id,
+            c.post_id,
+            c.user_id,
+            c.comment_text AS content,
+            c.created_at,
+            c.updated_at,
+            u.full_name AS user_name,
+            u.avatar_url AS user_avatar,
+            u.custom_user_id AS username
         FROM comments c
         JOIN users u ON c.user_id = u.id
         WHERE c.post_id = ?
@@ -84,11 +89,6 @@ try {
     
     // Process comments
     foreach ($comments as &$comment) {
-        // Convert author avatar to URL
-        if ($comment['author_avatar']) {
-            $comment['author_avatar'] = getFileUrl($comment['author_avatar']);
-        }
-        
         // Check if current user is the comment author
         $comment['is_author'] = isLoggedIn() && $_SESSION['user_id'] == $comment['user_id'];
     }

@@ -115,13 +115,18 @@ try {
     
     $commentId = $pdo->lastInsertId();
     
-    // Get created comment with user info
+    // Get created comment with user info (match frontend format)
     $commentStmt = $pdo->prepare("
         SELECT 
-            c.*,
-            u.full_name AS author_name,
-            u.avatar_url AS author_avatar,
-            u.custom_user_id AS author_username
+            c.id,
+            c.post_id,
+            c.user_id,
+            c.comment_text AS content,
+            c.created_at,
+            c.updated_at,
+            u.full_name AS user_name,
+            u.avatar_url AS user_avatar,
+            u.custom_user_id AS username
         FROM comments c
         JOIN users u ON c.user_id = u.id
         WHERE c.id = ?
@@ -129,11 +134,6 @@ try {
     
     $commentStmt->execute([$commentId]);
     $comment = $commentStmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Convert author avatar to URL
-    if ($comment['author_avatar']) {
-        $comment['author_avatar'] = getFileUrl($comment['author_avatar']);
-    }
     
     echo json_encode([
         'success' => true,
