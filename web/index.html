@@ -2826,8 +2826,14 @@
     
     <!-- Section 1: Hero Banner -->
     <div class="banner" id="home">
-        <!-- Video Background -->
-        <video class="banner-video" autoplay muted loop playsinline>
+        <!-- Video Background - Lazy Loaded -->
+        <video 
+            class="banner-video" 
+            id="bannerVideo"
+            poster="assets/images/bg.jpg"
+            muted loop playsinline
+            preload="none"
+        >
             <source src="assets/images/bg2.mp4" type="video/mp4">
         </video>
         
@@ -3752,8 +3758,9 @@
                 id="videoPlayer"
                 controls
                 controlsList="nodownload"
+                preload="none"
                 style="width: 100%; height: 100%; object-fit: contain;">
-                <source src="assets/images/intro.mp4" type="video/mp4">
+                <!-- Source will be added on-demand when modal opens -->
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -3765,22 +3772,12 @@
         window.addEventListener('load', function() {
             const preloader = document.getElementById('preloader');
             
-            // List of all resources to preload
+            // List of critical resources only (NO VIDEOS)
             const resources = [
-                // Images
+                // Critical images only
                 'assets/images/logo.png',
-                'assets/images/logo.ico',
-                'assets/images/bg.jpg',
-                'assets/images/human2.png',
-                'assets/images/model.png',
-                'assets/images/nature1.jpg',
-                'assets/images/nature2.jpg',
-                'assets/images/nature3.jpg',
-                'assets/images/a.png',
-                'assets/images/thumnail.jpg',
-                // Videos
-                'assets/images/bg2.mp4',
-                'assets/images/intro.mp4'
+                'assets/images/bg.jpg'
+                // Videos will lazy load - saves 108 MB!
             ];
             
             let loadedCount = 0;
@@ -3876,6 +3873,17 @@
         
         // Initialize Lucide Icons
         initLucideIcons();
+        
+        // Lazy load banner video after page is ready
+        setTimeout(() => {
+            const bannerVideo = document.getElementById('bannerVideo');
+            if (bannerVideo) {
+                bannerVideo.load(); // Start loading
+                bannerVideo.play().catch(e => {
+                    console.log('Video autoplay prevented by browser');
+                });
+            }
+        }, 1000); // Load after 1 second delay
         
         // Initialize scroll effects
         const initScrollEffects = () => {
@@ -4051,8 +4059,18 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
             
+            // Load video ONLY when modal opens (saves 98.72 MB on initial load!)
+            if (!video.src && video.children.length === 0) {
+                console.log('📹 Loading modal video on-demand...');
+                const source = document.createElement('source');
+                source.src = 'assets/images/intro.mp4';
+                source.type = 'video/mp4';
+                video.appendChild(source);
+                video.load();
+            }
+            
             // Auto play video
-            video.play();
+            video.play().catch(e => console.log('Video play prevented:', e));
             
             // Re-initialize Lucide icons in modal
             setTimeout(() => initLucideIcons(), 100);

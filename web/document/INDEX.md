@@ -26,6 +26,13 @@ Chào mừng đến với tài liệu dự án NeuralNova!
   - Best practices
   - 4-phase roadmap
 
+- **[VIDEO_OPTIMIZATION.md](VIDEO_OPTIMIZATION.md)** - 🎬 Video & Animation Optimization
+  - **CRITICAL**: Fix slow reload (108 MB videos)
+  - Lazy loading strategies
+  - On-demand video loading
+  - Animation optimization
+  - Mobile performance
+
 ---
 
 ## 🗂️ Cấu trúc Documentation
