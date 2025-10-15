@@ -7,10 +7,29 @@
  * =============================================
  */
 
+define('API_ACCESS', true);
+
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
+// CORS: Get origin from request for credentials support
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://neuralnova.space',
+    'http://neuralnova.space'
+];
+
+foreach ($allowedOrigins as $allowed) {
+    if (strpos($origin, $allowed) === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+        break;
+    }
+}
+
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -21,7 +40,7 @@ require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../../includes/file_upload.php';
 
-startSecureSession();
+initSession();
 
 try {
     // Get query parameters

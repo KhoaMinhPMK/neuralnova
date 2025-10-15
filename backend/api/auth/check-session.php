@@ -14,7 +14,29 @@ define('API_ACCESS', true);
 
 // Set headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *'); // Change to your domain in production
+
+// CORS: Get origin from request for credentials support
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+$allowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://neuralnova.space',
+    'http://neuralnova.space'
+];
+
+// Check if origin is allowed
+foreach ($allowedOrigins as $allowed) {
+    if (strpos($origin, $allowed) === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+        break;
+    }
+}
+
+// If no match, allow current origin for development
+if (!headers_sent() && !isset($origin)) {
+    header("Access-Control-Allow-Origin: " . ($_SERVER['HTTP_ORIGIN'] ?? 'http://localhost'));
+}
+
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
@@ -42,25 +64,53 @@ try {
     
     // Check if user is logged in
     if (!isLoggedIn()) {
-        sendError('Not authenticated', ['auth' => 'User is not logged in'], 401);
+        // Return not authenticated (NOT an error - just not logged in)
+        http_response_code(200);
+        echo json_encode([
+            'success' => true,
+            'authenticated' => false,
+            'message' => 'Not authenticated',
+            'timestamp' => date('Y-m-d H:i:s')
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
     }
     
     // Check session timeout
     if (!checkSessionTimeout()) {
-        sendError('Session expired', ['auth' => 'Please login again'], 401);
+        // Session expired - return not authenticated
+        http_response_code(200);
+        echo json_encode([
+            'success' => true,
+            'authenticated' => false,
+            'message' => 'Session expired',
+            'timestamp' => date('Y-m-d H:i:s')
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
     }
     
     // Get current user data
     $user = getCurrentUser();
     
-    // Success response
-    sendSuccess('User is authenticated', [
+    // Success response - user is authenticated
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'authenticated' => true,
+        'message' => 'User is authenticated',
         'user' => $user,
-        'authenticated' => true
-    ], 200);
+        'timestamp' => date('Y-m-d H:i:s')
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
     
 } catch (Exception $e) {
     error_log("Check Session Error: " . $e->getMessage());
-    sendServerError('Failed to check session');
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'authenticated' => false,
+        'message' => 'Session check failed',
+        'timestamp' => date('Y-m-d H:i:s')
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
 }
 

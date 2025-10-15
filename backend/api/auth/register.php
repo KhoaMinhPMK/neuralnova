@@ -12,7 +12,29 @@ define('API_ACCESS', true);
 
 // Set headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *'); // Change to your domain in production
+
+// CORS: Get origin from request for credentials support
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+$allowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://neuralnova.space',
+    'http://neuralnova.space'
+];
+
+// Check if origin is allowed
+foreach ($allowedOrigins as $allowed) {
+    if (strpos($origin, $allowed) === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+        break;
+    }
+}
+
+// If no match, allow current origin for development
+if (!headers_sent() && !isset($origin)) {
+    header("Access-Control-Allow-Origin: " . ($_SERVER['HTTP_ORIGIN'] ?? 'http://localhost'));
+}
+
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
