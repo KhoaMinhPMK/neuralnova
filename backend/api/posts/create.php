@@ -172,9 +172,9 @@ try {
         SELECT 
             p.id,
             p.user_id,
-            p.content,
-            p.image_url,
-            p.visibility,
+            p.caption AS content,
+            p.media_url AS image_url,
+            CASE WHEN p.is_public = 1 THEN 'public' ELSE 'private' END AS visibility,
             p.created_at,
             p.updated_at,
             u.full_name AS user_name,
@@ -189,18 +189,6 @@ try {
     
     $postStmt->execute([$postId]);
     $post = $postStmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Convert image URL if exists
-    if ($post['image_url']) {
-        // If it's a relative path, keep it as is
-        // Frontend will handle the path
-    }
-    
-    // Convert user avatar to URL
-    if ($post['user_avatar']) {
-        // If it's a relative path, keep it as is
-        // Frontend will handle the path
-    }
     
     // Parse GPS coordinates
     if ($post['coordinates']) {

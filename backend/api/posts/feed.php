@@ -61,9 +61,9 @@ try {
         SELECT 
             p.id,
             p.user_id,
-            p.content,
-            p.image_url,
-            p.visibility,
+            p.caption AS content,
+            p.media_url AS image_url,
+            CASE WHEN p.is_public = 1 THEN 'public' ELSE 'private' END AS visibility,
             p.created_at,
             p.updated_at,
             u.full_name AS user_name,
@@ -84,7 +84,7 @@ try {
         $params[] = $userId;
     } else {
         // If no user specified, only show public posts
-        $sql .= " AND p.visibility = 'public'";
+        $sql .= " AND p.is_public = 1";
     }
     
     // Order by created_at DESC

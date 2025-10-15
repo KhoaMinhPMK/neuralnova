@@ -523,15 +523,18 @@
     // Create Post
     async function createPost(content, imageUrl = null) {
         try {
+            // Create FormData (backend expects POST data, not JSON for this endpoint)
+            const formData = new FormData();
+            formData.append('caption', content);
+            if (imageUrl) {
+                formData.append('media_url', imageUrl);
+            }
+            formData.append('is_public', '1');
+            
             const res = await fetch(`${API_BASE}/posts/create.php`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({
-                    content: content,
-                    image_url: imageUrl,
-                    visibility: 'public'
-                })
+                body: formData
             });
             
             // Check if response is JSON
