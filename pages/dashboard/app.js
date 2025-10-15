@@ -481,17 +481,34 @@
     // Submit comment
     async function submitComment(postId, content) {
         try {
+            console.log('💬 Adding comment:', { postId, content });
+            
             const res = await fetch(`${API_BASE}/comments/add.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({
                     post_id: postId,
-                    content: content
+                    comment_text: content  // Backend expects 'comment_text'
                 })
             });
             
+            console.log('📡 Comment response status:', res.status);
+            
+            // Check if response is JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await res.text();
+                console.error('❌ Backend error (comments):');
+                console.error('━'.repeat(80));
+                console.error(text.substring(0, 1000));
+                console.error('━'.repeat(80));
+                toast('Backend error - check console', true);
+                return;
+            }
+            
             const data = await res.json();
+            console.log('📦 Comment response:', data);
             
             if (data.success) {
                 // Update comment count
