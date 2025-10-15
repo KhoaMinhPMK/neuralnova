@@ -1,3 +1,9 @@
+---
+noteId: "c31c3350a99211f0aa12ab3fbbc998b5"
+tags: []
+
+---
+
 # 🚀 NeuralNova Backend - Deployment Guide
 
 ## 📋 Deployment Checklist
