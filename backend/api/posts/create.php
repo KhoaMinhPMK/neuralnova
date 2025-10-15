@@ -58,6 +58,10 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 try {
+    // Debug: Log received data
+    error_log("POST data: " . print_r($_POST, true));
+    error_log("FILES data: " . print_r($_FILES, true));
+    
     // Handle media upload first (if provided)
     $mediaPath = null;
     $mediaType = 'none';
@@ -80,6 +84,12 @@ try {
     
     // Get form data
     $caption = isset($_POST['caption']) ? trim($_POST['caption']) : null;
+    
+    // If media_url provided as text (not file upload)
+    if (!$mediaPath && isset($_POST['media_url']) && !empty($_POST['media_url'])) {
+        $mediaPath = trim($_POST['media_url']);
+        $mediaType = 'image'; // Assume image for URL
+    }
     $species = isset($_POST['species']) ? trim($_POST['species']) : null;
     $region = isset($_POST['region']) ? trim($_POST['region']) : null;
     $bloomWindow = isset($_POST['bloom_window']) ? trim($_POST['bloom_window']) : null;
@@ -190,19 +200,17 @@ try {
     $postStmt->execute([$postId]);
     $post = $postStmt->fetch(PDO::FETCH_ASSOC);
     
-    // Parse GPS coordinates
-    if ($post['coordinates']) {
+    // Parse GPS coordinates (if column exists in result)
+    if (isset($post['coordinates']) && $post['coordinates']) {
         $coords = explode(',', $post['coordinates']);
         $post['gps'] = [
             'lat' => floatval(trim($coords[0])),
             'lng' => floatval(trim($coords[1]))
         ];
+        unset($post['coordinates']);
     } else {
         $post['gps'] = null;
     }
-    
-    // Remove raw coordinates string
-    unset($post['coordinates']);
     
     // Success response
     echo json_encode([
