@@ -3,149 +3,175 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hồ sơ người dùng | NeuralNova</title>
+  <title>Profile | NeuralNova</title>
   <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest" defer></script>
-  <link rel="stylesheet" href="style.css" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=4.0" />
 </head>
 <body>
-  <header class="p-header">
-    <a class="brand" href="../../index.html">
-      <img src="../../assets/images/logo.png" alt="NeuralNova" />
-      <span>NeuralNova</span>
-    </a>
-    <nav class="actions">
-      <a href="../dashboard/index.html" class="btn">Dashboard</a>
-      <a href="../checkout/index.html" class="btn">Thanh toán</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <!-- Facebook-like hero -->
-    <section class="hero">
-      <div class="cover">
-        <img id="cover" src="../../assets/images/nature1.jpg" alt="Cover" />
-        <label class="btn tiny change-cover">
-          <input id="coverInput" type="file" accept="image/*" hidden />Đổi ảnh bìa
-        </label>
-      </div>
-      <div class="hero-main">
-        <div class="hero-avatar">
-          <img id="avatarHero" src="" alt="Avatar" />
-          <label class="btn tiny overlap"><input id="avatarInputHero" type="file" accept="image/*" hidden />Cập nhật ảnh</label>
-        </div>
-        <div class="hero-info">
-          <h1 id="displayName">User</h1>
-          <div class="sub">@<span id="uid">—</span> • IP: <span id="ipShort">—</span></div>
-          <div class="badges" id="badges"></div>
-        </div>
-        <div class="hero-actions">
-          <a href="#" class="btn">Chỉnh sửa hồ sơ</a>
+  <!-- Top Navigation Bar (Facebook Style) -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="../../index.html" class="logo">
+          <img src="../../assets/images/logo.png" alt="NeuralNova">
+          <span>NeuralNova</span>
+        </a>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search NeuralNova">
         </div>
       </div>
-      <div class="hero-tabs">
-        <button class="h-tab active" data-k="intro">Giới thiệu</button>
-        <button class="h-tab" data-k="posts">Bài viết</button>
+      
+      <div class="nav-center">
+        <a href="../dashboard/index.html" class="nav-item">
+          <i class="fas fa-home"></i>
+        </a>
+        <a href="../profile/index.html" class="nav-item active">
+          <i class="fas fa-user"></i>
+        </a>
       </div>
-    </section>
-
-    <section class="layout">
-      <!-- Left column: Profile card -->
-      <aside class="profile">
-        <div class="avatar-wrap">
-          <img id="avatar" src="" alt="Avatar" />
-          <label class="btn tiny"><input id="avatarInput" type="file" accept="image/*" hidden />Cập nhật ảnh</label>
-        </div>
-        <div class="field">
-          <label>Tên người dùng</label>
-          <input id="username" placeholder="Tên hiển thị" />
-        </div>
-        <div class="field">
-          <label>User ID</label>
-          <input id="userId" placeholder="Tự nhập hoặc để hệ thống tạo" />
-        </div>
-        <div class="field">
-          <label>Địa chỉ IP</label>
-          <div class="ip-row">
-            <select id="ipRegion">
-              <option value="auto">Tự động (nếu cho phép)</option>
-              <option value="na">Bắc Mỹ</option>
-              <option value="sa">Nam Mỹ</option>
-              <option value="eu">Châu Âu</option>
-              <option value="af">Châu Phi</option>
-              <option value="as">Châu Á</option>
-              <option value="oc">Châu Đại Dương</option>
-            </select>
-            <button id="detectIp" class="btn tiny">Phát hiện</button>
-          </div>
-          <div class="ip-info">
-            <span>IP hiển thị:</span>
-            <strong id="ipDisplay">—</strong>
+      
+      <div class="nav-right">
+        <div class="user-menu">
+          <button class="user-btn" id="userMenuBtn">
+            <img id="navAvatar" src="../../assets/images/logo.png" alt="User" class="user-avatar">
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <button class="dropdown-item logout-btn" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
-        <button id="saveProfile" class="btn primary full">Lưu hồ sơ</button>
-      </aside>
+      </div>
+    </div>
+  </nav>
 
-      <!-- Right column: Tabs and content -->
-      <section class="content">
-        <!-- Hidden legacy tabs; using hero tabs instead -->
-        <div class="tabs" style="display:none"></div>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="cover-photo">
+        <img id="coverImg" src="../../assets/images/nature1.jpg" alt="Cover">
+        <button class="edit-cover-btn">
+          <i class="fas fa-camera"></i>
+          <span>Edit cover photo</span>
+          <input id="coverInput" type="file" accept="image/*" hidden>
+        </button>
+      </div>
+      
+      <div class="profile-info-container">
+        <div class="profile-picture-wrapper">
+          <img id="profilePicture" src="../../assets/images/logo.png" alt="Profile Picture" class="profile-picture">
+          <button class="edit-avatar-btn">
+            <i class="fas fa-camera"></i>
+            <input id="avatarInput" type="file" accept="image/*" hidden>
+          </button>
+        </div>
+        
+        <div class="profile-details">
+          <h1 id="profileName">Loading...</h1>
+          <p id="profileFriends" class="friends-count">104 friends</p>
+          <div class="profile-badges" id="badges"></div>
+        </div>
+      </div>
+      
+      <div class="profile-nav">
+        <div class="profile-nav-left">
+          <button class="profile-nav-item active" data-tab="posts">
+            <span>Posts</span>
+          </button>
+          <button class="profile-nav-item" data-tab="about">
+            <span>About</span>
+          </button>
+          <button class="profile-nav-item" data-tab="photos">
+            <span>Photos</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Intro (Giới thiệu) -->
-        <div id="intro" class="panel">
-          <div class="field">
-            <label>Giới thiệu bản thân</label>
-            <textarea id="bio" placeholder="Viết đôi dòng về bạn..." rows="3" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(8,8,12,.85);color:#fff"></textarea>
+    <!-- Profile Content Grid -->
+    <div class="profile-content-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Intro Card -->
+        <div class="card">
+          <h2 class="card-title">Intro</h2>
+          <div id="bioDisplay" class="bio-text"></div>
+          <div class="intro-details" id="introDetails"></div>
+          <button id="editDetailsBtn" class="btn-secondary">
+            <i class="fas fa-pen"></i>
+            Edit details
+          </button>
+        </div>
+
+        <!-- Photos Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Photos</h2>
+            <a href="#" class="see-all">See all photos</a>
           </div>
-          <div class="row">
-            <div class="field">
-              <label>Sở thích</label>
-              <input id="interests" placeholder="hoa, du lịch, chụp ảnh, ... (phân cách bằng dấu phẩy)" />
+          <div class="photos-grid" id="photosGrid">
+            <div class="photo-placeholder">No photos yet</div>
+          </div>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="card">
+          <h2 class="card-title">Statistics</h2>
+          <div class="stats-grid" id="statsDisplay"></div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Posts Tab Content -->
+        <div id="postsTab" class="tab-content active">
+          <!-- Create Post Card -->
+          <div class="card create-post-card">
+            <div class="create-post-header">
+              <img id="createPostAvatar" src="../../assets/images/logo.png" alt="User" class="user-avatar-small">
+              <button class="create-post-btn" id="createPostBtn">
+                <span>What's on your mind?</span>
+              </button>
             </div>
-            <div class="field">
-              <label>Quốc gia (IP)</label>
-              <div class="ip-row">
-                <select id="countrySel">
-                  <option value="">— Chọn quốc gia —</option>
-                  <option value="VN">Vietnam</option>
-                  <option value="US">United States</option>
-                  <option value="JP">Japan</option>
-                  <option value="KR">Korea</option>
-                  <option value="FR">France</option>
-                  <option value="DE">Germany</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="AU">Australia</option>
-                </select>
-                <button id="detectCountry" class="btn tiny" type="button">Phát hiện</button>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="field">
-              <label>Vị trí hiện tại (GPS)</label>
-              <input id="introCoords" placeholder="Chưa xác định" readonly />
-            </div>
-            <div class="field" style="display:flex;align-items:end;gap:8px">
-              <button id="updateGPSIntro" class="btn" type="button">Cập nhật GPS</button>
-              <button id="saveIntro" class="btn primary" type="button">Lưu Giới thiệu</button>
+            <div class="create-post-options">
+              <button class="post-option">
+                <i class="fas fa-image"></i>
+                <span>Photo/Video</span>
+              </button>
+              <button class="post-option">
+                <i class="fas fa-smile"></i>
+                <span>Feeling/Activity</span>
+              </button>
             </div>
           </div>
 
-          <h3>Thống kê</h3>
-          <div class="stats" id="stats"></div>
+          <!-- Posts Feed -->
+          <div id="postsFeed"></div>
+        </div>
 
-          <h3>Lịch nở hoa của tôi</h3>
-          <div class="timeline" id="timeline"></div>
-          <div class="field" style="margin-top:8px">
-            <label><input type="checkbox" id="blurLoc" /> Làm mờ vị trí trong bài viết công khai</label>
+        <!-- About Tab Content -->
+        <div id="aboutTab" class="tab-content" style="display:none">
+          <div class="card">
+            <h2 class="card-title">About</h2>
+            <div id="aboutContent"></div>
           </div>
         </div>
 
-        <!-- Posts (Bài viết) với gợi ý loài/vùng và dự đoán nở hoa -->
-        <div id="posts" class="panel" hidden>
+        <!-- Photos Tab Content -->
+        <div id="photosTab" class="tab-content" style="display:none">
+          <div class="card">
+            <h2 class="card-title">Photos</h2>
+            <div id="photosContent" class="photos-full-grid"></div>
+          </div>
+        </div>
+
+        <!-- Create/Edit Post Panel (hidden) -->
+        <div id="createPostPanel" class="panel" hidden>
           <div class="row">
             <div class="field">
               <label>Loài hoa</label>
@@ -192,8 +218,8 @@
               <input id="pCaption" placeholder="Cảm nhận, địa điểm..." />
             </div>
           </div>
-          <button id="pPublish" class="btn primary">Đăng bài</button>
-          <div id="postFeed" class="feed"></div>
+          <button id="pPublish" class="btn primary full">Đăng bài</button>
+          <div id="postFeed" class="feed" style="margin-top:16px"></div>
         </div>
 
         
@@ -203,8 +229,9 @@
     </section>
   </main>
 
-  <div id="toast" role="status" aria-live="polite"></div>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=5.0"></script>
 </body>
 </html>
