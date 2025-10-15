@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khám Phá & Gợi Ý | NeuralNova</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <link rel="stylesheet" href="../../assets/css/variables.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="d-header">
+    <div class="brand">
+      <img src="../../assets/images/logo.png" alt="NeuralNova" />
+      <span>NeuralNova Discovery</span>
+    </div>
+    <nav class="actions">
+      <button id="openChat" class="btn btn-ai"><img class="mini-logo" src="../../assets/images/logo.png" alt=""/><span>AI</span></button>
+      <button id="openPlan" class="btn">Mở Kế hoạch</button>
+      <button id="saveAll" class="btn primary">Lưu tất cả</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="content">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="tours" aria-selected="true">Tour</button>
+        <button class="tab" data-tab="hotels">Khách sạn</button>
+      </div>
+
+      <div class="panels">
+        <section id="panel-tours" class="panel" aria-labelledby="tab-tours">
+          <h2>Tour phù hợp</h2>
+          <div class="filters" id="tourFilters">
+            <button class="chip active" data-budget="all">Tất cả</button>
+            <button class="chip" data-budget="lt3">Dưới 3 triệu</button>
+            <button class="chip" data-budget="3to5">3 - 5 triệu</button>
+            <button class="chip" data-budget="5to10">5 - 10 triệu</button>
+            <button class="chip" data-budget="gt10">Trên 10 triệu</button>
+          </div>
+          <div id="tourList" class="cards"></div>
+        </section>
+        <section id="panel-hotels" class="panel" hidden aria-labelledby="tab-hotels">
+          <h2>Khách sạn đề xuất</h2>
+          <div id="hotelList" class="cards"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Chat Drawer -->
+  <div id="chatDrawer" class="drawer" hidden>
+    <div class="drawer-backdrop"></div>
+    <div class="drawer-body">
+      <div class="drawer-head">
+        <div class="brand-mini"><img src="../../assets/images/logo.png" alt=""/><span>AI</span></div>
+        <button id="closeChat" class="btn">Đóng</button>
+      </div>
+      <div class="chat" id="chatBox" aria-live="polite"></div>
+      <div class="chat-tools">
+        <label class="btn icon" title="Tải hình ảnh">
+          <i data-lucide="image"></i>
+          <input id="chatImageInput" type="file" accept="image/*" hidden />
+        </label>
+        <label class="btn icon" title="Tải tệp">
+          <i data-lucide="paperclip"></i>
+          <input id="chatFileInput" type="file" hidden />
+        </label>
+      </div>
+      <div class="composer">
+        <input id="chatInput" placeholder="Nhập tin nhắn..." />
+        <button id="voiceBtn" class="btn icon" type="button" title="Trợ lý giọng nói"><i data-lucide="mic"></i></button>
+        <button id="sendBtn" class="btn primary icon" type="button" title="Gửi"><i data-lucide="send"></i></button>
+      </div>
+      <div id="chatMap" class="map" hidden>
+        <div class="map-placeholder">Bản đồ (demo) — sẽ hiển thị khi bạn hỏi chỉ đường/địa điểm</div>
+        <div class="legend">
+          <span class="badge tour">Tour</span>
+          <span class="badge sight">Điểm tham quan</span>
+          <span class="badge food">Ăn uống</span>
+        </div>
+        <div id="chatMarkerList" class="markers"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="bookingModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-body" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+      <div class="modal-head">
+        <h3 id="bookTitle">Đặt dịch vụ</h3>
+        <button id="closeBooking" class="btn">Đóng</button>
+      </div>
+      <div id="bookSummary" class="muted" style="margin-bottom:8px"></div>
+      <div id="itineraryBox" class="itinerary" hidden></div>
+      <form id="bookForm" class="form" autocomplete="off">
+        <div id="tourFields" class="rows" hidden>
+          <div class="row">
+            <label>Ngày khởi hành</label>
+            <input id="tourDate" type="date" />
+          </div>
+          <div class="row two">
+            <div><label>Người lớn</label><input id="tourAdults" type="number" min="1" value="2"></div>
+            <div><label>Trẻ em</label><input id="tourKids" type="number" min="0" value="0"></div>
+          </div>
+        </div>
+        <div id="hotelFields" class="rows" hidden>
+          <div class="row two">
+            <div><label>Check‑in</label><input id="hotelCheckin" type="date"></div>
+            <div><label>Check‑out</label><input id="hotelCheckout" type="date"></div>
+          </div>
+          <div class="row two">
+            <div><label>Khách</label><input id="hotelGuests" type="number" min="1" value="2"></div>
+            <div><label>Phòng</label><input id="hotelRooms" type="number" min="1" value="1"></div>
+          </div>
+          <div class="row">
+            <label>Tùy chọn</label>
+            <input id="hotelPrefs" placeholder="Gần biển, 3-4 sao, có hồ bơi...">
+          </div>
+        </div>
+        <div class="row">
+          <button id="confirmBooking" type="submit" class="btn primary">Xác nhận đặt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
