@@ -1,3 +1,9 @@
+---
+noteId: "9cf40a00a98c11f0bb106dd5ae8ea104"
+tags: []
+
+---
+
 # ✅ Hiệu ứng Zoom đã được khôi phục!
 
 ## 🎯 Vấn đề

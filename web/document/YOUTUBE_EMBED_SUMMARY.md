@@ -1,3 +1,9 @@
+---
+noteId: "9cc77bc0a98c11f0bb106dd5ae8ea104"
+tags: []
+
+---
+
 # 🎬 YouTube Video Embed - Quick Summary
 
 ## ✅ IMPLEMENTED - October 15, 2025
