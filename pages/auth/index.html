@@ -24,7 +24,7 @@
       <div class="forms-container">
         <div class="signin-signup">
           <!-- Sign In Form -->
-          <form action="#" class="sign-in-form" autocomplete="off" id="loginForm">
+          <form action="#" class="sign-in-form" autocomplete="off" id="loginForm" onsubmit="return false;">
             <a href="../../index.html" class="back-home">
               <i class="fas fa-arrow-left"></i>
               <span>Về trang chủ</span>
@@ -68,7 +68,7 @@
               <a href="../forgot-password/index.html">Forgot password?</a>
             </div>
             
-            <input type="submit" value="Sign In" class="btn solid" id="loginBtn" />
+            <button type="button" class="btn solid" id="loginBtn" onclick="handleLogin()">Sign In</button>
             
             <p class="social-text">Or continue with</p>
             
@@ -100,7 +100,7 @@
           </form>
           
           <!-- Sign Up Form -->
-          <form action="#" class="sign-up-form" autocomplete="off" id="registerForm">
+          <form action="#" class="sign-up-form" autocomplete="off" id="registerForm" onsubmit="return false;">
             <a href="../../index.html" class="back-home">
               <i class="fas fa-arrow-left"></i>
               <span>Về trang chủ</span>
@@ -163,7 +163,7 @@
               </label>
             </div>
             
-            <input type="submit" value="Sign Up" class="btn" id="registerBtn" />
+            <button type="button" class="btn" id="registerBtn" onclick="handleRegister()">Sign Up</button>
             
             <p class="social-text">Or continue with</p>
             

@@ -74,10 +74,7 @@ function setLoading(buttonEl, isLoading) {
 // Login Handler
 // ===========================================
 
-const loginForm = document.getElementById('loginForm');
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
+async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   const submitBtn = document.getElementById('loginBtn');
@@ -94,6 +91,11 @@ loginForm.addEventListener('submit', async (e) => {
   // Set loading state
   setLoading(submitBtn, true);
   
+  // 🔍 DEBUG: Log request details
+  console.log('🔍 Login Request:');
+  console.log('API URL:', `${API_BASE_URL}/auth/login.php`);
+  console.log('Data:', { email, password: '[hidden]' });
+  
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login.php`, {
       method: 'POST',
@@ -107,7 +109,12 @@ loginForm.addEventListener('submit', async (e) => {
       })
     });
     
+    // 🔍 DEBUG: Log response
+    console.log('📡 Response Status:', response.status);
+    console.log('📡 Response OK:', response.ok);
+    
     const data = await response.json();
+    console.log('📦 Response Data:', data);
     
     if (data.success) {
       // Success!
@@ -129,16 +136,13 @@ loginForm.addEventListener('submit', async (e) => {
     showError('loginError', 'Connection error. Please try again.');
     setLoading(submitBtn, false);
   }
-});
+}
 
 // ===========================================
 // Register Handler
 // ===========================================
 
-const registerForm = document.getElementById('registerForm');
-registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
+async function handleRegister() {
   const fullName = document.getElementById('registerFullName').value.trim();
   const email = document.getElementById('registerEmail').value.trim();
   const password = document.getElementById('registerPassword').value;
@@ -162,6 +166,11 @@ registerForm.addEventListener('submit', async (e) => {
   // Set loading state
   setLoading(submitBtn, true);
   
+  // 🔍 DEBUG: Log request details
+  console.log('🔍 Registration Request:');
+  console.log('API URL:', `${API_BASE_URL}/auth/register.php`);
+  console.log('Data:', { full_name: fullName, email, password: '[hidden]', terms_accepted: termsAccepted });
+  
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register.php`, {
       method: 'POST',
@@ -177,7 +186,12 @@ registerForm.addEventListener('submit', async (e) => {
       })
     });
     
+    // 🔍 DEBUG: Log response
+    console.log('📡 Response Status:', response.status);
+    console.log('📡 Response OK:', response.ok);
+    
     const data = await response.json();
+    console.log('📦 Response Data:', data);
     
     if (data.success) {
       // Success!
@@ -195,11 +209,12 @@ registerForm.addEventListener('submit', async (e) => {
     }
     
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('❌ Registration error:', error);
+    console.error('Error details:', error.message, error.stack);
     showError('registerError', 'Connection error. Please try again.');
     setLoading(submitBtn, false);
   }
-});
+}
 
 // ===========================================
 // Social Login Handlers (Mock)
@@ -330,3 +345,7 @@ async function checkAuth() {
 checkAuth();
 
 console.log('🚀 NeuralNova Auth loaded. API:', API_BASE_URL);
+
+// Make functions globally available for onclick
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
