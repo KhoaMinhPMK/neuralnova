@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thanh toán | NeuralNova</title>
+  <title>Checkout | NeuralNova</title>
   <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
 
   <!-- Fonts -->
@@ -26,46 +26,46 @@
     </a>
     <a class="back-link" href="javascript:history.back()">
       <i data-lucide="arrow-left"></i>
-      Trở lại
+      Back
     </a>
   </header>
 
   <main class="container">
     <section class="card checkout">
       <div class="left">
-        <h1>Thanh toán</h1>
-        <p class="sub">Vui lòng nhập thông tin thanh toán an toàn của bạn.</p>
+        <h1>Checkout</h1>
+        <p class="sub">Please enter your secure payment information.</p>
 
         <div class="tabs" role="tablist">
           <button class="tab active" data-tab="card" aria-selected="true">
             <i data-lucide="credit-card"></i>
-            Thẻ tín dụng/ghi nợ
+            Credit/Debit Card
           </button>
-          <button class="tab" data-tab="wallet">
-            <i data-lucide="wallet"></i>
-            Ví NeuralNova
+          <button class="tab" data-tab="vnpay">
+            <i data-lucide="smartphone"></i>
+            E-Wallets
           </button>
         </div>
 
         <form id="card-form" class="form form--active" autocomplete="cc-number">
           <div class="field">
-            <label>Họ và tên</label>
-            <input id="name" type="text" placeholder="Nguyễn Văn A" required />
+            <label>Full Name</label>
+            <input id="name" type="text" placeholder="John Doe" required />
             <span class="err" data-for="name"></span>
           </div>
           <div class="field">
             <label>Email</label>
-            <input id="email" type="email" placeholder="ban@vidu.com" required />
+            <input id="email" type="email" placeholder="you@example.com" required />
             <span class="err" data-for="email"></span>
           </div>
           <div class="field">
-            <label>Số thẻ</label>
+            <label>Card Number</label>
             <input id="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" required />
             <span class="err" data-for="cardNumber"></span>
           </div>
           <div class="row">
             <div class="field">
-              <label>Hết hạn (MM/YY)</label>
+              <label>Expiry (MM/YY)</label>
               <input id="expiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" required />
               <span class="err" data-for="expiry"></span>
             </div>
@@ -77,127 +77,117 @@
           </div>
 
           <div class="field">
-            <label>Mã giảm giá (tuỳ chọn)</label>
+            <label>Discount Code (Optional)</label>
             <div class="input-group">
-              <input id="voucher" placeholder="NHAPMA" />
-              <button type="button" id="applyVoucher" class="btn ghost">Áp dụng</button>
+              <input id="voucher" placeholder="ENTER CODE" />
+              <button type="button" id="applyVoucher" class="btn ghost">Apply</button>
             </div>
-            <span class="help">Dùng query ?voucher=... để tự động áp dụng.</span>
+            <span class="help">Use query ?voucher=... to auto-apply.</span>
           </div>
 
           <button id="payBtn" class="btn primary full" type="submit">
-            <span class="btn-text">Thanh toán</span>
+            <span class="btn-text">Pay Now</span>
             <span class="btn-spinner" aria-hidden="true"></span>
           </button>
-          <p class="terms">Bằng việc thanh toán, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật.</p>
+          <p class="terms">By completing your payment, you agree to our Terms of Service and Privacy Policy.</p>
         </form>
 
-        
-
-        <div id="wallet-form" class="wallet" hidden>
-          <div class="wallet-box">
-            <h3>Ví NeuralNova</h3>
-            <div class="wallet-balance">Số dư hiện tại: <strong id="walletBalance">0₫</strong></div>
-            <div class="wallet-actions">
-              <button id="payByWallet" class="btn primary">Thanh toán bằng Ví</button>
-            </div>
-
-            <div class="wallet-tabs" role="tablist">
-              <button class="wallet-tab active" data-subtab="topup">Nạp tiền</button>
-              <button class="wallet-tab" data-subtab="history">Lịch sử</button>
-            </div>
-
-            <!-- Nạp tiền -->
-            <section id="walletTopup" class="wallet-section" aria-labelledby="tab-topup">
-              <p class="help" style="margin:0 0 10px">
-                Cần trợ giúp? Xem <a href="guide.html" style="color:#a5b4fc;text-decoration:underline">Hướng dẫn thanh toán</a>.
-              </p>
-              <div class="provider-groups">
-                <div class="group">
-                  <div class="group-title">Giao dịch P2P - VND</div>
-                  <div class="provider-row">
-                    <button class="provider-btn" data-provider="bank"><img src="../../assets/images/payments/bank.svg" alt="Bank"/> <span>Chuyển khoản</span></button>
-                    <button class="provider-btn active" data-provider="momo"><img src="../wallet/logopay/MoMo_Logo.png" alt="MoMo"/> <span>MoMo</span></button>
-                    <button class="provider-btn" data-provider="zalopay"><img src="../wallet/logopay/zalopay-logo.png" alt="ZaloPay"/> <span>ZaloPay</span></button>
-                    <button class="provider-btn" data-provider="vnpay"><img src="../wallet/logopay/vnpay%20logo.png" alt="VNPay"/> <span>VNPay</span></button>
-                  </div>
-                  <div class="provider-actions">
-                    <a id="providerDetailLink" class="link-detail" href="method.html?provider=momo">Nhập thông tin chi tiết</a>
-                  </div>
-                </div>
-                  <div class="group">
-                  <div class="group-title">Giao dịch P2P - Quốc tế</div>
-                  <div class="provider-row">
-                    <button class="provider-btn" data-provider="paypal"><img src="../wallet/logopay/paypal%20logo.png" alt="PayPal"/> <span>PayPal</span></button>
-                  </div>
-                  <div class="provider-actions">
-                    <a class="link-detail" href="method.html?provider=alipay&return=index.html#wallet">Nhập thông tin chi tiết Alipay</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="topup-controls">
-                <div class="topup-field">
-                  <label>Số tiền (VND)</label>
-                  <input id="topupAmount" placeholder="Ví dụ: 100000" inputmode="numeric" />
-                </div>
-                <div class="topup-field">
-                  <label>Ghi chú/Nội dung</label>
-                  <input id="topupNote" placeholder="Ví dụ: nap_vi_user123" />
-                </div>
-              </div>
-
-              <div class="qr-topup">
-                <div id="qrTopup" class="qr-placeholder">QR sẽ hiển thị tại đây</div>
-                <div class="payload">
-                  <label>Nội dung mã (demo)</label>
-                  <textarea id="topupPayload" readonly></textarea>
-                </div>
-              </div>
-              <div class="topup-actions">
-                <button id="genTopupBtn" class="btn">Tạo mã QR</button>
-                <button id="confirmTopupBtn" class="btn primary">Tôi đã thanh toán</button>
-                <button id="copyTopupBtn" class="btn ghost">Sao chép</button>
-              </div>
-            </section>
-
-            <!-- Lịch sử -->
-            <section id="walletHistory" class="wallet-section" hidden>
-              <div class="history">
-                <div class="history-head">
-                  <div>Thời gian</div>
-                  <div>Nhà cung cấp</div>
-                  <div>Số tiền</div>
-                  <div>Trạng thái</div>
-                </div>
-                <div id="historyList" class="history-body"></div>
-              </div>
-            </section>
+        <!-- E-Wallets Payment -->
+        <div id="vnpay-form" class="ewallet-form" hidden>
+          <h3>Select Payment Method</h3>
+          <p class="sub">You will be redirected to the payment gateway to complete the transaction</p>
+          
+          <div class="payment-providers">
+            <button class="provider-card" data-provider="momo">
+              <img src="../wallet/logopay/MoMo_Logo.png" alt="MoMo" />
+              <span>MoMo</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
+            <button class="provider-card" data-provider="vnpay">
+              <img src="../wallet/logopay/vnpay%20logo.png" alt="VNPay" />
+              <span>VNPay</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
+            <button class="provider-card" data-provider="zalopay">
+              <img src="../wallet/logopay/zalopay-logo.png" alt="ZaloPay" />
+              <span>ZaloPay</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
           </div>
+
+          <div class="ewallet-info">
+            <p class="help">
+              <i data-lucide="info"></i>
+              After selecting, you will be redirected to the provider's payment page. 
+              Please complete the payment within 15 minutes.
+            </p>
+          </div>
+
+          <button id="continueEwallet" class="btn primary full" disabled>
+            <span>Continue to Payment</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
         </div>
       </div>
 
       <aside class="right">
         <div class="summary">
-          <h2>Tóm tắt đơn hàng</h2>
+          <h2>Order Summary</h2>
           <div class="line">
-            <span class="label" id="itemName">Gói dịch vụ</span>
-            <span class="value" id="itemPrice">0₫</span>
+            <span class="label" id="itemName">Service Plan</span>
+            <span class="value" id="itemPrice">$0</span>
           </div>
           <div class="line small">
-            <span class="label">Số lượng</span>
+            <span class="label">Quantity</span>
             <span class="value" id="itemQty">1</span>
           </div>
           <div class="line small">
-            <span class="label">Giảm giá</span>
-            <span class="value" id="discount">- 0₫</span>
+            <span class="label">Discount</span>
+            <span class="value" id="discount">- $0</span>
           </div>
           <div class="divider"></div>
           <div class="line total">
-            <span>Tổng cộng</span>
-            <strong id="grandTotal">0₫</strong>
+            <span>Grand Total</span>
+            <strong id="grandTotal">$0</strong>
           </div>
-          <p class="secure"><i data-lucide="shield"></i> Thanh toán bảo mật với mã hoá TLS</p>
+          <p class="secure"><i data-lucide="shield"></i> Secure payment with TLS encryption</p>
+          
+          <!-- Payment Methods Accepted -->
+          <div class="payment-methods">
+            <span class="pm-label">We Accept:</span>
+            <div class="pm-logos">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'%3E%3Crect fill='%231434CB' width='48' height='32' rx='4'/%3E%3Cpath fill='%23fff' d='M19 10h-6l-3.8 12h3.6l.7-2h3.8l.7 2h4l-3-12zm-4.6 7.5l1.3-4.5 1.3 4.5h-2.6zm11.6-7.5h-4v12h4c3 0 5-2 5-6s-2-6-5-6zm0 9h-1v-6h1c1.5 0 2 1.5 2 3s-.5 3-2 3zm13-6c0-1.7-1.3-3-3-3h-4v12h3v-4h1c1.7 0 3-1.3 3-3v-2zm-3 2h-1v-3h1c.5 0 1 .5 1 1.5s-.5 1.5-1 1.5z'/%3E%3C/svg%3E" alt="Visa" title="Visa">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'%3E%3Crect fill='%23EB001B' width='48' height='32' rx='4'/%3E%3Ccircle cx='18' cy='16' r='10' fill='%23EB001B'/%3E%3Ccircle cx='30' cy='16' r='10' fill='%23F79E1B'/%3E%3Cpath fill='%23FF5F00' d='M24 7.5c-2 1.5-3.3 4-3.3 6.5s1.3 5 3.3 6.5c2-1.5 3.3-4 3.3-6.5s-1.3-5-3.3-6.5z'/%3E%3C/svg%3E" alt="Mastercard" title="Mastercard">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'%3E%3Crect fill='%23006FCF' width='48' height='32' rx='4'/%3E%3Cpath fill='%23fff' d='M10 12h4l1 4 1-4h4l-2 8h-3l1-3-1 3h-2l-1-3 1 3h-3l2-8zm14 0h6v2h-3v1h3v2h-3v1h3v2h-6v-8zm8 0h4l1 6v-6h3v8h-4l-1-6v6h-3v-8z'/%3E%3C/svg%3E" alt="AmEx" title="American Express">
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badges">
+            <div class="badge-item">
+              <i data-lucide="lock"></i>
+              <span>SSL 256-bit</span>
+            </div>
+            <div class="badge-item">
+              <i data-lucide="shield-check"></i>
+              <span>PCI DSS</span>
+            </div>
+            <div class="badge-item">
+              <i data-lucide="check-circle"></i>
+              <span>Verified</span>
+            </div>
+          </div>
+
+          <!-- Support Info -->
+          <div class="support-info">
+            <div class="support-item">
+              <i data-lucide="headphones"></i>
+              <div>
+                <strong>24/7 Support</strong>
+                <p>support@neuralnova.space</p>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </section>

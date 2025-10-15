@@ -1,3 +1,9 @@
+---
+noteId: "d4ca2910a9c711f0bb8ab337bc42cc1f"
+tags: []
+
+---
+
 # ✅ READY TO DEPLOY - VPS Production
 
 ## 🎉 Backend đã hoạt động hoàn hảo!

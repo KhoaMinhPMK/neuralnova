@@ -6,7 +6,7 @@
     <meta name="description" content="Đăng nhập & Đăng ký - NeuralNova" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=2.1" />
     <!-- Prefetch next route for smoother transition -->
     <link rel="prefetch" href="../forgot-password/index.html" as="document" />
     <!-- Preload target background video for smooth crossfade -->
@@ -153,6 +153,35 @@
               />
             </div>
             
+            <!-- Password Strength Meter -->
+            <div class="password-strength" id="passwordStrength">
+              <div class="strength-header">
+                <span class="strength-label">Password strength:</span>
+                <span class="strength-text" id="strengthText">Not set</span>
+              </div>
+              <div class="strength-bar">
+                <div class="strength-fill" id="strengthFill"></div>
+              </div>
+              <div class="strength-checks">
+                <span class="check-item" id="req-length">
+                  <i class="fas fa-circle-notch"></i>
+                  <span>8+ chars</span>
+                </span>
+                <span class="check-item" id="req-uppercase">
+                  <i class="fas fa-circle-notch"></i>
+                  <span>A-Z</span>
+                </span>
+                <span class="check-item" id="req-lowercase">
+                  <i class="fas fa-circle-notch"></i>
+                  <span>a-z</span>
+                </span>
+                <span class="check-item" id="req-number">
+                  <i class="fas fa-circle-notch"></i>
+                  <span>0-9</span>
+                </span>
+              </div>
+            </div>
+            
             <div class="terms">
               <input type="checkbox" id="terms" class="terms-checkbox" required />
               <label for="terms" class="switch-label">
@@ -224,7 +253,7 @@
       </div>
     </div>
 
-    <script src="app.js?v=2.0"></script>
+    <script src="app.js?v=2.2"></script>
     <script>
       // Ensure functions are available
       console.log('✅ handleLogin available:', typeof window.handleLogin);

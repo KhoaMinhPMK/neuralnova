@@ -101,10 +101,88 @@ h1 { font-size: 28px; margin: 4px 0 6px; letter-spacing: .2px; }
 .qr { display:flex; justify-content:center; padding: 12px 0 16px; }
 .qr-placeholder { width: 160px; height:160px; border-radius: 8px; border:1px dashed var(--border); display:flex; align-items:center; justify-content:center; color: var(--muted); }
 
-/* Wallet */
-.wallet .wallet-box { background: rgba(255,255,255,.04); border:1px solid var(--border); border-radius: 12px; padding: 16px; }
-.wallet .wallet-balance { margin: 6px 0 10px; color: var(--muted); }
-.wallet .wallet-actions { display:flex; gap: 8px; flex-wrap: wrap; }
+/* E-Wallet Payment */
+.ewallet-form { display: none; }
+.ewallet-form h3 { font-size: 20px; margin: 0 0 8px; }
+
+.payment-providers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.provider-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(255,255,255,.05);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.provider-card:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(124,58,237,.4);
+  transform: translateY(-2px);
+}
+
+.provider-card.selected {
+  background: rgba(124,58,237,.15);
+  border-color: rgba(124,58,237,.6);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.2);
+}
+
+.provider-card img {
+  height: 32px;
+  width: auto;
+  max-width: 100px;
+}
+
+.provider-card span {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.provider-card i {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.provider-card.selected i {
+  color: var(--primary-2);
+}
+
+.ewallet-info {
+  background: rgba(124,58,237,.05);
+  border: 1px solid rgba(124,58,237,.2);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0 20px;
+}
+
+.ewallet-info .help {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ewallet-info .help i {
+  width: 18px;
+  height: 18px;
+  color: var(--primary-2);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
 
 /* Inline top-up */
 .wallet-tabs { display:flex; gap:10px; margin: 12px 0; }
@@ -158,7 +236,111 @@ h1 { font-size: 28px; margin: 4px 0 6px; letter-spacing: .2px; }
 #toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: rgba(15,15,20,.9); color:#fff; padding: 10px 14px; border:1px solid var(--border); border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
+/* Payment Methods Accepted */
+.payment-methods {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.pm-label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.pm-logos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pm-logos img {
+  height: 24px;
+  width: auto;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.pm-logos img:hover {
+  opacity: 1;
+}
+
+/* Trust Badges */
+.trust-badges {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  padding: 8px;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+}
+
+.badge-item i {
+  width: 20px;
+  height: 20px;
+  color: var(--success);
+}
+
+.badge-item span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Support Info */
+.support-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.support-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  background: rgba(124, 58, 237, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 10px;
+}
+
+.support-item i {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-2);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.support-item strong {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.support-item p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
 @media (max-width: 980px) {
   .card.checkout { grid-template-columns: 1fr; }
   .right { position: static; }
+  .trust-badges { flex-wrap: wrap; }
 }

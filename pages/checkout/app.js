@@ -2,47 +2,41 @@
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-  const fmt = (amount, currency = 'VND', locale = 'vi-VN') => {
+  const fmt = (amount, currency = 'USD', locale = 'en-US') => {
     try { return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount); }
-    catch { return amount.toLocaleString('vi-VN') + '₫'; }
+    catch { return '$' + amount.toLocaleString('en-US'); }
   };
 
   const params = new URLSearchParams(location.search);
   
   // Handle plan parameter from pricing page
   const planParam = params.get('plan');
-  let itemName = params.get('name') || 'Gói NeuralNova Premium';
-  let price = Number(params.get('price') || 199000);
+  const planName = params.get('planName');
+  let itemName = planName || params.get('name') || 'NeuralNova Premium Plan';
+  let price = Number(params.get('price') || 199);
   const qty = Math.max(1, Number(params.get('qty') || 1));
-  let currency = (params.get('currency') || 'VND').toUpperCase();
+  let currency = (params.get('currency') || 'USD').toUpperCase();
   const presetVoucher = (params.get('voucher') || '').trim();
   const hasTrial = params.get('trial') || '';
   
-  // Convert pricing plan names to Vietnamese
-  if (planParam) {
-    if (planParam === 'starter') {
-      itemName = 'Gói Starter - NeuralNova';
-      // Convert USD to VND (approximate rate: 1 USD = 24,000 VND)
-      if (price < 1000) { // Likely USD
-        price = price * 24000;
-        currency = 'VND';
-      }
-    } else if (planParam === 'professional') {
-      itemName = hasTrial ? 'Gói Professional (14 ngày dùng thử) - NeuralNova' : 'Gói Professional - NeuralNova';
-      if (price < 1000) {
-        price = price * 24000;
-        currency = 'VND';
-      }
-    } else if (planParam === 'enterprise') {
-      itemName = 'Gói Enterprise - NeuralNova';
-      // For custom pricing, set a placeholder
+  // Handle new pricing structure with plan names
+  if (planParam && !planName) {
+    // Fallback for old URLs
+    if (planParam === 'starter' || planParam === 'individual') {
+      itemName = 'Individual Plan';
+    } else if (planParam === 'professional' || planParam === 'business') {
+      itemName = hasTrial ? 'Business Plan (14-day free trial)' : 'Business Plan';
+    } else if (planParam === 'enterprise' || planParam === 'custom') {
+      itemName = 'Enterprise Plan';
       if (params.get('price') === 'custom') {
         price = 0; // Will need to contact sales
-      } else if (price < 1000) {
-        price = price * 24000;
-        currency = 'VND';
       }
     }
+  }
+  
+  // Add trial info to item name if present
+  if (hasTrial && itemName && !itemName.includes('trial') && !itemName.includes('Trial')) {
+    itemName += ` (${hasTrial}-day free trial)`;
   }
 
   // State
@@ -69,16 +63,16 @@
   // Tabs switching
   const tabs = $$('.tab');
   const cardForm = $('#card-form');
-  const walletForm = $('#wallet-form');
+  const ewalletForm = $('#vnpay-form');
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const tab = btn.getAttribute('data-tab');
     const isCard = tab === 'card';
-    const isWallet = tab === 'wallet';
+    const isEwallet = tab === 'vnpay';
     cardForm.classList.toggle('form--active', isCard);
     cardForm.hidden = !isCard;
-    walletForm.hidden = !isWallet;
+    if (ewalletForm) ewalletForm.hidden = !isEwallet;
   }));
 
   // Helpers
@@ -127,112 +121,56 @@
     state.voucher = null; state.discount = 0;
     if (!c) return recalc();
     // Demo rules
-    if (c === 'NOVANEW') { state.voucher = c; state.discount = 20000; toast('Áp dụng voucher -20.000₫'); }
-    else if (c === 'NN50K') { state.voucher = c; state.discount = 50000; toast('Áp dụng voucher -50.000₫'); }
-    else if (c === 'NN10') { state.voucher = c; state.discount = Math.round(price * qty * 0.1); toast('Áp dụng voucher -10%'); }
-    else { toast('Mã giảm giá không hợp lệ', true); }
+    if (c === 'NOVANEW') { state.voucher = c; state.discount = 2; toast('Voucher applied -$2'); }
+    else if (c === 'NN50K') { state.voucher = c; state.discount = 5; toast('Voucher applied -$5'); }
+    else if (c === 'NN10') { state.voucher = c; state.discount = Math.round(price * qty * 0.1); toast('Voucher applied -10%'); }
+    else { toast('Invalid discount code', true); }
     recalc();
   };
   $('#applyVoucher').addEventListener('click', () => applyVoucher($('#voucher').value));
   if (presetVoucher) { $('#voucher').value = presetVoucher; applyVoucher(presetVoucher); }
 
-  // Bank transfer removed; bank is integrated under Wallet top-up
-
-  // Wallet payment
-  const walletBalanceEl = $('#walletBalance');
-  const getWalletBal = () => Number(localStorage.getItem('nn_wallet_balance') || 0);
-  const setWalletUI = () => { try { walletBalanceEl.textContent = new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(getWalletBal()); } catch { walletBalanceEl.textContent = (getWalletBal()).toLocaleString('vi-VN') + '₫'; } };
-  setWalletUI();
-  // Wallet sub-tabs: top-up and history
-  const walletTabs = $$('.wallet-tab');
-  const sectionTopup = $('#walletTopup');
-  const sectionHistory = $('#walletHistory');
-  const activateSubTab = (key) => {
-    walletTabs.forEach(b => b.classList.toggle('active', b.dataset.subtab === key));
-    sectionTopup.hidden = key !== 'topup';
-    sectionHistory.hidden = key !== 'history';
-    if (key === 'history') loadHistory();
-  };
-  walletTabs.forEach(b => b.addEventListener('click', () => activateSubTab(b.dataset.subtab)));
-
-  // Inline top-up logic (demo)
-  let topupAmount = 100000;
-  let topupProvider = 'momo';
-  const amountInput = $('#topupAmount');
-  const noteInput = $('#topupNote');
-  const providerBtns = $$('.provider-btn');
-  const payloadEl = $('#topupPayload');
-  const qrTopup = $('#qrTopup');
-  amountInput.addEventListener('input', (e) => { const v = Number(String(e.target.value).replace(/[^\d]/g,''))||0; e.target.value = v?String(v):''; topupAmount=v; });
-  const detailLink = $('#providerDetailLink');
-  providerBtns.forEach(p => p.addEventListener('click', () => {
-    providerBtns.forEach(b=>b.classList.remove('active'));
-    p.classList.add('active');
-    topupProvider = p.dataset.provider;
-    if (detailLink) detailLink.href = 'method.html?provider=' + encodeURIComponent(topupProvider) + '&return=' + encodeURIComponent('index.html#wallet');
+  // E-Wallet payment selection
+  let selectedEwallet = null;
+  const providerCards = $$('.provider-card');
+  const continueBtn = $('#continueEwallet');
+  
+  providerCards.forEach(card => card.addEventListener('click', () => {
+    providerCards.forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedEwallet = card.dataset.provider;
+    if (continueBtn) continueBtn.disabled = false;
   }));
-  if (detailLink) detailLink.href = 'method.html?provider=' + encodeURIComponent(topupProvider) + '&return=' + encodeURIComponent('index.html#wallet');
 
-  const buildTopupPayload = (prov, amt) => {
-    const orderId = 'TOPUP_' + Date.now();
-    const info = encodeURIComponent('Nap vi NeuralNova');
-    if (prov === 'momo') return `momo://app?action=payWithApp&partnerCode=NNDEMO&amount=${amt}&orderId=${orderId}&orderInfo=${info}`;
-    if (prov === 'vnpay') return `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${amt*100}&vnp_TxnRef=${orderId}&vnp_OrderInfo=${info}`;
-    if (prov === 'alipay') { const q = `https://pay.neuralnova.local/topup?oid=${orderId}&amt=${amt}`; return `alipayqr://platformapi/startapp?saId=10000007&qrcode=${encodeURIComponent(q)}`; }
-    if (prov === 'paypal') return `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=demo@neuralnova.local&amount=${amt}&currency_code=USD&item_name=Topup%20Wallet&invoice=${orderId}`;
-    if (prov === 'bank') return `bank://transfer?account=NN_DEMO_0123456789&amount=${amt}&desc=${info}`;
-    return `nnwallet:${orderId}?amount=${amt}`;
-  };
-  const renderTopupQR = (text) => {
-    // Placeholder only (no QR lib embedded here)
-    qrTopup.textContent = text ? 'QR đã sẵn sàng (demo)' : 'QR sẽ hiển thị tại đây';
-  };
-  $('#genTopupBtn').addEventListener('click', () => {
-    if (!topupAmount || topupAmount < 1000) { toast('Số tiền tối thiểu 1.000₫', true); return; }
-    const payload = buildTopupPayload(topupProvider, topupAmount) + (noteInput.value? `&note=${encodeURIComponent(noteInput.value)}`: '');
-    payloadEl.value = payload;
-    renderTopupQR(payload);
-    toast('Đã tạo mã thanh toán');
-  });
-  $('#copyTopupBtn').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(payloadEl.value || ''); toast('Đã sao chép'); } catch { toast('Không thể sao chép', true); }
-  });
-  $('#confirmTopupBtn').addEventListener('click', () => {
-    if (!topupAmount || topupAmount < 1000) { toast('Số tiền tối thiểu 1.000₫', true); return; }
-    const current = Number(localStorage.getItem('nn_wallet_balance') || 0);
-    const after = current + topupAmount;
-    try { localStorage.setItem('nn_wallet_balance', String(after)); } catch {}
-    // Log tx
-    try { const key = 'nn_wallet_tx'; const cur = JSON.parse(localStorage.getItem(key) || '[]'); cur.push({id:'TX_'+Date.now(),type:'TOPUP',provider:topupProvider,amount:topupAmount,at:new Date().toISOString(), note: noteInput.value||''}); localStorage.setItem(key, JSON.stringify(cur)); } catch {}
-    setWalletUI();
-    toast('Nạp tiền thành công vào Ví');
-    loadHistory();
-  });
-
-  // History rendering
-  const historyList = $('#historyList');
-  function loadHistory() {
-    if (!historyList) return;
-    let items = [];
-    try { items = JSON.parse(localStorage.getItem('nn_wallet_tx') || '[]'); } catch {}
-    items = items.filter(x => x.type === 'TOPUP').reverse();
-    historyList.innerHTML = items.map(x => {
-      const time = new Date(x.at).toLocaleString('vi-VN');
-      const amt = fmt(x.amount);
-      const prov = (x.provider||'').toUpperCase();
-      return `<div class="history-row"><div>${time}</div><div>${prov}</div><div>${amt}</div><div class="badge-ok">Thành công</div></div>`;
-    }).join('') || '<div class="history-row"><div>—</div><div>—</div><div>—</div><div>Chưa có giao dịch</div></div>';
+  if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+      if (!selectedEwallet) return;
+      
+      const { total } = recalc();
+      const orderId = 'ORD_' + Date.now();
+      const info = encodeURIComponent(itemName);
+      
+      // Build payment gateway URL (demo - would be generated server-side in production)
+      let gatewayUrl = '';
+      if (selectedEwallet === 'momo') {
+        gatewayUrl = `https://test-payment.momo.vn/v2/gateway/pay?amount=${total}&orderId=${orderId}&orderInfo=${info}`;
+      } else if (selectedEwallet === 'vnpay') {
+        gatewayUrl = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${total*100}&vnp_TxnRef=${orderId}&vnp_OrderInfo=${info}`;
+      } else if (selectedEwallet === 'zalopay') {
+        gatewayUrl = `https://sandbox.zalopay.vn/order/payment?app_id=2553&amount=${total}&app_trans_id=${orderId}`;
+      }
+      
+      // Save payment attempt
+      savePayment({ method: selectedEwallet.toUpperCase(), masked: null, total });
+      
+      // In production, this would redirect to actual payment gateway
+      // For demo, show alert then go to success
+      toast('Đang chuyển đến cổng thanh toán ' + selectedEwallet.toUpperCase() + '...');
+      setTimeout(() => {
+        location.href = 'success.html?method=' + selectedEwallet.toUpperCase() + '&total=' + encodeURIComponent(total) + '&name=' + encodeURIComponent(itemName);
+      }, 1500);
+    });
   }
-  // Initialize topup tab as default
-  activateSubTab('topup');
-  $('#payByWallet').addEventListener('click', () => {
-    const { total } = recalc();
-    const bal = getWalletBal();
-    if (bal < total) { alert('Số dư ví không đủ. Vui lòng nạp thêm.'); return; }
-    try { localStorage.setItem('nn_wallet_balance', String(bal - total)); } catch {}
-    savePayment({ method: 'WALLET', masked: null, total });
-    location.href = 'success.html?method=WALLET&total=' + encodeURIComponent(total) + '&name=' + encodeURIComponent(itemName);
-  });
 
   // Toast
   const toastEl = $('#toast');

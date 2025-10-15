@@ -24,6 +24,37 @@
   const setBalanceUI = () => { balEl.textContent = fmt(getBal()); };
   setBalanceUI();
 
+  // Display selected plan info from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const planId = urlParams.get('plan');
+  const planName = urlParams.get('planName');
+  const planPrice = urlParams.get('price');
+  const planTrial = urlParams.get('trial');
+
+  if (planId && planName && planPrice) {
+    const planInfoEl = $('#planInfo');
+    const planNameEl = $('#planName');
+    const planPriceEl = $('#planPrice');
+    const planTrialEl = $('#planTrial');
+    const trialInfoEl = $('#trialInfo');
+
+    planInfoEl.style.display = 'block';
+    planNameEl.textContent = planName;
+    
+    if (planPrice === 'custom') {
+      planPriceEl.textContent = 'Liên hệ báo giá';
+    } else {
+      planPriceEl.textContent = `$${planPrice}/tháng`;
+    }
+
+    if (planTrial) {
+      trialInfoEl.style.display = 'flex';
+      planTrialEl.textContent = `${planTrial} ngày miễn phí`;
+    }
+
+    console.log('📦 Plan Info:', { planId, planName, planPrice, planTrial });
+  }
+
   // Amount selection
   let amount = 100000; // default
   const chips = $$('.chip');

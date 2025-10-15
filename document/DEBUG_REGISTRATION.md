@@ -1,3 +1,9 @@
+---
+noteId: "fc26bf40a9c311f0aa12ab3fbbc998b5"
+tags: []
+
+---
+
 # 🐛 Debug Registration Issue
 
 ## ❌ Problem:

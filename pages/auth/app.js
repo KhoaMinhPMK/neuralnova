@@ -97,6 +97,32 @@ async function handleRegister() {
     return;
   }
   
+  // Validate full name
+  if (fullName.length < 2) {
+    showError('registerError', 'Full name must be at least 2 characters');
+    return;
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showError('registerError', 'Please enter a valid email address');
+    return;
+  }
+  
+  // Validate password strength
+  const passwordCheck = validatePasswordStrength(password);
+  if (!passwordCheck.isValid) {
+    const missingReqs = [];
+    if (!passwordCheck.requirements.length) missingReqs.push('at least 8 characters');
+    if (!passwordCheck.requirements.uppercase) missingReqs.push('one uppercase letter');
+    if (!passwordCheck.requirements.lowercase) missingReqs.push('one lowercase letter');
+    if (!passwordCheck.requirements.number) missingReqs.push('one number');
+    
+    showError('registerError', 'Password must contain: ' + missingReqs.join(', '));
+    return;
+  }
+  
   if (!termsAccepted) {
     showError('registerError', 'You must accept the Terms & Conditions');
     return;
@@ -181,10 +207,10 @@ function showError(elementId, message, errors = null) {
   errorEl.innerHTML = html;
   errorEl.style.display = 'block';
   
-  // Auto-hide after 5 seconds
+  // Auto-hide after 2 seconds
   setTimeout(() => {
     errorEl.style.display = 'none';
-  }, 5000);
+  }, 2000);
 }
 
 function showSuccess(elementId, message) {
@@ -210,6 +236,96 @@ function setLoading(buttonEl, isLoading) {
 }
 
 // ===========================================
+// Password Strength Validation
+// ===========================================
+
+function validatePasswordStrength(password) {
+  const requirements = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password)
+  };
+  
+  // Calculate strength score
+  const validCount = Object.values(requirements).filter(v => v).length;
+  
+  // Get UI elements
+  const strengthContainer = document.getElementById('passwordStrength');
+  const strengthText = document.getElementById('strengthText');
+  const strengthFill = document.getElementById('strengthFill');
+  const reqLength = document.getElementById('req-length');
+  const reqUppercase = document.getElementById('req-uppercase');
+  const reqLowercase = document.getElementById('req-lowercase');
+  const reqNumber = document.getElementById('req-number');
+  
+  // Show/hide strength meter
+  if (strengthContainer) {
+    if (password.length > 0) {
+      strengthContainer.classList.add('active');
+    } else {
+      strengthContainer.classList.remove('active');
+      if (strengthText) strengthText.textContent = 'Not set';
+      if (strengthFill) {
+        strengthFill.className = 'strength-fill';
+      }
+      return {
+        isValid: false,
+        requirements: requirements
+      };
+    }
+  }
+  
+  // Update strength text and bar
+  if (strengthText && strengthFill) {
+    // Remove all classes
+    strengthText.className = 'strength-text';
+    strengthFill.className = 'strength-fill';
+    
+    if (validCount === 0) {
+      strengthText.textContent = 'Very Weak';
+      strengthText.classList.add('weak');
+    } else if (validCount === 1) {
+      strengthText.textContent = 'Weak';
+      strengthText.classList.add('weak');
+      strengthFill.classList.add('weak');
+    } else if (validCount === 2) {
+      strengthText.textContent = 'Fair';
+      strengthText.classList.add('medium');
+      strengthFill.classList.add('medium');
+    } else if (validCount === 3) {
+      strengthText.textContent = 'Good';
+      strengthText.classList.add('strong');
+      strengthFill.classList.add('strong');
+    } else if (validCount === 4) {
+      strengthText.textContent = 'Excellent';
+      strengthText.classList.add('excellent');
+      strengthFill.classList.add('excellent');
+    }
+  }
+  
+  // Update individual requirement checks
+  if (reqLength) {
+    reqLength.classList.toggle('valid', requirements.length);
+  }
+  if (reqUppercase) {
+    reqUppercase.classList.toggle('valid', requirements.uppercase);
+  }
+  if (reqLowercase) {
+    reqLowercase.classList.toggle('valid', requirements.lowercase);
+  }
+  if (reqNumber) {
+    reqNumber.classList.toggle('valid', requirements.number);
+  }
+  
+  // Return validation result
+  return {
+    isValid: Object.values(requirements).every(val => val === true),
+    requirements: requirements
+  };
+}
+
+// ===========================================
 // UI Toggle
 // ===========================================
 
@@ -229,6 +345,14 @@ document.addEventListener('DOMContentLoaded', () => {
     sign_in_btn.addEventListener("click", () => {
       container.classList.remove("sign-up-mode");
       clearMessages();
+    });
+  }
+  
+  // Password validation real-time
+  const passwordInput = document.getElementById('registerPassword');
+  if (passwordInput) {
+    passwordInput.addEventListener('input', (e) => {
+      validatePasswordStrength(e.target.value);
     });
   }
 });

@@ -14,6 +14,13 @@ body{margin:0;color:var(--text);background:radial-gradient(1200px 800px at 20% -
 .container{max-width:980px;margin:24px auto;padding:0 16px}
 .panel{background:transparent;border:0}
 .wallet{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px}
+.plan-info{background:linear-gradient(135deg, rgba(124,58,237,.15), rgba(34,211,238,.1));border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:16px;margin-bottom:20px}
+.plan-info-header h3{margin:0 0 12px;font-size:16px;color:var(--cyan)}
+.plan-info-content{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px}
+.plan-detail{display:flex;flex-direction:column;gap:4px}
+.plan-label{font-size:13px;color:var(--muted)}
+.plan-value{font-size:18px;color:#fff}
+.plan-value.trial{color:var(--ok)}
 .wallet-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
 .wallet h1{margin:2px 0 6px}
 .muted{color:var(--muted)}

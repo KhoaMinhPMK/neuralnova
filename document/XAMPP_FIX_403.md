@@ -1,3 +1,9 @@
+---
+noteId: "d22ac610a9c711f0bb8ab337bc42cc1f"
+tags: []
+
+---
+
 # 🔧 Fix 403 Forbidden Error - XAMPP
 
 ## ❌ Error:
