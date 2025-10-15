@@ -8,6 +8,53 @@ const API_BASE_URL = 'https://neuralnova.space/backend/api'; // Production - ĐA
 // const API_BASE_URL = 'http://localhost/neuralnova/backend/api'; // Local
 
 // ===========================================
+// LocalStorage Helper Functions
+// ===========================================
+
+function saveUserToLocalStorage(userData) {
+  try {
+    localStorage.setItem('neuralnova_user', JSON.stringify(userData));
+    localStorage.setItem('neuralnova_auth_time', Date.now().toString());
+    console.log('✅ User saved to localStorage:', userData);
+  } catch (error) {
+    console.error('❌ Failed to save user to localStorage:', error);
+  }
+}
+
+function getUserFromLocalStorage() {
+  try {
+    const userStr = localStorage.getItem('neuralnova_user');
+    const authTime = localStorage.getItem('neuralnova_auth_time');
+    
+    if (!userStr || !authTime) {
+      return null;
+    }
+    
+    // Check if auth is older than 7 days
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - parseInt(authTime) > sevenDaysMs) {
+      clearUserFromLocalStorage();
+      return null;
+    }
+    
+    return JSON.parse(userStr);
+  } catch (error) {
+    console.error('❌ Failed to get user from localStorage:', error);
+    return null;
+  }
+}
+
+function clearUserFromLocalStorage() {
+  try {
+    localStorage.removeItem('neuralnova_user');
+    localStorage.removeItem('neuralnova_auth_time');
+    console.log('✅ User cleared from localStorage');
+  } catch (error) {
+    console.error('❌ Failed to clear localStorage:', error);
+  }
+}
+
+// ===========================================
 // Login Handler
 // ===========================================
 
@@ -54,6 +101,11 @@ async function handleLogin() {
     console.log('📦 Response Data:', data);
     
     if (data.success) {
+      // Save user to localStorage
+      if (data.data && data.data.user) {
+        saveUserToLocalStorage(data.data.user);
+      }
+      
       showSuccess('loginError', data.message);
       setTimeout(() => {
         window.location.href = data.data.redirect || '../dashboard/index.html';
@@ -159,6 +211,11 @@ async function handleRegister() {
     console.log('📦 Response Data:', data);
     
     if (data.success) {
+      // Save user to localStorage
+      if (data.data && data.data.user) {
+        saveUserToLocalStorage(data.data.user);
+      }
+      
       showSuccess('registerError', data.message);
       setTimeout(() => {
         window.location.href = data.data.redirect || '../dashboard/index.html';
@@ -449,6 +506,13 @@ if (videoBackground) {
 
 async function checkAuth() {
   try {
+    // First check localStorage
+    const localUser = getUserFromLocalStorage();
+    if (localUser) {
+      console.log('✅ User found in localStorage:', localUser);
+    }
+    
+    // Then verify with backend
     const response = await fetch(`${API_BASE_URL}/auth/check-session.php`, {
       method: 'GET',
       credentials: 'include'
@@ -456,13 +520,22 @@ async function checkAuth() {
     
     const data = await response.json();
     
-    if (data.success) {
-      console.log('User already logged in:', data.data.user);
-      // Uncomment to auto-redirect:
-      // window.location.href = '../../index.html';
+    if (data.success && data.authenticated && data.user) {
+      console.log('✅ User already logged in:', data.user);
+      // Update localStorage with latest data
+      saveUserToLocalStorage(data.user);
+      
+      // Optionally auto-redirect to dashboard
+      // setTimeout(() => {
+      //   window.location.href = '../dashboard/index.html';
+      // }, 2000);
+    } else {
+      // Clear localStorage if session is invalid
+      clearUserFromLocalStorage();
     }
   } catch (error) {
     console.log('Not authenticated');
+    clearUserFromLocalStorage();
   }
 }
 

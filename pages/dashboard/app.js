@@ -18,30 +18,89 @@
         ? 'http://localhost/neuralnova/backend/api'
         : 'https://neuralnova.space/backend/api';
 
+    // LocalStorage Helpers
+    function saveUserToLocalStorage(userData) {
+        try {
+            localStorage.setItem('neuralnova_user', JSON.stringify(userData));
+            localStorage.setItem('neuralnova_auth_time', Date.now().toString());
+        } catch (error) {
+            console.error('Failed to save user to localStorage:', error);
+        }
+    }
+
+    function getUserFromLocalStorage() {
+        try {
+            const userStr = localStorage.getItem('neuralnova_user');
+            const authTime = localStorage.getItem('neuralnova_auth_time');
+            
+            if (!userStr || !authTime) {
+                return null;
+            }
+            
+            // Check if auth is older than 7 days
+            const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+            if (Date.now() - parseInt(authTime) > sevenDaysMs) {
+                clearUserFromLocalStorage();
+                return null;
+            }
+            
+            return JSON.parse(userStr);
+        } catch (error) {
+            console.error('Failed to get user from localStorage:', error);
+            return null;
+        }
+    }
+
+    function clearUserFromLocalStorage() {
+        try {
+            localStorage.removeItem('neuralnova_user');
+            localStorage.removeItem('neuralnova_auth_time');
+            console.log('✅ User cleared from localStorage');
+        } catch (error) {
+            console.error('Failed to clear localStorage:', error);
+        }
+    }
+
     // Check authentication
     async function checkAuth() {
         try {
+            // First try to get user from localStorage
+            const localUser = getUserFromLocalStorage();
+            if (localUser) {
+                console.log('✅ User loaded from localStorage:', localUser);
+                // Update UI immediately from cache
+                const userName = localUser.full_name || 'User';
+                if ($('#sidebarUserName')) {
+                    $('#sidebarUserName').textContent = userName;
+                }
+            }
+
+            // Then verify with backend
             const res = await fetch(`${API_BASE}/auth/check-session.php`, {
                 credentials: 'include'
             });
             const data = await res.json();
 
             if (!data.authenticated) {
-                // Not logged in, redirect to auth page
+                // Not logged in, clear localStorage and redirect
+                clearUserFromLocalStorage();
                 window.location.href = '../auth/index.html';
                 return;
             }
 
-            // Update UI with user info
+            // Update UI with fresh backend data
             if (data.user) {
                 const userName = data.user.full_name || 'User';
                 if ($('#sidebarUserName')) {
                     $('#sidebarUserName').textContent = userName;
                 }
+                // Save/update user in localStorage
+                saveUserToLocalStorage(data.user);
             }
         } catch (error) {
             console.error('Auth check failed:', error);
-            // Redirect to auth page on error
+            // Clear localStorage and redirect to auth page on error
+            clearUserFromLocalStorage();
             window.location.href = '../auth/index.html';
         }
     }
@@ -76,6 +135,9 @@
                 const data = await res.json();
 
                 if (data.success) {
+                    // Clear localStorage
+                    clearUserFromLocalStorage();
+                    
                     toast('Logged out successfully');
                     setTimeout(() => {
                         window.location.href = '../../index.html';
@@ -85,6 +147,8 @@
                 }
             } catch (error) {
                 console.error('Logout error:', error);
+                // Clear localStorage anyway
+                clearUserFromLocalStorage();
                 toast('Logout failed', true);
             }
         });
