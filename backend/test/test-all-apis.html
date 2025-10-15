@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuralNova API Test Suite</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0a0e27; color: #e0e6ed; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { color: #00d9ff; margin-bottom: 20px; font-size: 28px; }
+    .section { background: #151932; border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #1e2642; }
+    h2 { color: #00d9ff; font-size: 20px; margin-bottom: 15px; }
+    button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; margin-bottom: 10px; }
+    button:hover { opacity: 0.9; }
+    button.danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    input, textarea, select { background: #0a0e27; color: #e0e6ed; border: 1px solid #1e2642; padding: 8px; border-radius: 4px; font-size: 14px; margin-bottom: 10px; width: 100%; }
+    .result { background: #0a0e27; padding: 15px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; border: 1px solid #1e2642; }
+    .success { border-left: 4px solid #10b981; }
+    .error { border-left: 4px solid #ef4444; }
+    .info { border-left: 4px solid #3b82f6; }
+    .field { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; color: #9ca3af; font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .status { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .status.ready { background: #10b981; color: white; }
+    .status.pending { background: #f59e0b; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 NeuralNova API Test Suite</h1>
+    <p style="margin-bottom: 20px; color: #9ca3af;">Complete test interface for all backend APIs</p>
+
+    <!-- AUTH APIs -->
+    <div class="section">
+      <h2>🔐 Authentication APIs <span class="status ready">READY</span></h2>
+      
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="John Doe" value="Test User">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="test@example.com" value="test@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Password123" value="Password123">
+      </div>
+      
+      <button onclick="testRegister()">Register</button>
+      <button onclick="testLogin()">Login</button>
+      <button onclick="testCheckSession()">Check Session</button>
+      <button onclick="testLogout()" class="danger">Logout</button>
+      
+      <div id="authResult" class="result info" style="display:none;"></div>
+    </div>
+
+    <!-- PROFILE APIs -->
+    <div class="section">
+      <h2>👤 Profile APIs <span class="status ready">READY</span></h2>
+      
+      <div class="grid">
+        <div>
+          <div class="field">
+            <label>User ID (optional)</label>
+            <input type="number" id="profileUserId" placeholder="Leave empty for current user">
+          </div>
+          <button onclick="testGetProfile()">Get Profile</button>
+        </div>
+        
+        <div>
+          <div class="field">
+            <label>Bio</label>
+            <textarea id="profileBio" rows="2" placeholder="Your bio...">Flower enthusiast 🌸</textarea>
+          </div>
+          <div class="field">
+            <label>Interests (comma-separated)</label>
+            <input type="text" id="profileInterests" placeholder="flowers, photography" value="flowers,photography,nature">
+          </div>
+          <div class="field">
+            <label>Country Code</label>
+            <input type="text" id="profileCountry" placeholder="VN" value="VN" maxlength="2">
+          </div>
+          <div class="field">
+            <label>Username</label>
+            <input type="text" id="profileUsername" placeholder="johndoe" value="testuser123">
+          </div>
+          <button onclick="testUpdateProfile()">Update Profile</button>
+        </div>
+      </div>
+      
+      <div class="field">
+        <label>Avatar Image</label>
+        <input type="file" id="avatarFile" accept="image/*">
+        <button onclick="testUploadAvatar()">Upload Avatar</button>
+      </div>
+      
+      <div class="field">
+        <label>Cover Image</label>
+        <input type="file" id="coverFile" accept="image/*">
+        <button onclick="testUploadCover()">Upload Cover</button>
+      </div>
+      
+      <div id="profileResult" class="result info" style="display:none;"></div>
+    </div>
+
+    <!-- POSTS APIs -->
+    <div class="section">
+      <h2>📝 Posts APIs <span class="status ready">READY</span></h2>
+      
+      <div class="grid">
+        <div>
+          <h3 style="color: #00d9ff; font-size: 16px; margin-bottom: 10px;">Create Post</h3>
+          <div class="field">
+            <label>Caption</label>
+            <textarea id="postCaption" rows="3" placeholder="Post caption...">Beautiful sakura blooms in Tokyo! 🌸</textarea>
+          </div>
+          <div class="field">
+            <label>Species</label>
+            <select id="postSpecies">
+              <option value="">-- Select --</option>
+              <option value="sakura">Sakura</option>
+              <option value="lotus">Lotus</option>
+              <option value="sunflower">Sunflower</option>
+              <option value="lavender">Lavender</option>
+              <option value="orchid">Orchid</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Region</label>
+            <select id="postRegion">
+              <option value="">-- Select --</option>
+              <option value="temperate-n">Temperate North</option>
+              <option value="temperate-s">Temperate South</option>
+              <option value="tropical">Tropical</option>
+              <option value="med">Mediterranean</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Post Date</label>
+            <input type="date" id="postDate" value="2025-03-15">
+          </div>
+          <div class="field">
+            <label>Post Media (optional)</label>
+            <input type="file" id="postMedia" accept="image/*,video/*">
+          </div>
+          <button onclick="testCreatePost()">Create Post</button>
+        </div>
+        
+        <div>
+          <h3 style="color: #00d9ff; font-size: 16px; margin-bottom: 10px;">Get & Manage Posts</h3>
+          <div class="field">
+            <label>Post ID</label>
+            <input type="number" id="getPostId" placeholder="1">
+          </div>
+          <button onclick="testGetPost()">Get Post</button>
+          <button onclick="testDeletePost()" class="danger">Delete Post</button>
+          
+          <div class="field" style="margin-top: 15px;">
+            <label>User ID (for feed)</label>
+            <input type="number" id="feedUserId" placeholder="Leave empty for all public">
+          </div>
+          <div class="field">
+            <label>Limit</label>
+            <input type="number" id="feedLimit" value="10">
+          </div>
+          <button onclick="testGetFeed()">Get Feed</button>
+        </div>
+      </div>
+      
+      <div id="postsResult" class="result info" style="display:none;"></div>
+    </div>
+
+    <!-- REACTIONS APIs -->
+    <div class="section">
+      <h2>❤️ Reactions APIs <span class="status ready">READY</span></h2>
+      
+      <div class="field">
+        <label>Post ID</label>
+        <input type="number" id="reactionPostId" placeholder="1" value="1">
+      </div>
+      <div class="field">
+        <label>Reaction Type</label>
+        <select id="reactionType">
+          <option value="like">👍 Like</option>
+          <option value="heart">❤️ Heart</option>
+          <option value="flower">🌸 Flower</option>
+          <option value="wow">😮 Wow</option>
+        </select>
+      </div>
+      
+      <button onclick="testAddReaction()">Add Reaction</button>
+      <button onclick="testRemoveReaction()" class="danger">Remove Reaction</button>
+      
+      <div id="reactionsResult" class="result info" style="display:none;"></div>
+    </div>
+
+    <!-- COMMENTS APIs -->
+    <div class="section">
+      <h2>💬 Comments APIs <span class="status ready">READY</span></h2>
+      
+      <div class="field">
+        <label>Post ID</label>
+        <input type="number" id="commentPostId" placeholder="1" value="1">
+      </div>
+      <div class="field">
+        <label>Comment Text</label>
+        <textarea id="commentText" rows="3" placeholder="Your comment...">Beautiful flowers! 🌸</textarea>
+      </div>
+      
+      <button onclick="testAddComment()">Add Comment</button>
+      <button onclick="testGetComments()">Get Comments</button>
+      
+      <div class="field" style="margin-top: 15px;">
+        <label>Comment ID (for delete)</label>
+        <input type="number" id="deleteCommentId" placeholder="1">
+      </div>
+      <button onclick="testDeleteComment()" class="danger">Delete Comment</button>
+      
+      <div id="commentsResult" class="result info" style="display:none;"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const API_BASE = window.location.hostname === 'localhost' 
+      ? 'http://localhost/neuralnova/backend/api'
+      : 'https://neuralnova.space/backend/api';
+
+    const showResult = (elementId, data, isError = false) => {
+      const el = document.getElementById(elementId);
+      el.style.display = 'block';
+      el.className = `result ${isError ? 'error' : 'success'}`;
+      el.textContent = JSON.stringify(data, null, 2);
+    };
+
+    // AUTH APIs
+    async function testRegister() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/register.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            full_name: document.getElementById('regName').value,
+            email: document.getElementById('regEmail').value,
+            password: document.getElementById('regPassword').value,
+            terms_accepted: true
+          })
+        });
+        const data = await res.json();
+        showResult('authResult', data, !data.success);
+      } catch (err) {
+        showResult('authResult', { error: err.message }, true);
+      }
+    }
+
+    async function testLogin() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/login.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: document.getElementById('regEmail').value,
+            password: document.getElementById('regPassword').value
+          })
+        });
+        const data = await res.json();
+        showResult('authResult', data, !data.success);
+      } catch (err) {
+        showResult('authResult', { error: err.message }, true);
+      }
+    }
+
+    async function testCheckSession() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/check-session.php`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        showResult('authResult', data, !data.authenticated);
+      } catch (err) {
+        showResult('authResult', { error: err.message }, true);
+      }
+    }
+
+    async function testLogout() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/logout.php`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const data = await res.json();
+        showResult('authResult', data, !data.success);
+      } catch (err) {
+        showResult('authResult', { error: err.message }, true);
+      }
+    }
+
+    // PROFILE APIs
+    async function testGetProfile() {
+      try {
+        const userId = document.getElementById('profileUserId').value;
+        const url = userId 
+          ? `${API_BASE}/profile/get.php?user_id=${userId}`
+          : `${API_BASE}/profile/get.php`;
+        
+        const res = await fetch(url, { credentials: 'include' });
+        const data = await res.json();
+        showResult('profileResult', data, !data.success);
+      } catch (err) {
+        showResult('profileResult', { error: err.message }, true);
+      }
+    }
+
+    async function testUpdateProfile() {
+      try {
+        const interests = document.getElementById('profileInterests').value
+          .split(',').map(s => s.trim()).filter(Boolean);
+        
+        const res = await fetch(`${API_BASE}/profile/update.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            bio: document.getElementById('profileBio').value,
+            interests: interests,
+            country: document.getElementById('profileCountry').value,
+            custom_user_id: document.getElementById('profileUsername').value
+          })
+        });
+        const data = await res.json();
+        showResult('profileResult', data, !data.success);
+      } catch (err) {
+        showResult('profileResult', { error: err.message }, true);
+      }
+    }
+
+    async function testUploadAvatar() {
+      try {
+        const fileInput = document.getElementById('avatarFile');
+        if (!fileInput.files[0]) {
+          alert('Please select an image file');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('avatar', fileInput.files[0]);
+
+        const res = await fetch(`${API_BASE}/profile/upload-avatar.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json();
+        showResult('profileResult', data, !data.success);
+      } catch (err) {
+        showResult('profileResult', { error: err.message }, true);
+      }
+    }
+
+    async function testUploadCover() {
+      try {
+        const fileInput = document.getElementById('coverFile');
+        if (!fileInput.files[0]) {
+          alert('Please select an image file');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('cover', fileInput.files[0]);
+
+        const res = await fetch(`${API_BASE}/profile/upload-cover.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json();
+        showResult('profileResult', data, !data.success);
+      } catch (err) {
+        showResult('profileResult', { error: err.message }, true);
+      }
+    }
+
+    // POSTS APIs
+    async function testCreatePost() {
+      try {
+        const formData = new FormData();
+        formData.append('caption', document.getElementById('postCaption').value);
+        formData.append('species', document.getElementById('postSpecies').value);
+        formData.append('region', document.getElementById('postRegion').value);
+        formData.append('post_date', document.getElementById('postDate').value);
+        formData.append('is_public', '1');
+
+        const mediaFile = document.getElementById('postMedia').files[0];
+        if (mediaFile) {
+          formData.append('media', mediaFile);
+        }
+
+        const res = await fetch(`${API_BASE}/posts/create.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json();
+        showResult('postsResult', data, !data.success);
+      } catch (err) {
+        showResult('postsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testGetPost() {
+      try {
+        const postId = document.getElementById('getPostId').value;
+        if (!postId) {
+          alert('Please enter a post ID');
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/posts/get.php?post_id=${postId}`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        showResult('postsResult', data, !data.success);
+      } catch (err) {
+        showResult('postsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testGetFeed() {
+      try {
+        const userId = document.getElementById('feedUserId').value;
+        const limit = document.getElementById('feedLimit').value;
+        
+        let url = `${API_BASE}/posts/feed.php?limit=${limit}`;
+        if (userId) {
+          url += `&user_id=${userId}`;
+        }
+
+        const res = await fetch(url, { credentials: 'include' });
+        const data = await res.json();
+        showResult('postsResult', data, !data.success);
+      } catch (err) {
+        showResult('postsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testDeletePost() {
+      try {
+        const postId = document.getElementById('getPostId').value;
+        if (!postId) {
+          alert('Please enter a post ID');
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/posts/delete.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ post_id: parseInt(postId) })
+        });
+        const data = await res.json();
+        showResult('postsResult', data, !data.success);
+      } catch (err) {
+        showResult('postsResult', { error: err.message }, true);
+      }
+    }
+
+    // REACTIONS APIs
+    async function testAddReaction() {
+      try {
+        const res = await fetch(`${API_BASE}/reactions/add.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            post_id: parseInt(document.getElementById('reactionPostId').value),
+            reaction_type: document.getElementById('reactionType').value
+          })
+        });
+        const data = await res.json();
+        showResult('reactionsResult', data, !data.success);
+      } catch (err) {
+        showResult('reactionsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testRemoveReaction() {
+      try {
+        const res = await fetch(`${API_BASE}/reactions/remove.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            post_id: parseInt(document.getElementById('reactionPostId').value),
+            reaction_type: document.getElementById('reactionType').value
+          })
+        });
+        const data = await res.json();
+        showResult('reactionsResult', data, !data.success);
+      } catch (err) {
+        showResult('reactionsResult', { error: err.message }, true);
+      }
+    }
+
+    // COMMENTS APIs
+    async function testAddComment() {
+      try {
+        const res = await fetch(`${API_BASE}/comments/add.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            post_id: parseInt(document.getElementById('commentPostId').value),
+            comment_text: document.getElementById('commentText').value
+          })
+        });
+        const data = await res.json();
+        showResult('commentsResult', data, !data.success);
+      } catch (err) {
+        showResult('commentsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testGetComments() {
+      try {
+        const postId = document.getElementById('commentPostId').value;
+        const res = await fetch(`${API_BASE}/comments/get.php?post_id=${postId}`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        showResult('commentsResult', data, !data.success);
+      } catch (err) {
+        showResult('commentsResult', { error: err.message }, true);
+      }
+    }
+
+    async function testDeleteComment() {
+      try {
+        const commentId = document.getElementById('deleteCommentId').value;
+        if (!commentId) {
+          alert('Please enter a comment ID');
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/comments/delete.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ comment_id: parseInt(commentId) })
+        });
+        const data = await res.json();
+        showResult('commentsResult', data, !data.success);
+      } catch (err) {
+        showResult('commentsResult', { error: err.message }, true);
+      }
+    }
+  </script>
+</body>
+</html>
+

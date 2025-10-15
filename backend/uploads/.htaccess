@@ -1,0 +1,18 @@
+# Disable PHP execution in uploads directory
+php_flag engine off
+
+# Allow image and video access
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|mp4|webm)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Enable CORS for media files
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, OPTIONS"
+</IfModule>
+

@@ -1,0 +1,144 @@
+<?php
+/**
+ * =============================================
+ * Add Reaction to Post
+ * POST /api/reactions/add.php
+ * Phase: 5 - Reactions API
+ * =============================================
+ */
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+require_once '../../config/database.php';
+require_once '../../includes/session.php';
+
+startSecureSession();
+
+// Check authentication
+if (!isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Not authenticated'
+    ]);
+    exit;
+}
+
+$userId = $_SESSION['user_id'];
+
+// Get JSON input
+$input = json_decode(file_get_contents('php://input'), true);
+
+if (!$input || !isset($input['post_id']) || !isset($input['reaction_type'])) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Missing post_id or reaction_type'
+    ]);
+    exit;
+}
+
+$postId = intval($input['post_id']);
+$reactionType = trim($input['reaction_type']);
+
+// Validate reaction type
+$validReactions = ['like', 'heart', 'flower', 'wow'];
+if (!in_array($reactionType, $validReactions)) {
+    http_response_code(422);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Invalid reaction type. Allowed: ' . implode(', ', $validReactions)
+    ]);
+    exit;
+}
+
+try {
+    // Check if post exists
+    $postStmt = $pdo->prepare("SELECT id FROM posts WHERE id = ?");
+    $postStmt->execute([$postId]);
+    
+    if (!$postStmt->fetch()) {
+        http_response_code(404);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Post not found'
+        ]);
+        exit;
+    }
+    
+    // Check if user already reacted with this type
+    $checkStmt = $pdo->prepare("
+        SELECT id FROM reactions 
+        WHERE post_id = ? AND user_id = ? AND reaction_type = ?
+    ");
+    $checkStmt->execute([$postId, $userId, $reactionType]);
+    
+    if ($checkStmt->fetch()) {
+        // Already reacted with this type - do nothing (idempotent)
+        echo json_encode([
+            'success' => true,
+            'message' => 'Already reacted with this type',
+            'already_exists' => true
+        ]);
+        exit;
+    }
+    
+    // Insert reaction (UNIQUE constraint prevents duplicates)
+    $insertStmt = $pdo->prepare("
+        INSERT INTO reactions (post_id, user_id, reaction_type) 
+        VALUES (?, ?, ?)
+    ");
+    
+    $insertStmt->execute([$postId, $userId, $reactionType]);
+    
+    // Get updated reaction counts
+    $countStmt = $pdo->prepare("
+        SELECT 
+            reaction_type,
+            COUNT(*) AS count
+        FROM reactions
+        WHERE post_id = ?
+        GROUP BY reaction_type
+    ");
+    
+    $countStmt->execute([$postId]);
+    $reactions = $countStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $reactionCounts = [
+        'like' => 0,
+        'heart' => 0,
+        'flower' => 0,
+        'wow' => 0,
+        'total' => 0
+    ];
+    
+    foreach ($reactions as $reaction) {
+        $reactionCounts[$reaction['reaction_type']] = intval($reaction['count']);
+        $reactionCounts['total'] += intval($reaction['count']);
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Reaction added successfully',
+        'reaction_type' => $reactionType,
+        'counts' => $reactionCounts,
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Database error',
+        'message' => $e->getMessage()
+    ]);
+}
+

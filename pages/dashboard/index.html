@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | NeuralNova</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="../../index.html" class="logo">
+                    <img src="../../assets/images/logo.png" alt="NeuralNova">
+                    <span>NeuralNova</span>
+                </a>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search NeuralNova">
+                </div>
+            </div>
+            
+            <div class="nav-center">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user-friends"></i>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-compass"></i>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <button class="icon-btn">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-comment-alt"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-btn" id="userMenuBtn">
+                        <img src="../../assets/images/logo.png" alt="User" class="user-avatar">
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="../profile/index.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <div class="sidebar-item">
+                <img src="../../assets/images/logo.png" alt="User" class="sidebar-avatar">
+                <span id="sidebarUserName">User Name</span>
+            </div>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-user-friends"></i>
+                <span>Friends</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-users"></i>
+                <span>Groups</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-tv"></i>
+                <span>Watch</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-clock"></i>
+                <span>Memories</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-bookmark"></i>
+                <span>Saved</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-flag"></i>
+                <span>Pages</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+        </aside>
+
+        <!-- Feed -->
+        <main class="feed">
+            <!-- Create Post Box -->
+            <div class="create-post">
+                <div class="create-post-top">
+                    <img src="../../assets/images/logo.png" alt="User" class="post-avatar">
+                    <input type="text" placeholder="What's on your mind?" id="createPostInput">
+                </div>
+                <div class="create-post-actions">
+                    <button class="post-action">
+                        <i class="fas fa-image"></i>
+                        <span>Photo/Video</span>
+                    </button>
+                    <button class="post-action">
+                        <i class="fas fa-smile"></i>
+                        <span>Feeling/Activity</span>
+                    </button>
+                    <button class="post-action">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Check in</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Posts Feed -->
+            <div id="postsContainer">
+                <!-- Posts will be loaded here -->
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <div class="sidebar-section">
+                <h3>Sponsored</h3>
+                <div class="sponsored-item">
+                    <img src="../../assets/images/nature1.jpg" alt="Ad">
+                    <div class="sponsored-info">
+                        <p class="sponsored-title">Eco Tourism Adventure</p>
+                        <p class="sponsored-link">neuralnova.space</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>Contacts</h3>
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="contacts-list">
+                    <div class="contact-item">
+                        <div class="contact-avatar">
+                            <img src="../../assets/images/logo.png" alt="Contact">
+                            <span class="status-online"></span>
+                        </div>
+                        <span>Sarah Johnson</span>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">
+                            <img src="../../assets/images/logo.png" alt="Contact">
+                            <span class="status-online"></span>
+                        </div>
+                        <span>Mike Chen</span>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">
+                            <img src="../../assets/images/logo.png" alt="Contact">
+                            <span class="status-offline"></span>
+                        </div>
+                        <span>Emma Davis</span>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">
+                            <img src="../../assets/images/logo.png" alt="Contact">
+                            <span class="status-online"></span>
+                        </div>
+                        <span>Alex Thompson</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
+

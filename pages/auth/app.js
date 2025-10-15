@@ -56,7 +56,7 @@ async function handleLogin() {
     if (data.success) {
       showSuccess('loginError', data.message);
       setTimeout(() => {
-        window.location.href = data.data.redirect || '../../index.html';
+        window.location.href = data.data.redirect || '../dashboard/index.html';
       }, 1000);
     } else {
       // 🔍 DEBUG: Log validation errors
@@ -161,7 +161,7 @@ async function handleRegister() {
     if (data.success) {
       showSuccess('registerError', data.message);
       setTimeout(() => {
-        window.location.href = data.data.redirect || '../../index.html';
+        window.location.href = data.data.redirect || '../dashboard/index.html';
       }, 1500);
     } else {
       // 🔍 DEBUG: Log validation errors
