@@ -555,6 +555,133 @@
             font-size: 0.8125rem;
         }
         
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+        
+        .btn-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-user:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(34, 211, 238, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 200px;
+            background: rgba(15, 15, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: dropdownFadeIn 0.2s ease;
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+        }
+        
+        .dropdown-item i {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+        }
+        
+        .logout-btn {
+            color: #ef4444;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        /* Auth Notification */
+        .auth-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(15, 15, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+        
+        .auth-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .auth-notification.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .auth-notification.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .auth-notification.info {
+            border-left: 4px solid #22d3ee;
+        }
+        
         .header.scrolled .btn svg {
             width: 14px;
             height: 14px;
@@ -4124,5 +4251,8 @@
             }
         });
     </script>
+    
+    <!-- Authentication Integration -->
+    <script src="assets/js/auth.js"></script>
 </body>
 </html>
