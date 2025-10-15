@@ -523,13 +523,32 @@
     // Create Post
     async function createPost(content, imageUrl = null) {
         try {
+            console.log('📝 Creating post with:', { content, imageUrl });
+            
+            // Validate content
+            if (!content || content.trim() === '') {
+                toast('Please write something!', true);
+                return false;
+            }
+            
             // Create FormData (backend expects POST data, not JSON for this endpoint)
             const formData = new FormData();
-            formData.append('caption', content);
-            if (imageUrl) {
-                formData.append('media_url', imageUrl);
+            formData.append('caption', content.trim());
+            
+            if (imageUrl && imageUrl.trim()) {
+                formData.append('media_url', imageUrl.trim());
+                console.log('📎 Added image URL:', imageUrl.trim());
             }
+            
             formData.append('is_public', '1');
+            
+            // Log FormData contents
+            console.log('📤 FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}:`, value);
+            }
+            
+            console.log('🌐 Sending to:', `${API_BASE}/posts/create.php`);
             
             const res = await fetch(`${API_BASE}/posts/create.php`, {
                 method: 'POST',
@@ -537,28 +556,42 @@
                 body: formData
             });
             
+            console.log('📡 Response status:', res.status);
+            
             // Check if response is JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await res.text();
-                console.error('❌ Backend returned HTML instead of JSON:', text.substring(0, 500));
+                console.error('❌ Backend returned HTML instead of JSON:');
+                console.error('━'.repeat(80));
+                console.error(text.substring(0, 1000));
+                console.error('━'.repeat(80));
                 toast('Backend error - check console', true);
                 return false;
             }
             
             const data = await res.json();
+            console.log('📦 Response:', data);
             
             if (data.success) {
+                // Check if content was saved
+                if (!data.post.content) {
+                    console.warn('⚠️ Post created but content is NULL!');
+                    console.warn('Backend may not have received caption field');
+                }
+                
                 toast('Post created!');
                 // Reload posts
                 await loadPosts();
                 return true;
             } else {
-                toast(data.message || 'Failed to create post', true);
+                console.error('❌ Backend error:', data);
+                toast(data.message || data.error || 'Failed to create post', true);
                 return false;
             }
         } catch (error) {
-            console.error('Create post error:', error);
+            console.error('❌ Exception creating post:', error);
+            console.error('Stack:', error.stack);
             toast('Failed to create post', true);
             return false;
         }
