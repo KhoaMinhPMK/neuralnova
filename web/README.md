@@ -1,89 +1,254 @@
 # NeuralNova Web Application
 
-## 📁 Cấu trúc dự án
+**Space Technology & Eco Tourism SaaS Platform**
+
+## 📁 Cấu trúc dự án chi tiết
 
 ```
 web/
-├── index.html                  # Trang chủ (chứa tất cả sections)
+├── index.html                       # 🏠 Trang chủ (Single Page Application)
+│
 ├── assets/
 │   ├── css/
-│   │   ├── reset.css          # CSS reset
-│   │   ├── variables.css      # CSS variables (colors, fonts, spacing)
-│   │   ├── base.css           # Base styles
-│   │   ├── components.css     # Component styles
-│   │   ├── layout.css         # Layout styles
-│   │   ├── responsive.css     # Responsive styles
-│   │   └── home.css           # Home page specific styles (Section 1, etc.)
-│   ├── images/                # All images
-│   │   ├── bg.jpg
-│   │   ├── valentin-petrov-m-mal-01.jpg
-│   │   ├── after.png
-│   │   └── ...
-│   └── js/
-│       └── main.js
+│   │   ├── reset.css               # CSS reset
+│   │   ├── variables.css           # CSS variables (colors, fonts, spacing)
+│   │   ├── base.css                # Base styles
+│   │   ├── components.css          # Component styles
+│   │   ├── layout.css              # Layout styles
+│   │   └── responsive.css          # Responsive styles
+│   │
+│   ├── images/
+│   │   ├── logo.png / logo.ico     # Logo & favicon
+│   │   ├── bg.jpg, bg2.mp4         # Background images/videos
+│   │   ├── nature1-3.jpg           # Nature images for slider
+│   │   ├── human2.png, model.png   # Model images
+│   │   ├── a.png                   # App screenshot
+│   │   ├── thumnail.jpg            # Video thumbnail
+│   │   └── payments/               # Payment provider logos
+│   │       ├── bank.svg
+│   │       ├── momo.svg
+│   │       ├── vnpay.svg
+│   │       ├── zalopay.svg
+│   │       ├── paypal.svg
+│   │       └── alipay.svg
+│   │
+│   ├── js/
+│   │   └── main.js                 # Main JavaScript
+│   │
+│   └── font/
+│       └── DFVN MBF Space Habitat Regular.otf
+│
 ├── pages/
-│   ├── auth/                  # Authentication pages
+│   ├── auth/                       # 🔐 Authentication
+│   │   ├── index.html              # Login & Register
+│   │   ├── style.css
+│   │   └── app.js
+│   │
+│   ├── checkout/                   # 💳 Payment & Checkout
+│   │   ├── index.html              # Main checkout page
+│   │   ├── method.html             # Payment method details
+│   │   ├── guide.html              # Payment guide
+│   │   ├── success.html            # Payment success
+│   │   ├── style.css
+│   │   └── app.js
+│   │
+│   ├── wallet/                     # 💰 Wallet Management
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   ├── app.js
+│   │   └── logopay/                # Payment logos
+│   │
+│   ├── profile/                    # 👤 User Profile
 │   │   ├── index.html
 │   │   ├── style.css
 │   │   └── app.js
-│   ├── forgot-password/       # Password recovery
-│   └── verify-code/           # Email verification
-└── components/                # Reusable HTML components
+│   │
+│   ├── forgot-password/            # 🔑 Password Recovery
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   └── app.js
+│   │
+│   └── verify-code/                # ✉️ Email Verification
+│       ├── index.html
+│       ├── style.css
+│       └── app.js
+│
+└── components/                     # 🧩 Reusable Components
     ├── badge.html
     ├── card.html
     └── modal.html
 ```
 
-## 🎨 Home Page (index.html)
+## 🎨 Trang chủ (index.html)
 
-### Sections:
-1. **Section 1 - Hero Banner**: Animation "NeuralNova" với zoom effect
-2. **Features Section**: Hiển thị tính năng chính
-3. **CTA Section**: Call to action
+### Sections Overview:
+1. **Hero Banner** - Animation "NeuralNova" với video background & zoom effect
+2. **About Section** - Slider với 4 themes (Space, Nature, Forest, Earth)
+3. **Technology Section** - 6 tech cards (2 hàng × 3 cột)
+4. **Video Showcase** - Demo video với modal player
+5. **Trusted Partners** - Auto-sliding brands (Space & Environmental orgs)
+6. **Pricing Section** - 3 pricing tiers (Starter, Professional, Enterprise)
+7. **Download App** - Mobile app download với phone mockup
 
-### Styles:
-- Global styles: Trong `<style>` tag của index.html
-- Section 1 styles: `assets/css/home.css`
+### Header Features:
+- ✅ iOS-style glassmorphism design
+- ✅ Fixed position with smooth scroll effects
+- ✅ Responsive: Text → Icons only when screen < 920px
+- ✅ Tooltips on hover for icon-only mode
+- ✅ Auto-hide menu on mobile (< 768px)
 
-## 🚀 Dynamic Island Header
+## 💳 Hệ thống thanh toán
 
-Header với glassmorphism effect:
-- Fixed position, float giữa màn hình
-- Animation fade in khi load
-- Thu nhỏ khi scroll xuống (70% kích thước)
-- Text → Icon khi thu nhỏ
-- Gradient purple theme
+### Checkout Flow:
+```
+Pricing Page → Checkout → Payment → Success
+     ↓             ↓          ↓
+  (3 plans)   (Card/Wallet) (Confirmation)
+```
 
-## 🎯 NeuralNova Branding
+### Payment Methods:
+1. **Credit/Debit Card** - Visa, Mastercard
+2. **NeuralNova Wallet** - Ví điện tử nội bộ
+   - Top-up methods:
+     - 🇻🇳 VND: Bank Transfer, MoMo, ZaloPay, VNPay
+     - 🌍 International: PayPal, Alipay
 
-### Colors:
-- Primary Purple: `#7c3aed`
-- Secondary Cyan: `#22d3ee`
-- Dark: `#0f0a1f`
-- Black: `#000000`
+### Pricing Integration:
+- **Starter Plan**: `?plan=starter&price=29` → 696,000₫
+- **Professional Plan**: `?plan=professional&price=79&trial=14` → 1,896,000₫
+- **Enterprise Plan**: `?plan=enterprise&price=custom` → Custom pricing
 
-### Fonts:
-- Display: `Space Habitat` (for titles/hero)
-- Heading: `Inter`
-- Body: System fonts
+### Voucher Codes (Demo):
+- `NOVANEW` - Giảm 20,000₫
+- `NN50K` - Giảm 50,000₫
+- `NN10` - Giảm 10%
 
-## 📝 Quy tắc phát triển
+## 🎯 Branding & Design System
 
-1. **CSS tách riêng**: Mỗi page có file CSS riêng trong `assets/css/`
-2. **HTML gộp chung**: Tất cả sections trong 1 file `index.html`
-3. **Images tập trung**: Tất cả ảnh trong `assets/images/`
-4. **Components**: Tái sử dụng component trong folder `components/`
+### Color Palette:
+- **Primary**: `#22d3ee` (Cyan) - Technology, Innovation
+- **Secondary**: `#3b82f6` (Blue) - Trust, Reliability
+- **Accent**: `#10b981` (Green) - Nature, Eco-friendly
+- **Dark**: `#0f0f14` - Background
+- **Purple**: `#7c3aed` - Premium features
 
-## 🔧 Thêm Section mới
+### Typography:
+- **Display**: `Space Habitat` - Hero titles, brand
+- **Heading**: `Inter` (700-900) - Section titles
+- **Body**: `Inter` (400-600) - Content text
 
-1. Viết HTML trực tiếp trong `index.html`
-2. Thêm CSS vào `assets/css/home.css` (hoặc tạo file mới nếu cần)
-3. Link CSS trong `<head>` của index.html
+### Spacing System:
+- Base unit: `8px`
+- Sections: `120px` padding (desktop), `80px` (mobile)
+- Cards: `30-40px` gap
+- Buttons: `14-16px` padding
 
-## 📱 Responsive
+## 📱 Responsive Breakpoints
 
-- Desktop: > 1024px
-- Tablet: 768px - 1024px
-- Mobile: < 768px
+### Desktop (> 1024px)
+- Full navigation menu with text
+- 3-column tech grid
+- Side-by-side content layouts
 
-Tất cả responsive styles trong `assets/css/responsive.css` và inline styles.
+### Tablet (768px - 1024px)
+- 2-column tech grid
+- Stacked content layouts
+
+### Medium Screens (≤ 920px)
+- **Navigation**: Icons only + tooltips
+- **Buttons**: Icons only
+- Compact header design
+
+### Mobile (< 768px)
+- Hamburger menu toggle
+- 1-column layouts
+- Full-width cards
+- Optimized touch targets
+
+## 🚀 Performance Features
+
+### Loading Strategy:
+- ✅ Preloader với resource loading
+- ✅ Minimum 5s loading time cho smooth transition
+- ✅ Lazy loading cho images & videos
+- ✅ CSS/JS inline để giảm requests
+
+### Animations:
+- Hero banner text fill animation (4s)
+- Background zoom effects
+- Smooth scroll behavior
+- Card hover effects với transform
+- Glassmorphism effects
+
+## 🔧 Development Guidelines
+
+### Quy tắc code:
+1. **CSS**: Inline trong `<style>` tag của index.html
+2. **HTML**: Single file structure cho landing page
+3. **JS**: Minimal vanilla JavaScript, no frameworks
+4. **Images**: Optimized & WebP format khi có thể
+
+### Adding New Sections:
+1. Thêm HTML vào `index.html` trước `</body>`
+2. Thêm styles vào `<style>` tag trong `<head>`
+3. Thêm navigation link vào header menu
+4. Update preloader visibility list
+
+### Adding New Pages:
+1. Tạo folder mới trong `/pages`
+2. Include `index.html`, `style.css`, `app.js`
+3. Link CSS variables: `../../assets/css/variables.css`
+4. Link Lucide icons & fonts
+
+## 🔗 Navigation & Routing
+
+### Internal Links:
+- Home sections: `#home`, `#about`, `#technology`, `#video`, `#pricing`, `#download`
+- Auth: `pages/auth/index.html`
+- Checkout: `pages/checkout/index.html?plan=...&price=...`
+- Wallet: `pages/wallet/index.html`
+- Profile: `pages/profile/index.html`
+
+### Query Parameters:
+- Checkout: `?plan=starter&price=29&trial=14&voucher=NOVANEW`
+- Return URLs: `?return=index.html#wallet`
+
+## 📦 Dependencies
+
+### External Libraries:
+- **Lucide Icons**: `https://unpkg.com/lucide@latest`
+- **Google Fonts**: Inter (300-900)
+- **No jQuery, No Bootstrap** - Pure vanilla JS
+
+### Browser Support:
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## 🎓 Key Features
+
+### ✨ User Experience:
+- Smooth scrolling & animations
+- Interactive hover effects
+- Auto-playing sliders
+- Video modal player
+- Toast notifications
+- Form validation
+
+### 🔒 Security:
+- Input sanitization
+- Luhn algorithm for card validation
+- XSS protection
+- LocalStorage for demo data only
+
+### 💾 Data Persistence:
+- Wallet balance: `nn_wallet_balance`
+- Transactions: `nn_wallet_tx`
+- Payments: `nn_payments`
+
+---
+
+**Last Updated**: October 2025  
+**Version**: 1.0.0  
+**Tech Stack**: HTML5, CSS3, Vanilla JavaScript

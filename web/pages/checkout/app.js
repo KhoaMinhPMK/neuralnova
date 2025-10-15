@@ -8,11 +8,42 @@
   };
 
   const params = new URLSearchParams(location.search);
-  const itemName = params.get('name') || 'Gói NeuralNova Premium';
-  const price = Number(params.get('price') || 199000);
+  
+  // Handle plan parameter from pricing page
+  const planParam = params.get('plan');
+  let itemName = params.get('name') || 'Gói NeuralNova Premium';
+  let price = Number(params.get('price') || 199000);
   const qty = Math.max(1, Number(params.get('qty') || 1));
-  const currency = (params.get('currency') || 'VND').toUpperCase();
+  let currency = (params.get('currency') || 'VND').toUpperCase();
   const presetVoucher = (params.get('voucher') || '').trim();
+  const hasTrial = params.get('trial') || '';
+  
+  // Convert pricing plan names to Vietnamese
+  if (planParam) {
+    if (planParam === 'starter') {
+      itemName = 'Gói Starter - NeuralNova';
+      // Convert USD to VND (approximate rate: 1 USD = 24,000 VND)
+      if (price < 1000) { // Likely USD
+        price = price * 24000;
+        currency = 'VND';
+      }
+    } else if (planParam === 'professional') {
+      itemName = hasTrial ? 'Gói Professional (14 ngày dùng thử) - NeuralNova' : 'Gói Professional - NeuralNova';
+      if (price < 1000) {
+        price = price * 24000;
+        currency = 'VND';
+      }
+    } else if (planParam === 'enterprise') {
+      itemName = 'Gói Enterprise - NeuralNova';
+      // For custom pricing, set a placeholder
+      if (params.get('price') === 'custom') {
+        price = 0; // Will need to contact sales
+      } else if (price < 1000) {
+        price = price * 24000;
+        currency = 'VND';
+      }
+    }
+  }
 
   // State
   const state = {

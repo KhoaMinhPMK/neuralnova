@@ -211,6 +211,7 @@
         body.loading .tech-section,
         body.loading .video-section,
         body.loading .brands-section,
+        body.loading .pricing-section,
         body.loading .download-section {
             visibility: hidden;
         }
@@ -596,6 +597,83 @@
             }
         }
         
+        /* Medium screens: Hide text, show only icons */
+        @media (max-width: 920px) {
+            .nav-menu {
+                gap: 0.25rem;
+            }
+            
+            .nav-link {
+                padding: 10px;
+                min-width: 42px;
+                justify-content: center;
+            }
+            
+            .nav-link span {
+                display: none;
+            }
+            
+            .nav-link svg {
+                width: 18px;
+                height: 18px;
+                opacity: 1;
+                margin: 0;
+            }
+            
+            /* Show tooltips on hover */
+            .nav-link {
+                position: relative;
+            }
+            
+            .nav-link::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: -45px;
+                left: 50%;
+                transform: translateX(-50%) translateY(5px);
+                background: rgba(15, 15, 20, 0.95);
+                color: #fff;
+                padding: 8px 14px;
+                border-radius: 10px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+            }
+            
+            .nav-link:hover::after {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            
+            /* Buttons: Hide text except icons */
+            .btn span {
+                display: none;
+            }
+            
+            .btn {
+                padding: 10px;
+                min-width: 42px;
+                justify-content: center;
+            }
+            
+            .btn svg {
+                margin: 0;
+            }
+            
+            .btn-primary {
+                background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+            }
+            
+            .nav-actions {
+                gap: 8px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .header {
                 width: 96%;
@@ -628,7 +706,7 @@
                 font-size: 0.8125rem;
             }
             
-            .btn-login span {
+            .btn span {
                 display: none;
             }
         }
@@ -1262,8 +1340,10 @@
         
         .tech-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
         .tech-card {
@@ -1558,6 +1638,11 @@
                 font-size: 2.5rem;
             }
             
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
             .video-content {
                 grid-template-columns: 1fr;
                 gap: 60px;
@@ -1581,6 +1666,11 @@
             
             .tech-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .tech-card {
+                padding: 35px 25px;
             }
             
             .video-thumbnail {
@@ -1599,6 +1689,26 @@
             .video-modal-close {
                 top: -60px;
                 right: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tech-card {
+                padding: 30px 20px;
+            }
+            
+            .tech-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .tech-icon svg {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .tech-card-title {
+                font-size: 1.25rem;
             }
         }
         
@@ -2169,6 +2279,411 @@
                 height: 80px;
             }
         }
+        
+        /* Section: Pricing */
+        .pricing-section {
+            min-height: 100vh;
+            background: linear-gradient(180deg, 
+                rgba(15, 15, 20, 0.95) 0%, 
+                rgba(10, 15, 25, 0.98) 100%
+            );
+            padding: 120px 5%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(34, 211, 238, 0.1), transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1), transparent 50%);
+            pointer-events: none;
+        }
+        
+        .pricing-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .pricing-label {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #22d3ee;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .pricing-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .pricing-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 50px 40px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.05), rgba(59, 130, 246, 0.05));
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 24px 70px rgba(34, 211, 238, 0.25);
+        }
+        
+        .pricing-card:hover::before {
+            opacity: 1;
+        }
+        
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15));
+            border: 2px solid rgba(34, 211, 238, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(34, 211, 238, 0.3);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.08) translateY(-12px);
+            box-shadow: 0 30px 80px rgba(34, 211, 238, 0.4);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pricing-card-header {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            transition: all 0.4s ease;
+        }
+        
+        .pricing-card:hover .pricing-card-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.4);
+        }
+        
+        .pricing-card-icon svg {
+            width: 36px;
+            height: 36px;
+            color: #22d3ee;
+        }
+        
+        .pricing-card-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        
+        .pricing-card-description {
+            font-size: 0.9375rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+        
+        .pricing-card-price {
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-amount {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .pricing-currency {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .pricing-value {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        
+        .pricing-period {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+        
+        .pricing-note {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .pricing-features {
+            flex: 1;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .pricing-feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .pricing-feature-item:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing-feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .pricing-feature-icon svg {
+            width: 14px;
+            height: 14px;
+            color: #22d3ee;
+        }
+        
+        .pricing-feature-text {
+            font-size: 0.9375rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+        }
+        
+        .pricing-cta {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-btn {
+            width: 100%;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .pricing-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .pricing-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+        
+        .pricing-btn:hover svg {
+            transform: translateX(4px);
+        }
+        
+        .pricing-btn-primary {
+            background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(34, 211, 238, 0.4);
+        }
+        
+        .pricing-btn-primary:hover {
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .pricing-btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .pricing-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(34, 211, 238, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .pricing-footer {
+            margin-top: 80px;
+            text-align: center;
+        }
+        
+        .pricing-footer-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+        
+        .pricing-footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #22d3ee;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-footer-link:hover {
+            gap: 12px;
+            color: #3b82f6;
+        }
+        
+        .pricing-footer-link svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Responsive Pricing */
+        @media (max-width: 1024px) {
+            .pricing-title {
+                font-size: 2.5rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            
+            .pricing-card.featured:hover {
+                transform: translateY(-12px) scale(1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-section {
+                padding: 80px 5%;
+            }
+            
+            .pricing-title {
+                font-size: 2rem;
+            }
+            
+            .pricing-card {
+                padding: 40px 30px;
+            }
+            
+            .pricing-value {
+                font-size: 3rem;
+            }
+        }
     </style>
 </head>
 <body class="loading">
@@ -2250,31 +2765,37 @@
                 <!-- Navigation Menu -->
                 <ul class="nav-menu">
                     <li>
-                        <a href="#home" class="nav-link active">
+                        <a href="#home" class="nav-link active" data-tooltip="Home">
                             <i data-lucide="home"></i>
                             <span>Home</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#about" class="nav-link">
+                        <a href="#about" class="nav-link" data-tooltip="About">
                             <i data-lucide="info"></i>
                             <span>About</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#technology" class="nav-link">
+                        <a href="#technology" class="nav-link" data-tooltip="Technology">
                             <i data-lucide="satellite"></i>
                             <span>Technology</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#video" class="nav-link">
+                        <a href="#video" class="nav-link" data-tooltip="Watch Video">
                             <i data-lucide="play-circle"></i>
                             <span>Watch Video</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#download" class="nav-link">
+                        <a href="#pricing" class="nav-link" data-tooltip="Pricing">
+                            <i data-lucide="credit-card"></i>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#download" class="nav-link" data-tooltip="Download">
                             <i data-lucide="download"></i>
                             <span>Download</span>
                         </a>
@@ -2740,6 +3261,265 @@
                         </svg>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section: Pricing -->
+    <section class="pricing-section" id="pricing">
+        <div class="pricing-container">
+            <div class="pricing-header">
+                <span class="pricing-label">FLEXIBLE PRICING</span>
+                <h2 class="pricing-title">Choose Your Perfect Plan</h2>
+                <p class="pricing-subtitle">
+                    Select the plan that best fits your needs. All plans include our core features 
+                    with flexible options to scale as you grow.
+                </p>
+            </div>
+            
+            <div class="pricing-grid">
+                <!-- Starter Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-card-header">
+                        <div class="pricing-card-icon">
+                            <i data-lucide="rocket"></i>
+                        </div>
+                        <h3 class="pricing-card-name">Starter</h3>
+                        <p class="pricing-card-description">
+                            Perfect for individuals and small teams starting their journey
+                        </p>
+                    </div>
+                    
+                    <div class="pricing-card-price">
+                        <div class="pricing-amount">
+                            <span class="pricing-currency">$</span>
+                            <span class="pricing-value">29</span>
+                            <span class="pricing-period">/month</span>
+                        </div>
+                        <p class="pricing-note">Billed monthly</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <ul class="pricing-features-list">
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Up to 5 team members</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">10 GB cloud storage</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Basic satellite data access</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Monthly reports</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Email support</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Mobile app access</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pricing-cta">
+                        <a href="pages/checkout/index.html?plan=starter&price=29" class="pricing-btn pricing-btn-secondary">
+                            <span>Get Started</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Professional Plan (Featured) -->
+                <div class="pricing-card featured">
+                    <span class="pricing-badge">Most Popular</span>
+                    
+                    <div class="pricing-card-header">
+                        <div class="pricing-card-icon">
+                            <i data-lucide="sparkles"></i>
+                        </div>
+                        <h3 class="pricing-card-name">Professional</h3>
+                        <p class="pricing-card-description">
+                            Ideal for growing businesses and research teams
+                        </p>
+                    </div>
+                    
+                    <div class="pricing-card-price">
+                        <div class="pricing-amount">
+                            <span class="pricing-currency">$</span>
+                            <span class="pricing-value">79</span>
+                            <span class="pricing-period">/month</span>
+                        </div>
+                        <p class="pricing-note">Billed monthly</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <ul class="pricing-features-list">
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Up to 20 team members</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">100 GB cloud storage</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Advanced AI analytics</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Real-time satellite updates</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Priority support 24/7</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Custom integrations</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">API access</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Advanced reporting</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pricing-cta">
+                        <a href="pages/checkout/index.html?plan=professional&price=79&trial=14" class="pricing-btn pricing-btn-primary">
+                            <span>Start Free Trial</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-card-header">
+                        <div class="pricing-card-icon">
+                            <i data-lucide="building-2"></i>
+                        </div>
+                        <h3 class="pricing-card-name">Enterprise</h3>
+                        <p class="pricing-card-description">
+                            Tailored solutions for large organizations
+                        </p>
+                    </div>
+                    
+                    <div class="pricing-card-price">
+                        <div class="pricing-amount">
+                            <span class="pricing-currency">$</span>
+                            <span class="pricing-value">Custom</span>
+                        </div>
+                        <p class="pricing-note">Contact us for pricing</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <ul class="pricing-features-list">
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Unlimited team members</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Unlimited storage</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Dedicated AI infrastructure</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Custom satellite solutions</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Dedicated account manager</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">SLA guarantees</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">On-premise deployment</span>
+                            </li>
+                            <li class="pricing-feature-item">
+                                <div class="pricing-feature-icon">
+                                    <i data-lucide="check"></i>
+                                </div>
+                                <span class="pricing-feature-text">Custom training & onboarding</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pricing-cta">
+                        <a href="pages/checkout/index.html?plan=enterprise&price=custom" class="pricing-btn pricing-btn-secondary">
+                            <span>Contact Sales</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pricing-footer">
+                <p class="pricing-footer-text">All plans include a 14-day free trial. No credit card required.</p>
+                <a href="#" class="pricing-footer-link">
+                    <span>Compare all features</span>
+                    <i data-lucide="arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
