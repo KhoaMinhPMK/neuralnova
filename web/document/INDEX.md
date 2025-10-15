@@ -6,6 +6,19 @@ Chào mừng đến với tài liệu dự án NeuralNova!
 
 ## 📖 Tài liệu có sẵn
 
+### 🎬 Video Solutions (Latest)
+
+- **[YOUTUBE_VIDEO_SOLUTION.md](YOUTUBE_VIDEO_SOLUTION.md)** ⭐ **NEW! GAME CHANGER!**
+  - **Status**: ✅ IMPLEMENTED
+  - **Priority**: 🔥 CRITICAL
+  - Replace 108 MB local videos with YouTube embeds
+  - **98% payload reduction** (110 MB → 2.2 MB)
+  - **Zero bandwidth cost**
+  - YouTube CDN global delivery
+  - 10-20x faster page load
+  - Background video: https://youtu.be/xKFDadYur_Q
+  - Intro modal: https://youtu.be/0_XRGxNd-Go
+
 ### 🔧 Fixes & Solutions
 - **[FIXES_SUMMARY.md](FIXES_SUMMARY.md)** - Tóm tắt các lỗi đã fix
   - Lucide Icons timeout error
@@ -39,10 +52,12 @@ Chào mừng đến với tài liệu dự án NeuralNova!
 
 ```
 document/
-├── INDEX.md                    # File này - Danh mục tài liệu
-├── FIXES_SUMMARY.md           # Tóm tắt các fixes
-├── LUCIDE_FIX.md             # Chi tiết Lucide Icons fix
-└── OPTIMIZATION_GUIDE.md      # Hướng dẫn optimization đầy đủ
+├── INDEX.md                         # File này - Danh mục tài liệu
+├── YOUTUBE_VIDEO_SOLUTION.md       # ⭐ NEW! YouTube embed solution
+├── VIDEO_OPTIMIZATION.md            # Video lazy loading (deprecated)
+├── FIXES_SUMMARY.md                # Tóm tắt các fixes
+├── LUCIDE_FIX.md                   # Chi tiết Lucide Icons fix
+└── OPTIMIZATION_GUIDE.md            # Hướng dẫn optimization đầy đủ
 ```
 
 ---

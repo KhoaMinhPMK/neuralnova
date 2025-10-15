@@ -743,23 +743,50 @@
             opacity: 0;
         }
         
-        .banner.zoom-out .banner-video {
+        .banner.zoom-out .banner-video-container {
             transform: scale(1.5);
+        }
+        
+        .banner.zoom-out .banner-video-container iframe {
+            transform: translate(-50%, -50%) scale(1.5);
         }
         
         .banner.zoom-out .banner::after {
             transform: scale(0.5);
         }
         
-        .banner-video {
+        .banner-video-container {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             z-index: -1;
             pointer-events: none;
+            overflow: hidden;
             transition: transform 1s ease-out;
+        }
+        
+        .banner-video-container iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: transform 1s ease-out;
+        }
+        
+        /* Scale video to cover entire banner */
+        @media (min-aspect-ratio: 16/9) {
+            .banner-video-container iframe {
+                height: 56.25vw;
+            }
+        }
+        @media (max-aspect-ratio: 16/9) {
+            .banner-video-container iframe {
+                width: 177.78vh;
+            }
         }
         
         .banner::after {
@@ -2826,16 +2853,10 @@
     
     <!-- Section 1: Hero Banner -->
     <div class="banner" id="home">
-        <!-- Video Background - Lazy Loaded -->
-        <video 
-            class="banner-video" 
-            id="bannerVideo"
-            poster="assets/images/bg.jpg"
-            muted loop playsinline
-            preload="none"
-        >
-            <source src="assets/images/bg2.mp4" type="video/mp4">
-        </video>
+        <!-- YouTube Video Background - Zero bandwidth cost! -->
+        <div class="banner-video-container" id="bannerVideoContainer">
+            <!-- YouTube iframe will load here -->
+        </div>
         
         <div class="title">
             <div class="neural"></div>
@@ -3754,15 +3775,9 @@
             <button class="video-modal-close" onclick="closeVideoModal()">
                 <i data-lucide="x"></i>
             </button>
-            <video 
-                id="videoPlayer"
-                controls
-                controlsList="nodownload"
-                preload="none"
-                style="width: 100%; height: 100%; object-fit: contain;">
-                <!-- Source will be added on-demand when modal opens -->
-                Your browser does not support the video tag.
-            </video>
+            <div id="videoPlayerContainer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <!-- YouTube iframe will be loaded here on-demand -->
+            </div>
         </div>
     </div>
     
@@ -3861,7 +3876,7 @@
         // Helper function to safely initialize Lucide Icons
         function initLucideIcons(retries = 5, delay = 200) {
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                lucide.createIcons();
+        lucide.createIcons();
                 console.log('✅ Lucide Icons initialized');
             } else if (retries > 0) {
                 console.log(`⏳ Waiting for Lucide Icons... (${retries} retries left)`);
@@ -3874,14 +3889,17 @@
         // Initialize Lucide Icons
         initLucideIcons();
         
-        // Lazy load banner video after page is ready
+        // Lazy load YouTube background video after page is ready
         setTimeout(() => {
-            const bannerVideo = document.getElementById('bannerVideo');
-            if (bannerVideo) {
-                bannerVideo.load(); // Start loading
-                bannerVideo.play().catch(e => {
-                    console.log('Video autoplay prevented by browser');
-                });
+            const container = document.getElementById('bannerVideoContainer');
+            if (container && !container.querySelector('iframe')) {
+                console.log('🎬 Loading YouTube background video...');
+                const iframe = document.createElement('iframe');
+                iframe.src = 'https://www.youtube.com/embed/xKFDadYur_Q?autoplay=1&mute=1&loop=1&playlist=xKFDadYur_Q&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1';
+                iframe.frameBorder = '0';
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.title = 'Background Video';
+                container.appendChild(iframe);
             }
         }, 1000); // Load after 1 second delay
         
@@ -4054,23 +4072,24 @@
         // Video Modal Functions
         function openVideoModal() {
             const modal = document.getElementById('videoModal');
-            const video = document.getElementById('videoPlayer');
+            const container = document.getElementById('videoPlayerContainer');
             
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
             
-            // Load video ONLY when modal opens (saves 98.72 MB on initial load!)
-            if (!video.src && video.children.length === 0) {
-                console.log('📹 Loading modal video on-demand...');
-                const source = document.createElement('source');
-                source.src = 'assets/images/intro.mp4';
-                source.type = 'video/mp4';
-                video.appendChild(source);
-                video.load();
+            // Load YouTube video ONLY when modal opens (zero bandwidth cost!)
+            if (!container.querySelector('iframe')) {
+                console.log('🎬 Loading YouTube intro video on-demand...');
+                const iframe = document.createElement('iframe');
+                iframe.src = 'https://www.youtube.com/embed/0_XRGxNd-Go?autoplay=1&controls=1&rel=0&modestbranding=1';
+                iframe.frameBorder = '0';
+                iframe.allow = 'autoplay; encrypted-media; fullscreen';
+                iframe.allowFullscreen = true;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.title = 'NeuralNova Intro Video';
+                container.appendChild(iframe);
             }
-            
-            // Auto play video
-            video.play().catch(e => console.log('Video play prevented:', e));
             
             // Re-initialize Lucide icons in modal
             setTimeout(() => initLucideIcons(), 100);
@@ -4078,11 +4097,16 @@
         
         function closeVideoModal() {
             const modal = document.getElementById('videoModal');
-            const video = document.getElementById('videoPlayer');
+            const container = document.getElementById('videoPlayerContainer');
             
             modal.classList.remove('active');
-            video.pause(); // Pause video
-            video.currentTime = 0; // Reset to beginning
+            
+            // Remove iframe to stop YouTube video
+            const iframe = container.querySelector('iframe');
+            if (iframe) {
+                iframe.remove();
+            }
+            
             document.body.style.overflow = ''; // Restore scrolling
         }
         
