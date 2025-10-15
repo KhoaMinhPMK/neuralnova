@@ -737,16 +737,17 @@ form.sign-in-form {
 }
 
 .btn {
-  width: 160px;
+  max-width: 380px;
+  width: 100%;
   background: linear-gradient(135deg, var(--auth-primary), var(--auth-primary-2));
   border: none;
   outline: none;
-  height: 52px;
+  height: 55px;
   border-radius: 28px;
   color: #fff;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin: 15px 0;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -939,7 +940,7 @@ form.sign-in-form {
   }
   
   form {
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 2rem;
     max-height: 85vh;
     width: 95%;
   }
@@ -1047,39 +1048,45 @@ form.sign-in-form {
 
 @media (max-width: 570px) {
   form {
-    padding: 1.5rem 1.2rem;
+    padding: 2rem 1.5rem;
     max-height: 88vh;
     width: 95%;
   }
   
   .title {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-  }
-  
-  .form-logo {
+    font-size: 2rem;
     margin-bottom: 10px;
   }
   
+  .form-logo {
+    margin-bottom: 12px;
+  }
+  
   .form-logo img {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
   }
   
   .input-field {
-    height: 52px;
-    margin: 10px 0;
-    padding: 0 16px;
+    height: 55px;
+    margin: 12px 0;
+    padding: 0 18px;
+    gap: 10px;
+  }
+  
+  .input-field i {
+    font-size: 1.1rem;
   }
   
   input {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
   
   .btn {
-    height: 48px;
-    font-size: 0.9rem;
-    margin-top: 8px;
+    height: 52px;
+    font-size: 0.95rem;
+    margin: 15px 0;
+    font-weight: 700;
   }
   
   .social-text {
