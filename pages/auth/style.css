@@ -94,17 +94,19 @@ body::before {
   align-items: center;
   justify-content: center;
   z-index: 5;
-  padding: 40px 0;
+  padding: 20px 0;
+  max-height: 95vh;
 }
 
 form {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   padding: 2.5rem 2rem;
   transition: all 0.2s 0.7s;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -115,6 +117,26 @@ form {
   position: relative;
   max-width: 450px;
   width: 90%;
+  max-height: 90vh;
+}
+
+/* Custom scrollbar for form */
+form::-webkit-scrollbar {
+  width: 6px;
+}
+
+form::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+form::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.5);
+  border-radius: 10px;
+}
+
+form::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.7);
 }
 
 form::before {
@@ -910,19 +932,28 @@ form.sign-in-form {
 
 @media (max-width: 870px) {
   .container {
-    min-height: 800px;
+    min-height: 100vh;
     height: 100vh;
   }
+  
   .signin-signup {
     width: 100%;
-    top: 95%;
-    transform: translate(-50%, -100%);
+    top: 50%;
+    transform: translate(-50%, -50%);
     transition: 1s 0.8s ease-in-out;
+    padding: 10px 0;
+    max-height: 90vh;
   }
 
   .signin-signup,
   .container.sign-up-mode .signin-signup {
     left: 50%;
+  }
+  
+  form {
+    padding: 2rem 1.5rem;
+    max-height: 85vh;
+    width: 95%;
   }
 
   .panels-container {
@@ -1028,18 +1059,95 @@ form.sign-in-form {
 
 @media (max-width: 570px) {
   form {
-    padding: 0 1.5rem;
+    padding: 1.5rem 1.2rem;
+    max-height: 88vh;
+    width: 95%;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+  
+  .form-logo {
+    margin-bottom: 10px;
+  }
+  
+  .form-logo img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .input-field {
+    height: 52px;
+    margin: 10px 0;
+    padding: 0 16px;
+  }
+  
+  input {
+    font-size: 0.9rem;
+  }
+  
+  .btn {
+    height: 48px;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  
+  .social-text {
+    font-size: 0.85rem;
+    margin: 12px 0;
+  }
+  
+  .social-media {
+    gap: 12px;
+    margin: 8px 0;
+  }
+  
+  .forgot-password {
+    margin: 8px 0;
+  }
+  
+  /* Password Strength on Mobile */
+  .password-strength {
+    margin: 12px 0 16px 0;
+  }
+  
+  .strength-header {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+  }
+  
+  .strength-bar-container {
+    height: 4px;
+  }
+  
+  .strength-badges {
+    gap: 6px;
+    margin-top: 8px;
+  }
+  
+  .strength-badge {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border-radius: 8px;
   }
 
   .image {
     display: none;
   }
+  
   .panel .content {
     padding: 1.5rem 1.5rem;
     border-radius: 20px;
   }
+  
   .container {
-    padding: 1.5rem;
+    padding: 0;
+  }
+  
+  .panels-container {
+    display: none;
   }
 
   .container:before {
@@ -1050,6 +1158,10 @@ form.sign-in-form {
   .container.sign-up-mode:before {
     bottom: 28%;
     left: 50%;
+  }
+  
+  .signin-signup {
+    padding: 5px 0;
   }
 }
 
