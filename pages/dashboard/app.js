@@ -1,5 +1,6 @@
-// Dashboard App - Mockup Data
+// Dashboard App - Real Backend Integration v2.0
 (() => {
+    console.log('🚀 Dashboard v2.0 - Loading real data from backend...');
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -584,12 +585,13 @@
         });
     });
 
-    // Initialize
+    // Initialize - Load real data from backend
+    console.log('🔗 API Base:', API_BASE);
+    console.log('📊 Dashboard initializing with REAL backend data...');
+    
     checkAuth().then(() => {
+        console.log('✅ Auth checked, loading posts from database...');
         loadPosts();
     });
-
-    console.log('📊 Dashboard initializing...');
-    console.log('🔗 API Base:', API_BASE);
 })();
 
