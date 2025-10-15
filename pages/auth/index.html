@@ -224,6 +224,16 @@
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=2.0"></script>
+    <script>
+      // Ensure functions are available
+      console.log('✅ handleLogin available:', typeof window.handleLogin);
+      console.log('✅ handleRegister available:', typeof window.handleRegister);
+      
+      if (typeof window.handleLogin === 'undefined' || typeof window.handleRegister === 'undefined') {
+        console.error('⚠️ Auth functions not loaded! Reloading page...');
+        setTimeout(() => location.reload(), 100);
+      }
+    </script>
   </body>
 </html>
