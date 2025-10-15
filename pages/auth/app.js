@@ -7,69 +7,6 @@
 const API_BASE_URL = 'https://neuralnova.space/backend/api'; // Production - ĐANG DÙNG
 // const API_BASE_URL = 'http://localhost/neuralnova/backend/api'; // Local
 
-// UI Toggle
-const sign_in_btn = document.querySelector("#sign-in-btn");
-const sign_up_btn = document.querySelector("#sign-up-btn");
-const container = document.querySelector(".container");
-
-sign_up_btn.addEventListener("click", () => {
-  container.classList.add("sign-up-mode");
-  clearMessages();
-});
-
-sign_in_btn.addEventListener("click", () => {
-  container.classList.remove("sign-up-mode");
-  clearMessages();
-});
-
-// ===========================================
-// Helper Functions
-// ===========================================
-
-function showError(elementId, message, errors = null) {
-  const errorEl = document.getElementById(elementId);
-  
-  let html = `<strong>❌ ${message}</strong>`;
-  
-  if (errors && typeof errors === 'object') {
-    html += '<ul>';
-    for (const [field, error] of Object.entries(errors)) {
-      if (error) html += `<li>${error}</li>`;
-    }
-    html += '</ul>';
-  }
-  
-  errorEl.innerHTML = html;
-  errorEl.style.display = 'block';
-  
-  // Auto-hide after 5 seconds
-  setTimeout(() => {
-    errorEl.style.display = 'none';
-  }, 5000);
-}
-
-function showSuccess(elementId, message) {
-  const errorEl = document.getElementById(elementId);
-  errorEl.className = 'success-message';
-  errorEl.innerHTML = `<strong>✅ ${message}</strong>`;
-  errorEl.style.display = 'block';
-}
-
-function clearMessages() {
-  document.getElementById('loginError').style.display = 'none';
-  document.getElementById('registerError').style.display = 'none';
-}
-
-function setLoading(buttonEl, isLoading) {
-  if (isLoading) {
-    buttonEl.classList.add('loading');
-    buttonEl.disabled = true;
-  } else {
-    buttonEl.classList.remove('loading');
-    buttonEl.disabled = false;
-  }
-}
-
 // ===========================================
 // Login Handler
 // ===========================================
@@ -102,7 +39,7 @@ async function handleLogin() {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include', // Important for sessions
+      credentials: 'include',
       body: JSON.stringify({
         email: email,
         password: password
@@ -117,16 +54,11 @@ async function handleLogin() {
     console.log('📦 Response Data:', data);
     
     if (data.success) {
-      // Success!
       showSuccess('loginError', data.message);
-      
-      // Redirect after 1 second
       setTimeout(() => {
         window.location.href = data.data.redirect || '../../index.html';
       }, 1000);
-      
     } else {
-      // Error
       showError('loginError', data.message, data.errors);
       setLoading(submitBtn, false);
     }
@@ -177,7 +109,7 @@ async function handleRegister() {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include', // Important for sessions
+      credentials: 'include',
       body: JSON.stringify({
         full_name: fullName,
         email: email,
@@ -194,16 +126,11 @@ async function handleRegister() {
     console.log('📦 Response Data:', data);
     
     if (data.success) {
-      // Success!
       showSuccess('registerError', data.message);
-      
-      // Redirect after 1.5 seconds
       setTimeout(() => {
         window.location.href = data.data.redirect || '../../index.html';
       }, 1500);
-      
     } else {
-      // Error
       showError('registerError', data.message, data.errors);
       setLoading(submitBtn, false);
     }
@@ -216,6 +143,82 @@ async function handleRegister() {
   }
 }
 
+// Make functions globally available IMMEDIATELY
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
+
+// ===========================================
+// Helper Functions
+// ===========================================
+
+function showError(elementId, message, errors = null) {
+  const errorEl = document.getElementById(elementId);
+  
+  let html = `<strong>❌ ${message}</strong>`;
+  
+  if (errors && typeof errors === 'object') {
+    html += '<ul>';
+    for (const [field, error] of Object.entries(errors)) {
+      if (error) html += `<li>${error}</li>`;
+    }
+    html += '</ul>';
+  }
+  
+  errorEl.innerHTML = html;
+  errorEl.style.display = 'block';
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    errorEl.style.display = 'none';
+  }, 5000);
+}
+
+function showSuccess(elementId, message) {
+  const errorEl = document.getElementById(elementId);
+  errorEl.className = 'success-message';
+  errorEl.innerHTML = `<strong>✅ ${message}</strong>`;
+  errorEl.style.display = 'block';
+}
+
+function clearMessages() {
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('registerError').style.display = 'none';
+}
+
+function setLoading(buttonEl, isLoading) {
+  if (isLoading) {
+    buttonEl.classList.add('loading');
+    buttonEl.disabled = true;
+  } else {
+    buttonEl.classList.remove('loading');
+    buttonEl.disabled = false;
+  }
+}
+
+// ===========================================
+// UI Toggle
+// ===========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sign_in_btn = document.querySelector("#sign-in-btn");
+  const sign_up_btn = document.querySelector("#sign-up-btn");
+  const container = document.querySelector(".container");
+  
+  if (sign_up_btn) {
+    sign_up_btn.addEventListener("click", () => {
+      container.classList.add("sign-up-mode");
+      clearMessages();
+    });
+  }
+  
+  if (sign_in_btn) {
+    sign_in_btn.addEventListener("click", () => {
+      container.classList.remove("sign-up-mode");
+      clearMessages();
+    });
+  }
+});
+
 // ===========================================
 // Social Login Handlers (Mock)
 // ===========================================
@@ -224,8 +227,6 @@ document.querySelectorAll('.social-icon').forEach(icon => {
   icon.addEventListener('click', (e) => {
     e.preventDefault();
     const provider = icon.getAttribute('aria-label').replace('Continue with ', '');
-    
-    // Show coming soon message
     alert(`🚧 ${provider} login coming soon!\n\nThis feature will be available in the next update.`);
   });
 });
@@ -240,25 +241,21 @@ if (forgotLink) {
     e.preventDefault();
     const href = forgotLink.getAttribute('href');
 
-    // Create a fog/blur overlay
     const overlay = document.createElement('div');
     overlay.className = 'route-transition';
     document.body.appendChild(overlay);
 
-    // Subtle blur/scale on the main container
+    const container = document.querySelector(".container");
     container?.classList.add('route-blur');
 
-    // Fade out video a bit sooner for crossfade feel
     const vid = document.querySelector('.video-background');
     if (vid) {
       vid.classList.add('fade-out');
     }
 
-    // Force reflow then activate transition
     overlay.offsetHeight;
     overlay.classList.add('active');
 
-    // Navigate after transition
     setTimeout(() => {
       window.location.href = href;
     }, 700);
@@ -271,7 +268,6 @@ if (forgotLink) {
 
 const videoBackground = document.querySelector('.video-background');
 if (videoBackground) {
-  // Đặt video bắt đầu từ giây thứ 10
   videoBackground.currentTime = 10;
   
   videoBackground.addEventListener('timeupdate', function() {
@@ -279,34 +275,26 @@ if (videoBackground) {
     const currentTime = this.currentTime;
     const timeLeft = duration - currentTime;
     
-    // Fade out ở 1.5 giây cuối
     if (timeLeft <= 1.5 && timeLeft > 0) {
       this.style.opacity = timeLeft / 1.5;
-    }
-    // Fade in ở 1.5 giây đầu (từ giây 10-11.5)
-    else if (currentTime >= 10 && currentTime <= 11.5) {
+    } else if (currentTime >= 10 && currentTime <= 11.5) {
       this.style.opacity = (currentTime - 10) / 1.5;
-    }
-    // Opacity bình thường
-    else {
+    } else {
       this.style.opacity = 1;
     }
   });
   
-  // Đảm bảo fade in khi video load
   videoBackground.addEventListener('loadeddata', function() {
     this.currentTime = 10;
     this.style.opacity = 0;
     this.style.transition = 'opacity 1.5s ease-in-out';
   });
   
-  // Khi video kết thúc, quay về giây thứ 10
   videoBackground.addEventListener('ended', function() {
     this.currentTime = 10;
     this.play();
   });
   
-  // Fade in khi video bắt đầu play
   videoBackground.addEventListener('play', function() {
     if (this.currentTime < 10.5) {
       this.style.opacity = 0;
@@ -331,7 +319,6 @@ async function checkAuth() {
     const data = await response.json();
     
     if (data.success) {
-      // User is logged in, redirect to home
       console.log('User already logged in:', data.data.user);
       // Uncomment to auto-redirect:
       // window.location.href = '../../index.html';
@@ -345,7 +332,3 @@ async function checkAuth() {
 checkAuth();
 
 console.log('🚀 NeuralNova Auth loaded. API:', API_BASE_URL);
-
-// Make functions globally available for onclick
-window.handleLogin = handleLogin;
-window.handleRegister = handleRegister;
