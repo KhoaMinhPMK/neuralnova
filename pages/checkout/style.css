@@ -70,6 +70,8 @@ h1 { font-size: 28px; margin: 4px 0 6px; letter-spacing: .2px; }
 .input-icon input { padding-left: 36px; }
 .input-group { display:flex; gap:8px; }
 .input-group input { flex:1; }
+/* Hide the help text under the voucher input */
+.input-group + .help { display: none; }
 
 .btn { 
   display:inline-flex; align-items:center; justify-content:center; gap:10px; 

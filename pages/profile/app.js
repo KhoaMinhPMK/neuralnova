@@ -2,6 +2,29 @@
   const $ = (s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
   const toastEl = $('#toast'); let tTimer;
   const toast = (m)=>{ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(()=>toastEl.classList.remove('show'),2000); };
+  // Inject Back to Dashboard button and hide Checkout button if present
+  try {
+    const header = document.querySelector('.p-header');
+    if (header) {
+      let actions = header.querySelector('.actions');
+      if (!actions) { actions = document.createElement('nav'); actions.className = 'actions'; header.appendChild(actions); }
+      const backBtn = document.createElement('a'); backBtn.className = 'btn'; backBtn.href = '../../index.html'; backBtn.textContent = 'Quay lại Dashboard'; actions.appendChild(backBtn);
+      const payBtn = actions.querySelector('a[href*="checkout"]'); if (payBtn) payBtn.style.display = 'none';
+    }
+  } catch {}
+
+  // Adjust UI texts/visibility per request
+  try {
+    // Change region label to "Nơi đến"
+    const regionSelect = document.querySelector('#pRegion');
+    if (regionSelect && regionSelect.previousElementSibling && regionSelect.previousElementSibling.tagName === 'LABEL') {
+      regionSelect.previousElementSibling.textContent = 'Nơi đến';
+    }
+    // Hide the "Làm mờ vị trí..." option
+    const blurInput = document.querySelector('#blurLoc');
+    const blurField = blurInput ? (blurInput.closest('.field') || blurInput.parentElement) : null;
+    if (blurField) blurField.style.display = 'none';
+  } catch {}
 
   const keyProfile = 'nn_profile';
   const keyPosts   = 'nn_posts';
@@ -189,7 +212,7 @@
   });
   function renderFeed(){
     const box=$('#postFeed'); if (!box) return;
-    const useBlur = !!(load(keyProfile, {}).blur);
+    const useBlur = false; // blur option removed
     box.innerHTML = posts2.slice().reverse().map(p=>{
       const media = p.media ? (p.isVideo?`<video src="${p.media}" controls></video>`:`<img src="${p.media}" alt="media">`) : '';
       const coords = p.coords||'—';
@@ -259,6 +282,11 @@
       <div class="stat">Vùng đã ghé: <strong>${regs.size}</strong></div>
       <div class="stat">Bài viết: <strong>${posts2.length}</strong></div>
       <div class="stat">Độ chính xác dự báo: <strong>${total?Math.round(within*100/total):0}%</strong></div>
+    `;
+    // Override stats layout per request
+    if (st) st.innerHTML = `
+      <div class="stat">Nơi đến: <strong>${regs.size}</strong></div>
+      <div class="stat">Bài viết: <strong>${posts2.length}</strong></div>
     `;
   }
   function isDateWithinWindow(dateStr, win){
