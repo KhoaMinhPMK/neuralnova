@@ -192,21 +192,85 @@
   }
   populateCountries();
 
-  // Avatar upload
+  // Avatar upload with backend integration
+  async function uploadAvatar(file) {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      const response = await fetch(`${API_BASE}/profile/upload-avatar.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        const avatarUrl = data.avatar_url;
+        if ($('#avatar')) $('#avatar').src = avatarUrl;
+        if ($('#avatarHero')) $('#avatarHero').src = avatarUrl;
+        toast('Avatar uploaded successfully');
+        await initProfile(); // Reload profile data
+      } else {
+        toast('Upload failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      toast('Avatar upload failed');
+    }
+  }
+  
   $('#avatarInput').addEventListener('change', (e)=>{
-    const f = e.target.files[0]; if (!f) return;
-    const rd = new FileReader(); rd.onload = ()=>{ $('#avatar').src = rd.result; }; rd.readAsDataURL(f);
+    const f = e.target.files[0]; 
+    if (!f) return;
+    uploadAvatar(f);
   });
+  
   const bindAvatarHero = (inputSel)=>{
-    const inp = $(inputSel); if (!inp) return; inp.addEventListener('change', (e)=>{
-      const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ if($('#avatar')) $('#avatar').src=rd.result; if($('#avatarHero')) $('#avatarHero').src=rd.result; }; rd.readAsDataURL(f);
+    const inp = $(inputSel); 
+    if (!inp) return; 
+    inp.addEventListener('change', (e)=>{
+      const f=e.target.files[0]; 
+      if(!f) return; 
+      uploadAvatar(f);
     });
   };
   bindAvatarHero('#avatarInputHero');
 
-  // Cover upload
+  // Cover upload with backend integration
+  async function uploadCover(file) {
+    try {
+      const formData = new FormData();
+      formData.append('cover', file);
+      
+      const response = await fetch(`${API_BASE}/profile/upload-cover.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        $('#cover').src = data.cover_url;
+        toast('Cover photo uploaded successfully');
+        await initProfile(); // Reload profile data
+      } else {
+        toast('Upload failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Cover upload error:', error);
+      toast('Cover upload failed');
+    }
+  }
+  
   const coverInput = $('#coverInput');
-  if (coverInput) coverInput.addEventListener('change', (e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ $('#cover').src=rd.result; }; rd.readAsDataURL(f); });
+  if (coverInput) coverInput.addEventListener('change', (e)=>{ 
+    const f=e.target.files[0]; 
+    if(!f) return; 
+    uploadCover(f);
+  });
 
   // Detect IP (best effort; may fail offline)
   $('#detectIp').addEventListener('click', async ()=>{

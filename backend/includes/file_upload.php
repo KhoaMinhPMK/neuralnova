@@ -63,11 +63,18 @@ function initUploadDirectories() {
  * Upload file with validation
  * 
  * @param array $file - $_FILES array element
- * @param string $type - 'avatar', 'cover', 'post'
- * @param int $userId - User ID for filename generation
+ * @param string $type - 'avatar', 'cover', 'post', 'posts/images', 'posts/videos'
+ * @param int|array $userId - User ID for filename generation, or options array
  * @return array - ['success' => bool, 'path' => string or 'error' => string]
  */
-function uploadFile($file, $type, $userId) {
+function uploadFile($file, $type, $userId = null, $options = []) {
+    // Handle old signature: uploadFile($file, $type, $userId)
+    // New signature: uploadFile($file, $type, $options)
+    if (is_array($userId)) {
+        $options = $userId;
+        $userId = $options['user_id'] ?? null;
+    }
+    
     // Initialize directories
     initUploadDirectories();
     
@@ -86,30 +93,53 @@ function uploadFile($file, $type, $userId) {
     $fileType = mime_content_type($fileTmpPath);
     
     // Determine upload directory and size limit
-    switch ($type) {
-        case 'avatar':
-            $uploadDir = UPLOAD_AVATARS;
-            $maxSize = MAX_AVATAR_SIZE;
-            $allowedTypes = ALLOWED_IMAGE_TYPES;
-            break;
-            
-        case 'cover':
-            $uploadDir = UPLOAD_COVERS;
-            $maxSize = MAX_COVER_SIZE;
-            $allowedTypes = ALLOWED_IMAGE_TYPES;
-            break;
-            
-        case 'post':
-            $uploadDir = UPLOAD_POSTS;
-            $maxSize = MAX_POST_SIZE;
-            $allowedTypes = array_merge(ALLOWED_IMAGE_TYPES, ALLOWED_VIDEO_TYPES);
-            break;
-            
-        default:
-            return [
-                'success' => false,
-                'error' => 'Invalid upload type'
-            ];
+    $uploadDir = '';
+    $maxSize = 0;
+    $allowedTypes = [];
+    
+    // Support for subfolder paths like 'posts/images'
+    if (strpos($type, '/') !== false) {
+        $uploadDir = UPLOAD_BASE . $type . '/';
+        // Create subfolder if it doesn't exist
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+            // Create .htaccess for security
+            file_put_contents($uploadDir . '.htaccess', "php_flag engine off\n");
+        }
+        // Determine settings based on path
+        if (strpos($type, 'posts/videos') !== false) {
+            $maxSize = $options['max_size'] ?? 50 * 1024 * 1024; // 50MB for videos
+            $allowedTypes = $options['allowed_types'] ?? ALLOWED_VIDEO_TYPES;
+        } else {
+            $maxSize = $options['max_size'] ?? MAX_POST_SIZE;
+            $allowedTypes = $options['allowed_types'] ?? array_merge(ALLOWED_IMAGE_TYPES, ALLOWED_VIDEO_TYPES);
+        }
+    } else {
+        switch ($type) {
+            case 'avatar':
+                $uploadDir = UPLOAD_AVATARS;
+                $maxSize = MAX_AVATAR_SIZE;
+                $allowedTypes = ALLOWED_IMAGE_TYPES;
+                break;
+                
+            case 'cover':
+                $uploadDir = UPLOAD_COVERS;
+                $maxSize = MAX_COVER_SIZE;
+                $allowedTypes = ALLOWED_IMAGE_TYPES;
+                break;
+                
+            case 'post':
+                $uploadDir = UPLOAD_POSTS;
+                $maxSize = MAX_POST_SIZE;
+                $allowedTypes = array_merge(ALLOWED_IMAGE_TYPES, ALLOWED_VIDEO_TYPES);
+                break;
+                
+            default:
+                return [
+                    'success' => false,
+                    'error' => 'Invalid upload type'
+                ];
+        }
     }
     
     // Validate file type

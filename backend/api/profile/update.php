@@ -56,14 +56,23 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 
-// Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+// Get input (support both JSON and FormData)
+$input = [];
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+if (strpos($contentType, 'application/json') !== false) {
+    $input = json_decode(file_get_contents('php://input'), true);
+} elseif (strpos($contentType, 'multipart/form-data') !== false || !empty($_POST)) {
+    $input = $_POST;
+} else {
+    $input = json_decode(file_get_contents('php://input'), true);
+}
 
 if (!$input) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'error' => 'Invalid JSON input'
+        'error' => 'Invalid input'
     ]);
     exit;
 }
@@ -76,20 +85,32 @@ try {
     // Allowed fields to update
     $allowedFields = [
         'bio' => 'string',
-        'interests' => 'array',  // Will convert to comma-separated
+        'interests' => 'string',  // Can be array or comma-separated string
         'country' => 'string',
         'gps_coords' => 'string',
+        'gps_coordinates' => 'string',  // Alias for gps_coords
         'ip_region' => 'string',
+        'ip_address' => 'string',  // Alias for ip_display
         'ip_display' => 'string',
-        'custom_user_id' => 'string'
+        'custom_user_id' => 'string',
+        'full_name' => 'string'
     ];
     
     foreach ($allowedFields as $field => $type) {
         if (isset($input[$field])) {
             $value = $input[$field];
+            $dbField = $field;
+            
+            // Handle field aliases
+            if ($field === 'gps_coordinates') {
+                $dbField = 'gps_coords';
+            }
+            if ($field === 'ip_address') {
+                $dbField = 'ip_display';
+            }
             
             // Handle GPS coordinates
-            if ($field === 'gps_coords' && is_array($value)) {
+            if (($field === 'gps_coords' || $field === 'gps_coordinates') && is_array($value)) {
                 // Convert {lat, lng} to "lat, lng" string
                 if (isset($value['lat']) && isset($value['lng'])) {
                     $value = $value['lat'] . ', ' . $value['lng'];
@@ -98,9 +119,12 @@ try {
                 }
             }
             
-            // Handle interests array
-            if ($field === 'interests' && is_array($value)) {
-                $value = implode(',', $value);
+            // Handle interests (can be array or string)
+            if ($field === 'interests') {
+                if (is_array($value)) {
+                    $value = implode(',', $value);
+                }
+                // Already string, keep as is
             }
             
             // Handle custom_user_id (username) - check uniqueness
@@ -133,8 +157,8 @@ try {
                 }
             }
             
-            // Add to update query
-            $updateFields[] = "$field = ?";
+            // Add to update query (use dbField for actual column name)
+            $updateFields[] = "$dbField = ?";
             $updateValues[] = $value;
         }
     }

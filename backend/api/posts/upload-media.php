@@ -64,8 +64,9 @@ try {
     $isVideo = strpos($fileType, 'video/') === 0;
     $subfolder = $isVideo ? 'videos' : 'images';
     
-    // Upload file
+    // Upload file with new signature
     $uploadResult = uploadFile($file, "posts/{$subfolder}", [
+        'user_id' => $userId,
         'max_size' => $isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024, // 50MB for videos, 10MB for images
         'allowed_types' => $allowedTypes
     ]);
