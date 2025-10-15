@@ -43,6 +43,9 @@ require_once '../../includes/file_upload.php';
 
 initSession();
 
+// Get database connection
+$pdo = getDBConnection();
+
 try {
     // Get target user ID (from query or session)
     $targetUserId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;

@@ -41,6 +41,9 @@ require_once '../../includes/session.php';
 
 initSession();
 
+// Get database connection
+$pdo = getDBConnection();
+
 // Check authentication
 if (!isLoggedIn()) {
     http_response_code(401);

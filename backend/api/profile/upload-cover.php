@@ -42,6 +42,9 @@ require_once '../../includes/file_upload.php';
 
 initSession();
 
+// Get database connection
+$pdo = getDBConnection();
+
 // Check authentication
 if (!isLoggedIn()) {
     http_response_code(401);

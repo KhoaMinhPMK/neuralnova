@@ -42,6 +42,9 @@ require_once '../../includes/file_upload.php';
 
 initSession();
 
+// Get database connection
+$pdo = getDBConnection();
+
 try {
     // Get query parameters
     if (!isset($_GET['post_id'])) {
