@@ -17,8 +17,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons - Local with CDN Fallback -->
+    <script src="assets/js/lucide.min.js" defer onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js'"></script>
     
     <style>
         /* Reset & Base */
@@ -3861,8 +3861,21 @@
             });
         });
         
+        // Helper function to safely initialize Lucide Icons
+        function initLucideIcons(retries = 5, delay = 200) {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+                console.log('✅ Lucide Icons initialized');
+            } else if (retries > 0) {
+                console.log(`⏳ Waiting for Lucide Icons... (${retries} retries left)`);
+                setTimeout(() => initLucideIcons(retries - 1, delay), delay);
+            } else {
+                console.warn('⚠️ Lucide Icons failed to load. Using fallback.');
+            }
+        }
+        
         // Initialize Lucide Icons
-        lucide.createIcons();
+        initLucideIcons();
         
         // Initialize scroll effects
         const initScrollEffects = () => {
@@ -4042,7 +4055,7 @@
             video.play();
             
             // Re-initialize Lucide icons in modal
-            setTimeout(() => lucide.createIcons(), 100);
+            setTimeout(() => initLucideIcons(), 100);
         }
         
         function closeVideoModal() {

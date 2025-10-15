@@ -1,0 +1,28 @@
+{
+  "name": "neuralnova-web",
+  "version": "1.0.0",
+  "description": "NeuralNova - Space Technology & Eco Tourism SaaS Platform",
+  "scripts": {
+    "start": "npx serve . -p 8080",
+    "optimize": "node optimize.js",
+    "lighthouse": "lighthouse http://localhost:8080 --view --output html --output-path ./lighthouse-report.html",
+    "analyze": "npm run lighthouse && echo 'Report saved to lighthouse-report.html'",
+    "compress-images": "echo 'Install imagemin-cli: npm install -g imagemin-cli' && imagemin assets/images/*.{jpg,png} --out-dir=assets/images/optimized",
+    "webp": "echo 'Convert images to WebP format' && echo 'Install cwebp or use online tools'",
+    "minify-css": "echo 'Extract CSS and minify' && echo 'Use csso or cssnano'",
+    "build": "npm run optimize && echo 'Build complete!'",
+    "test": "echo 'Run performance tests' && npm run analyze"
+  },
+  "keywords": [
+    "space",
+    "technology",
+    "eco-tourism",
+    "saas",
+    "satellite"
+  ],
+  "author": "NeuralNova Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}
+
