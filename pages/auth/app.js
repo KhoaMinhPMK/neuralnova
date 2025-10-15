@@ -59,6 +59,13 @@ async function handleLogin() {
         window.location.href = data.data.redirect || '../../index.html';
       }, 1000);
     } else {
+      // 🔍 DEBUG: Log validation errors
+      if (data.errors) {
+        console.log('❌ Login Errors:', data.errors);
+        Object.entries(data.errors).forEach(([field, error]) => {
+          console.log(`   - ${field}: ${error}`);
+        });
+      }
       showError('loginError', data.message, data.errors);
       setLoading(submitBtn, false);
     }
@@ -131,6 +138,13 @@ async function handleRegister() {
         window.location.href = data.data.redirect || '../../index.html';
       }, 1500);
     } else {
+      // 🔍 DEBUG: Log validation errors
+      if (data.errors) {
+        console.log('❌ Validation Errors:', data.errors);
+        Object.entries(data.errors).forEach(([field, error]) => {
+          console.log(`   - ${field}: ${error}`);
+        });
+      }
       showError('registerError', data.message, data.errors);
       setLoading(submitBtn, false);
     }
