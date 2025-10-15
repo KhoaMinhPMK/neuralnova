@@ -167,13 +167,21 @@ try {
     
     $postId = $pdo->lastInsertId();
     
-    // Get created post with user info
+    // Get created post with user info (match feed.php format)
     $postStmt = $pdo->prepare("
         SELECT 
-            p.*,
-            u.full_name AS author_name,
-            u.avatar_url AS author_avatar,
-            u.custom_user_id AS author_username
+            p.id,
+            p.user_id,
+            p.content,
+            p.image_url,
+            p.visibility,
+            p.created_at,
+            p.updated_at,
+            u.full_name AS user_name,
+            u.avatar_url AS user_avatar,
+            0 AS total_reactions,
+            0 AS total_comments,
+            NULL AS user_reaction
         FROM posts p
         JOIN users u ON p.user_id = u.id
         WHERE p.id = ?
@@ -182,14 +190,16 @@ try {
     $postStmt->execute([$postId]);
     $post = $postStmt->fetch(PDO::FETCH_ASSOC);
     
-    // Convert media path to URL
-    if ($post['media_url']) {
-        $post['media_url'] = getFileUrl($post['media_url']);
+    // Convert image URL if exists
+    if ($post['image_url']) {
+        // If it's a relative path, keep it as is
+        // Frontend will handle the path
     }
     
-    // Convert author avatar to URL
-    if ($post['author_avatar']) {
-        $post['author_avatar'] = getFileUrl($post['author_avatar']);
+    // Convert user avatar to URL
+    if ($post['user_avatar']) {
+        // If it's a relative path, keep it as is
+        // Frontend will handle the path
     }
     
     // Parse GPS coordinates

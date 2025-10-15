@@ -59,16 +59,24 @@ try {
     // Build query based on filters
     $sql = "
         SELECT 
-            p.*,
-            u.full_name AS author_name,
-            u.avatar_url AS author_avatar,
-            u.custom_user_id AS author_username
+            p.id,
+            p.user_id,
+            p.content,
+            p.image_url,
+            p.visibility,
+            p.created_at,
+            p.updated_at,
+            u.full_name AS user_name,
+            u.avatar_url AS user_avatar,
+            (SELECT COUNT(*) FROM reactions WHERE post_id = p.id) AS total_reactions,
+            (SELECT COUNT(*) FROM comments WHERE post_id = p.id) AS total_comments,
+            (SELECT reaction_type FROM reactions WHERE post_id = p.id AND user_id = ?) AS user_reaction
         FROM posts p
         JOIN users u ON p.user_id = u.id
         WHERE 1=1
     ";
     
-    $params = [];
+    $params = [isLoggedIn() ? $_SESSION['user_id'] : 0];
     
     // Filter by user ID (if provided)
     if ($userId) {
@@ -76,23 +84,7 @@ try {
         $params[] = $userId;
     } else {
         // If no user specified, only show public posts
-        $sql .= " AND p.is_public = 1";
-    }
-    
-    // If viewing own posts, show both public and private
-    if (isLoggedIn() && $userId && $userId == $_SESSION['user_id']) {
-        // Remove the is_public filter by rebuilding query
-        $sql = "
-            SELECT 
-                p.*,
-                u.full_name AS author_name,
-                u.avatar_url AS author_avatar,
-                u.custom_user_id AS author_username
-            FROM posts p
-            JOIN users u ON p.user_id = u.id
-            WHERE p.user_id = ?
-        ";
-        $params = [$userId];
+        $sql .= " AND p.visibility = 'public'";
     }
     
     // Order by created_at DESC
