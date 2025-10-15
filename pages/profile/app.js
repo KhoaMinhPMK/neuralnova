@@ -2,6 +2,10 @@
   const $ = (s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
   const toastEl = $('#toast'); let tTimer;
   const toast = (m)=>{ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(()=>toastEl.classList.remove('show'),2000); };
+  
+  // API Configuration
+  const API_BASE = 'https://neuralnova.space/backend/api';
+  let currentUser = null;
   // Inject Back to Dashboard button and hide Checkout button if present
   try {
     const header = document.querySelector('.p-header');
@@ -34,19 +38,125 @@
   const load = (k,def)=>{ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch{ return def; } };
   const save = (k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} };
 
-  // Init profile
-  const prof = load(keyProfile, { avatar:'', cover:'', username:'', userId:'', ip:'', region:'auto' });
-  const avatarSrc = prof.avatar || '../../assets/images/logo.png';
-  if ($('#avatar')) $('#avatar').src = avatarSrc;
-  const avHero = $('#avatarHero'); if (avHero) avHero.src = avatarSrc;
-  if (prof.cover) $('#cover').src = prof.cover;
-  $('#username').value = prof.username || '';
-  $('#userId').value   = prof.userId   || ('USR_'+Date.now());
-  $('#ipRegion').value = prof.region   || 'auto';
-  $('#ipDisplay').textContent = prof.ip || '—';
-  $('#displayName').textContent = prof.username || 'User';
-  $('#uid').textContent = prof.userId || '—';
-  $('#ipShort').textContent = prof.ip || '—';
+  // Initialize with backend data
+  async function initProfile() {
+    try {
+      // Check authentication
+      const authResponse = await fetch(`${API_BASE}/auth/check-session.php`, {
+        credentials: 'include'
+      });
+      const authData = await authResponse.json();
+      
+      if (!authData.success || !authData.authenticated) {
+        window.location.href = '../auth/index.html';
+        return;
+      }
+      
+      currentUser = authData.user;
+      
+      // Load profile data
+      const profileResponse = await fetch(`${API_BASE}/profile/get.php`, {
+        credentials: 'include'
+      });
+      const profileData = await profileResponse.json();
+      
+      if (profileData.success) {
+        const prof = profileData.profile;
+        const avatarSrc = prof.avatar_url || '../../assets/images/logo.png';
+        if ($('#avatar')) $('#avatar').src = avatarSrc;
+        const avHero = $('#avatarHero'); if (avHero) avHero.src = avatarSrc;
+        if (prof.cover_url) $('#cover').src = prof.cover_url;
+        $('#username').value = prof.full_name || '';
+        $('#userId').value = prof.custom_user_id || ('USR_'+Date.now());
+        $('#ipRegion').value = prof.ip_region || 'auto';
+        $('#ipDisplay').textContent = prof.ip_address || '—';
+        $('#displayName').textContent = prof.full_name || 'User';
+        $('#uid').textContent = prof.custom_user_id || '—';
+        $('#ipShort').textContent = prof.ip_address || '—';
+        
+        // Load bio and interests
+        if (prof.bio) $('#bio').value = prof.bio;
+        if (prof.interests) $('#interests').value = prof.interests;
+        if (prof.country) $('#countrySel').value = prof.country;
+        if (prof.gps_coordinates) $('#introCoords').value = prof.gps_coordinates;
+      }
+      
+      // Load timeline and stats
+      await loadTimelineAndStats();
+      
+      // Load badges
+      await loadBadges();
+      
+    } catch (error) {
+      console.error('Profile initialization error:', error);
+      toast('Failed to load profile data');
+    }
+  }
+  
+  // Load timeline and stats from backend
+  async function loadTimelineAndStats() {
+    try {
+      const response = await fetch(`${API_BASE}/profile/timeline.php`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update stats
+        const statsEl = $('#stats');
+        if (statsEl) {
+          statsEl.innerHTML = `
+            <div class="stat">Nơi đến: <strong>${data.stats.regions_count}</strong></div>
+            <div class="stat">Bài viết: <strong>${data.stats.total_posts}</strong></div>
+            <div class="stat">Loài đã ghi: <strong>${data.stats.species_count}</strong></div>
+            <div class="stat">Độ chính xác: <strong>${data.stats.accuracy_rate}%</strong></div>
+          `;
+        }
+        
+        // Update timeline
+        const timelineEl = $('#timeline');
+        if (timelineEl) {
+          timelineEl.innerHTML = data.timeline.map(item => `
+            <div class="tl-item ${item.is_accurate ? 'ok' : 'miss'}">
+              <div><strong>${item.species}</strong> • ${item.region}</div>
+              <div>Ngày quan sát: ${item.observation_date} • Cửa sổ dự báo: ${item.bloom_window}</div>
+              <div>${item.is_accurate ? 'Khớp dự báo ✅' : 'Ngoài cửa sổ dự báo ⚠'}</div>
+            </div>
+          `).join('') || '<div class="tl-item">Chưa có dữ liệu. Hãy đăng một bài viết có ngày và loài.</div>';
+        }
+      }
+    } catch (error) {
+      console.error('Timeline/Stats error:', error);
+    }
+  }
+  
+  // Load badges from backend
+  async function loadBadges() {
+    try {
+      const response = await fetch(`${API_BASE}/profile/badges.php`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        const badgesEl = $('#badges');
+        if (badgesEl) {
+          badgesEl.innerHTML = data.badges.map(badge => `
+            <span class="badge" style="border-color: ${badge.color}; background: ${badge.color}20;">
+              <i data-lucide="${badge.icon}"></i>${badge.name}
+            </span>
+          `).join('');
+          
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    } catch (error) {
+      console.error('Badges error:', error);
+    }
+  }
+  
+  // Initialize profile on page load
+  initProfile();
 
   // Countries list (ISO 3166-1 alpha-2)
   const COUNTRIES = [
@@ -111,20 +221,35 @@
     }
   });
 
-  // Save profile
-  $('#saveProfile').addEventListener('click', ()=>{
-    const data = {
-      avatar: ($('#avatar')?$('#avatar').src:($('#avatarHero')?$('#avatarHero').src:'')) || '',
-      cover: $('#cover')?$('#cover').src:'',
-      username: $('#username').value.trim(),
-      userId: $('#userId').value.trim() || ('USR_'+Date.now()),
-      region: $('#ipRegion').value,
-      ip: $('#ipDisplay').textContent || '—',
-    };
-    save(keyProfile, data); toast('Đã lưu hồ sơ');
-    $('#displayName').textContent = data.username || 'User';
-    $('#uid').textContent = data.userId || '—';
-    $('#ipShort').textContent = data.ip || '—';
+  // Save profile to backend
+  $('#saveProfile').addEventListener('click', async ()=>{
+    try {
+      const formData = new FormData();
+      formData.append('full_name', $('#username').value.trim());
+      formData.append('custom_user_id', $('#userId').value.trim() || ('USR_'+Date.now()));
+      formData.append('ip_region', $('#ipRegion').value);
+      formData.append('ip_address', $('#ipDisplay').textContent || '—');
+      
+      const response = await fetch(`${API_BASE}/profile/update.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast('Đã lưu hồ sơ');
+        $('#displayName').textContent = $('#username').value.trim() || 'User';
+        $('#uid').textContent = $('#userId').value.trim() || '—';
+        $('#ipShort').textContent = $('#ipDisplay').textContent || '—';
+      } else {
+        toast('Lỗi khi lưu hồ sơ: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Save profile error:', error);
+      toast('Lỗi khi lưu hồ sơ');
+    }
   });
 
   // Tabs
@@ -145,15 +270,32 @@
     lavender:{ 'temperate-n':'06-07', 'temperate-s':'12-01', tropical:'05-08', med:'06-07' },
     orchid:  { 'temperate-n':'04-06', 'temperate-s':'10-12', tropical:'Quanh năm', med:'03-05' },
   };
-  // INTRO: save bio/interests/country, GPS
-  $('#saveIntro')?.addEventListener('click', ()=>{
-    const data = load(keyProfile, {});
-    data.bio = $('#bio').value.trim();
-    data.interests = $('#interests').value.trim();
-    data.country = $('#countrySel').value || data.country || '';
-    data.gps = $('#introCoords').value || '';
-    data.blur = $('#blurLoc')?.checked || false;
-    save(keyProfile, data); toast('Đã lưu Giới thiệu');
+  // INTRO: save bio/interests/country, GPS to backend
+  $('#saveIntro')?.addEventListener('click', async ()=>{
+    try {
+      const formData = new FormData();
+      formData.append('bio', $('#bio').value.trim());
+      formData.append('interests', $('#interests').value.trim());
+      formData.append('country', $('#countrySel').value || '');
+      formData.append('gps_coordinates', $('#introCoords').value || '');
+      
+      const response = await fetch(`${API_BASE}/profile/update.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast('Đã lưu Giới thiệu');
+      } else {
+        toast('Lỗi khi lưu: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Save intro error:', error);
+      toast('Lỗi khi lưu Giới thiệu');
+    }
   });
   $('#updateGPSIntro')?.addEventListener('click', ()=>{
     if (!navigator.geolocation) { toast('Thiết bị không hỗ trợ GPS'); return; }
@@ -199,16 +341,83 @@
   // Post feed with like/comment
   const posts2 = load(keyPosts, []); renderFeed();
   computeBadgesAndStats(); renderTimeline();
-  $('#pPublish')?.addEventListener('click', ()=>{
-    const sp=$('#pSpecies').value; const reg=$('#pRegion').value; const win=$('#pBloomWin').value; const info=$('#pInfo').value;
-    const coords=$('#pCoords').value.trim(); const date=$('#pDate').value; const cap=$('#pCaption').value.trim();
-    const f=$('#pMedia').files[0];
-    const add=(src,isVideo)=>{
-      posts2.push({ id:'POST_'+Date.now(), sp, reg, win, info, coords, date, cap, media:src||'', isVideo: !!isVideo, likes:0, reactions:{like:0,heart:0,flower:0,wow:0}, comments:[] , at:new Date().toISOString()});
-      save(keyPosts, posts2); renderFeed(); toast('Đã đăng');
-      $('#pCaption').value=''; $('#pMedia').value='';
-    };
-    if (f) { const rd=new FileReader(); rd.onload=()=> add(rd.result, (f.type||'').startsWith('video/')); rd.readAsDataURL(f); } else add('', false);
+  // POSTS: Create post with backend integration
+  $('#pPublish')?.addEventListener('click', async ()=>{
+    try {
+      const sp = $('#pSpecies').value;
+      const reg = $('#pRegion').value;
+      const win = $('#pBloomWin').value;
+      const info = $('#pInfo').value;
+      const coords = $('#pCoords').value.trim();
+      const date = $('#pDate').value;
+      const cap = $('#pCaption').value.trim();
+      const f = $('#pMedia').files[0];
+      
+      if (!cap.trim()) {
+        toast('Vui lòng nhập mô tả');
+        return;
+      }
+      
+      let mediaUrl = '';
+      
+      // Upload media if provided
+      if (f) {
+        const mediaFormData = new FormData();
+        mediaFormData.append('media', f);
+        
+        const mediaResponse = await fetch(`${API_BASE}/posts/upload-media.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: mediaFormData
+        });
+        
+        const mediaData = await mediaResponse.json();
+        
+        if (mediaData.success) {
+          mediaUrl = mediaData.file.url;
+        } else {
+          toast('Lỗi upload media: ' + (mediaData.error || 'Unknown error'));
+          return;
+        }
+      }
+      
+      // Create post
+      const postFormData = new FormData();
+      postFormData.append('caption', cap);
+      if (mediaUrl) postFormData.append('media_url', mediaUrl);
+      postFormData.append('is_public', '1');
+      postFormData.append('species', sp);
+      postFormData.append('region', reg);
+      postFormData.append('bloom_window', win);
+      postFormData.append('observation_date', date);
+      postFormData.append('coordinates', coords);
+      postFormData.append('species_info', info);
+      
+      const response = await fetch(`${API_BASE}/posts/create.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: postFormData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast('Đã đăng bài');
+        $('#pCaption').value = '';
+        $('#pMedia').value = '';
+        $('#pCoords').value = '';
+        $('#pDate').value = '';
+        
+        // Reload timeline and stats
+        await loadTimelineAndStats();
+        await loadBadges();
+      } else {
+        toast('Lỗi khi đăng bài: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Publish post error:', error);
+      toast('Lỗi khi đăng bài');
+    }
   });
   function renderFeed(){
     const box=$('#postFeed'); if (!box) return;

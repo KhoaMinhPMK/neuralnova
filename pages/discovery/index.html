@@ -54,15 +54,48 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Chat Drawer -->
+  <!-- Chat Drawer - Enhanced -->
   <div id="chatDrawer" class="drawer" hidden>
     <div class="drawer-backdrop"></div>
     <div class="drawer-body">
       <div class="drawer-head">
-        <div class="brand-mini"><img src="../../assets/images/logo.png" alt=""/><span>AI</span></div>
-        <button id="closeChat" class="btn">Đóng</button>
+        <div class="brand-mini">
+          <img src="../../assets/images/logo.png" alt="NeuralNova AI"/>
+          <div>
+            <span>NeuralNova AI</span>
+            <small style="display: block; color: rgba(255,255,255,.6); font-size: 0.8rem; font-weight: 400;">Trợ lý du lịch thông minh</small>
+          </div>
+        </div>
+        <button id="closeChat" class="btn icon" title="Đóng chat">
+          <i data-lucide="x"></i>
+        </button>
       </div>
-      <div class="chat" id="chatBox" aria-live="polite"></div>
+      
+      <div class="chat" id="chatBox" aria-live="polite">
+        <!-- Welcome message -->
+        <div class="msg assistant">
+          <div class="bubble">
+            <div class="message-header">
+              <div class="message-avatar">
+                <i data-lucide="sparkles"></i>
+              </div>
+              <span>NeuralNova AI</span>
+            </div>
+            <div class="message-content">
+              Xin chào! Tôi là NeuralNova AI - trợ lý du lịch thông minh được hỗ trợ bởi GPT-OSS. Tôi có thể giúp bạn:
+              <ul style="margin: 8px 0; padding-left: 20px; color: rgba(255,255,255,.8);">
+                <li>🌟 Gợi ý tour du lịch phù hợp</li>
+                <li>🏨 Tìm khách sạn theo yêu cầu</li>
+                <li>🗺️ Lên kế hoạch lịch trình chi tiết</li>
+                <li>💰 Tư vấn về ngân sách và thời gian</li>
+                <li>🍽️ Đề xuất địa điểm ăn uống</li>
+              </ul>
+              Hãy cho tôi biết bạn muốn đi đâu và có gì đặc biệt nhé! Tôi sẽ tư vấn một cách chuyên nghiệp và chi tiết nhất.
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div class="chat-tools">
         <label class="btn icon" title="Tải hình ảnh">
           <i data-lucide="image"></i>
@@ -72,18 +105,27 @@
           <i data-lucide="paperclip"></i>
           <input id="chatFileInput" type="file" hidden />
         </label>
+        <button class="btn icon" title="Xóa lịch sử chat" onclick="clearChatHistory()">
+          <i data-lucide="trash-2"></i>
+        </button>
       </div>
+      
       <div class="composer">
         <input id="chatInput" placeholder="Nhập tin nhắn..." />
-        <button id="voiceBtn" class="btn icon" type="button" title="Trợ lý giọng nói"><i data-lucide="mic"></i></button>
-        <button id="sendBtn" class="btn primary icon" type="button" title="Gửi"><i data-lucide="send"></i></button>
+        <button id="voiceBtn" class="btn icon" type="button" title="Giọng nói">
+          <i data-lucide="mic"></i>
+        </button>
+        <button id="sendBtn" class="btn primary icon" type="button" title="Gửi">
+          <i data-lucide="send"></i>
+        </button>
       </div>
+      
       <div id="chatMap" class="map" hidden>
-        <div class="map-placeholder">Bản đồ (demo) — sẽ hiển thị khi bạn hỏi chỉ đường/địa điểm</div>
+        <div class="map-placeholder">🗺️ Bản đồ tương tác — Hiển thị các điểm tham quan được gợi ý</div>
         <div class="legend">
-          <span class="badge tour">Tour</span>
-          <span class="badge sight">Điểm tham quan</span>
-          <span class="badge food">Ăn uống</span>
+          <span class="badge tour">🏛️ Tour</span>
+          <span class="badge sight">📍 Điểm tham quan</span>
+          <span class="badge food">🍽️ Ăn uống</span>
         </div>
         <div id="chatMarkerList" class="markers"></div>
       </div>
@@ -132,6 +174,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

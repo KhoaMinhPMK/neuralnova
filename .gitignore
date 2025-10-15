@@ -1,1 +1,37 @@
-"pages/.env" 
+# Environment variables (API keys, secrets)
+.env
+*.env
+.env.local
+.env.*.local
+
+# Discovery page config (contains API keys)
+pages/discovery/config.js
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
+*.min.js
+*.min.css
+
+# Temporary files
+temp_patch.txt
+*.tmp
+*.bak
+

@@ -92,6 +92,7 @@ try {
     $speciesInfo = isset($_POST['species_info']) ? trim($_POST['species_info']) : null;
     $coordinates = isset($_POST['coordinates']) ? trim($_POST['coordinates']) : null;
     $postDate = isset($_POST['post_date']) ? trim($_POST['post_date']) : null;
+    $observationDate = isset($_POST['observation_date']) ? trim($_POST['observation_date']) : null;
     $isPublic = isset($_POST['is_public']) ? intval($_POST['is_public']) : 1;
     $blurLocation = isset($_POST['blur_location']) ? intval($_POST['blur_location']) : 0;
     
@@ -148,12 +149,13 @@ try {
             species_info, 
             coordinates, 
             post_date, 
+            observation_date,
             caption, 
             media_url, 
             media_type, 
             is_public, 
             blur_location
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
     $stmt->execute([
@@ -164,6 +166,7 @@ try {
         $speciesInfo,
         $coordinates,
         $postDate,
+        $observationDate,
         $caption,
         $mediaPath,
         $mediaType,

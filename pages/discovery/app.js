@@ -6,9 +6,111 @@
   const KEY_SESSION = 'nn_discovery_session';
   const KEY_RESULTS = 'nn_discovery_results';
   const KEY_PLAN = 'nn_itinerary_saved';
+  
+  // Groq API Configuration
+  const GROQ_API_KEY = window.DISCOVERY_CONFIG?.GROQ_API_KEY || 'gsk_BAMU3dFXVOq1EGJYVPCPWGdyb3FYFyR3wO1v0CFDMiBuSL9aQ';
+  const GROQ_API_URL = window.DISCOVERY_CONFIG?.GROQ_API_URL || 'https://api.groq.com/openai/v1/chat/completions';
+  const MODEL = window.DISCOVERY_CONFIG?.MODEL || 'openai/gpt-oss-20b';
+  const TEMPERATURE = window.DISCOVERY_CONFIG?.TEMPERATURE || 0.6;
+  const MAX_TOKENS = window.DISCOVERY_CONFIG?.MAX_TOKENS || 2048;
+  const TOP_P = window.DISCOVERY_CONFIG?.TOP_P || 0.95;
+  const INCLUDE_REASONING = window.DISCOVERY_CONFIG?.INCLUDE_REASONING || false;
+  const REASONING_EFFORT = window.DISCOVERY_CONFIG?.REASONING_EFFORT || 'medium';
 
   const load = (k, def)=>{ try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); } catch { return def; } };
   const save = (k, v)=>{ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+  // Groq API function
+  async function callGroqAPI(messages) {
+    try {
+      // Validate API key
+      if (!GROQ_API_KEY) {
+        throw new Error('API key is missing. Please configure GROQ_API_KEY in config.js');
+      }
+      
+      console.log('🚀 Calling Groq API with model:', MODEL);
+      
+      const requestBody = {
+        model: MODEL,
+        messages: messages,
+        temperature: TEMPERATURE,
+        max_completion_tokens: MAX_TOKENS,
+        top_p: TOP_P,
+        stream: false
+      };
+      
+      // Add reasoning parameters based on model
+      if (MODEL.includes('gpt-oss')) {
+        requestBody.include_reasoning = INCLUDE_REASONING;
+        if (REASONING_EFFORT) {
+          requestBody.reasoning_effort = REASONING_EFFORT;
+        }
+      } else if (MODEL.includes('qwen')) {
+        // Qwen uses reasoning_format instead
+        requestBody.reasoning_format = 'hidden'; // or 'raw' or 'parsed'
+        requestBody.reasoning_effort = 'default'; // or 'none'
+      }
+      
+      console.log('API Request:', { model: MODEL, temperature: TEMPERATURE, max_tokens: MAX_TOKENS });
+      
+      const response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ API Response Error:', response.status, errorText);
+        
+        let errorMessage = 'Xin lỗi, tôi gặp lỗi khi xử lý yêu cầu của bạn.';
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.error && errorData.error.message) {
+            errorMessage = `Lỗi API: ${errorData.error.message}`;
+          }
+        } catch {
+          // If not JSON, use generic message
+        }
+        
+        if (response.status === 401) {
+          errorMessage = 'Lỗi xác thực API key. Vui lòng kiểm tra lại API key trong config.js';
+        } else if (response.status === 429) {
+          errorMessage = 'Quá nhiều yêu cầu. Vui lòng thử lại sau vài giây.';
+        } else if (response.status === 400) {
+          errorMessage = 'Yêu cầu không hợp lệ. Vui lòng kiểm tra cấu hình model.';
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      // Extract content and reasoning if available
+      const message = data.choices[0].message;
+      let content = message.content || '';
+      
+      // If reasoning is included and available, append it
+      if (INCLUDE_REASONING && message.reasoning) {
+        content = `<div class="reasoning-block"><strong>🧠 Quá trình suy luận:</strong><br/>${message.reasoning}</div><hr/>${content}`;
+      }
+      
+      return content;
+    } catch (error) {
+      console.error('❌ Groq API Error:', error);
+      
+      // Return user-friendly error message
+      if (error.message) {
+        return `<div class="error-message">⚠️ ${error.message}</div>`;
+      }
+      return '<div class="error-message">⚠️ Xin lỗi, tôi gặp lỗi khi xử lý yêu cầu của bạn. Vui lòng thử lại.</div>';
+    }
+  }
 
   const state = {
     chat: load(KEY_SESSION, { history: [] }),
@@ -18,8 +120,35 @@
 
   function renderChat(){
     const box = $('#chatBox'); if (!box) return;
-    box.innerHTML = (state.chat.history||[]).map(m=>`<div class="msg ${m.role}"><div class="bubble">${m.text}</div></div>`).join('');
+    box.innerHTML = (state.chat.history||[]).map(m=>{
+      if (m.role === 'assistant') {
+        return `<div class="msg ${m.role}">
+          <div class="bubble">
+            <div class="message-header">
+              <div class="message-avatar">
+                <i data-lucide="sparkles"></i>
+              </div>
+              <span>NeuralNova AI</span>
+            </div>
+            <div class="message-content">${m.text}</div>
+          </div>
+        </div>`;
+      } else {
+        return `<div class="msg ${m.role}">
+          <div class="bubble">
+            <div class="message-header">
+              <div class="message-avatar">
+                <i data-lucide="user"></i>
+              </div>
+              <span>Bạn</span>
+            </div>
+            <div class="message-content">${m.text}</div>
+          </div>
+        </div>`;
+      }
+    }).join('');
     box.scrollTop = box.scrollHeight;
+    if (window.lucide) lucide.createIcons();
   }
 
   function parseCriteria(text){
@@ -77,7 +206,18 @@
   }
 
   function renderResults(){
-    const toursBox = $('#tourList'); const hotelsBox=$('#hotelList'); const placesBox = $('#placeList'); const blogsBox = $('#blogList'); const mbox = $('#markerList');
+    const toursBox = $('#tourList'); 
+    const hotelsBox = $('#hotelList'); 
+    const placesBox = $('#placeList'); 
+    const blogsBox = $('#blogList'); 
+    const mbox = $('#markerList');
+    
+    // Check if elements exist before rendering
+    if (!toursBox || !hotelsBox) {
+      console.warn('Required elements not found for rendering results');
+      return;
+    }
+    
     const { tours, hotels, places, blogs, markers } = state.results;
 
     toursBox.innerHTML = (tours||[]).map(t=>`
@@ -96,32 +236,39 @@
       </div>
     `).join('') || '<div class="card">Chưa có tour phù hợp</div>';
 
-    placesBox.innerHTML = (places||[]).map(p=>`
-      <div class="card">
-        <div class="row"><strong>${p.name}</strong><span class="tag">${p.type}</span></div>
-        <div class="tags">${(p.tags||[]).map(x=>`<span class="tag">${x}</span>`).join('')}</div>
-        <div class="row">
-          <small class="muted">${p.lat.toFixed(2)}, ${p.lng.toFixed(2)}</small>
-          <button class="btn" data-act="save" data-type="place" data-id="${p.id}">Lưu</button>
+    // Only render if elements exist
+    if (placesBox) {
+      placesBox.innerHTML = (places||[]).map(p=>`
+        <div class="card">
+          <div class="row"><strong>${p.name}</strong><span class="tag">${p.type}</span></div>
+          <div class="tags">${(p.tags||[]).map(x=>`<span class="tag">${x}</span>`).join('')}</div>
+          <div class="row">
+            <small class="muted">${p.lat.toFixed(2)}, ${p.lng.toFixed(2)}</small>
+            <button class="btn" data-act="save" data-type="place" data-id="${p.id}">Lưu</button>
+          </div>
         </div>
-      </div>
-    `).join('') || '<div class="card">Chưa có địa điểm</div>';
+      `).join('') || '<div class="card">Chưa có địa điểm</div>';
+    }
 
-    blogsBox.innerHTML = (blogs||[]).map(b=>`
-      <div class="card">
-        <div class="row"><strong>${b.title}</strong><span>${b.readTimeMin} phút</span></div>
-        <div class="muted">${b.summary||''}</div>
-        <div><button class="btn" data-act="save" data-type="blog" data-id="${b.id}">Lưu</button></div>
-      </div>
-    `).join('') || '<div class="card">Chưa có bài viết</div>';
+    if (blogsBox) {
+      blogsBox.innerHTML = (blogs||[]).map(b=>`
+        <div class="card">
+          <div class="row"><strong>${b.title}</strong><span>${b.readTimeMin} phút</span></div>
+          <div class="muted">${b.summary||''}</div>
+          <div><button class="btn" data-act="save" data-type="blog" data-id="${b.id}">Lưu</button></div>
+        </div>
+      `).join('') || '<div class="card">Chưa có bài viết</div>';
+    }
 
-    mbox.innerHTML = (markers||[]).map(m=>`
-      <div class="marker">
-        <div><strong>${m.label}</strong></div>
-        <div class="muted">${m.lat.toFixed(3)}, ${m.lng.toFixed(3)}</div>
-        <div class="tags"><span class="tag">${m.kind}</span></div>
-      </div>
-    `).join('') || '<div class="marker">Chưa có điểm hiển thị</div>';
+    if (mbox) {
+      mbox.innerHTML = (markers||[]).map(m=>`
+        <div class="marker">
+          <div><strong>${m.label}</strong></div>
+          <div class="muted">${m.lat.toFixed(3)}, ${m.lng.toFixed(3)}</div>
+          <div class="tags"><span class="tag">${m.kind}</span></div>
+        </div>
+      `).join('') || '<div class="marker">Chưa có điểm hiển thị</div>';
+    }
 
     if (window.lucide) lucide.createIcons();
     // Ensure tour book buttons exist (inject if missing)
@@ -153,37 +300,125 @@
     try { renderHotelsBox(); } catch {}
   }
 
-  function reply(text){
-    const crit = parseCriteria(text);
-    const res = sampleData(crit);
-    state.results = res; save(KEY_RESULTS, res);
-    const hints = [];
-    if (crit.theme) hints.push(`chủ đề: ${crit.theme}`);
-    if (crit.days) hints.push(`${crit.days} ngày`);
-    if (crit.budget) hints.push(`ngân sách ~ ${crit.budget}`);
-    if (crit.hotelIntent) hints.push('kèm gợi ý khách sạn');
-    const msg = `Mình gợi ý theo ${hints.join(', ') || 'nhu cầu của bạn'} — xem Tour và Địa điểm ở khung bên phải.`;
-    state.chat.history.push({ role:'assistant', text: msg }); save(KEY_SESSION, state.chat);
-    renderChat(); renderResults();
-    // Show map in chat if user asked for map/places/directions
+  async function reply(text){
+    // Show typing indicator
+    showTypingIndicator();
+    
     try {
-      const wantMap = /(bản đồ|ban do|map|chỉ đường|chi duong|google map|đi đâu|dia diem)/i.test(text||'');
-      if (wantMap) {
-        const drawer = document.querySelector('#chatDrawer .drawer-body');
-        if (drawer && !document.getElementById('chatMap')) {
-          const map = document.createElement('div'); map.id='chatMap'; map.className='map'; map.hidden=false;
-          map.innerHTML = '<div class="map-placeholder">Bản đồ (demo) — sẽ hiện các điểm gợi ý</div><div class="legend"><span class="badge tour">Tour</span><span class="badge sight">Điểm tham quan</span><span class="badge food">Ăn uống</span></div><div id="chatMarkerList" class="markers"></div>';
-          const tools = drawer.querySelector('.chat-tools') || drawer.querySelector('.composer');
-          drawer.insertBefore(map, tools);
+      // Prepare messages for Groq API
+      const messages = [
+        {
+          role: 'system',
+          content: `Bạn là NeuralNova AI - trợ lý du lịch thông minh chuyên nghiệp. Nhiệm vụ của bạn:
+
+1. GỢI Ý DU LỊCH:
+- Phân tích nhu cầu du lịch từ tin nhắn người dùng
+- Gợi ý tour, khách sạn, địa điểm phù hợp
+- Lên kế hoạch lịch trình chi tiết
+- Tư vấn về ngân sách, thời gian, hoạt động
+
+2. PHONG CÁCH TRẢ LỜI:
+- Thân thiện, nhiệt tình như một chuyên gia du lịch
+- Trả lời bằng tiếng Việt
+- Cung cấp thông tin chi tiết và hữu ích
+- Đề xuất cụ thể về địa điểm, thời gian, chi phí
+
+3. XỬ LÝ YÊU CẦU:
+- Phân tích ngân sách, số ngày, sở thích
+- Gợi ý theo chủ đề: biển, núi, văn hóa, ẩm thực
+- Tư vấn khách sạn theo yêu cầu
+- Hướng dẫn lịch trình tối ưu
+
+Hãy trả lời một cách chuyên nghiệp và hữu ích!`
+        },
+        ...state.chat.history.map(msg => ({
+          role: msg.role,
+          content: msg.text
+        }))
+      ];
+
+      // Call Groq API
+      const aiResponse = await callGroqAPI(messages);
+      
+      // Hide typing indicator
+      hideTypingIndicator();
+      
+      // Add AI response to chat
+      state.chat.history.push({ role:'assistant', text: aiResponse });
+      save(KEY_SESSION, state.chat);
+      renderChat();
+      
+      // Parse criteria and generate sample data for UI
+      const crit = parseCriteria(text);
+      const res = sampleData(crit);
+      state.results = res; 
+      save(KEY_RESULTS, res);
+      renderResults();
+      
+      // Show map if requested
+      try {
+        const wantMap = /(bản đồ|ban do|map|chỉ đường|chi duong|google map|đi đâu|dia diem)/i.test(text||'');
+        if (wantMap) {
+          const drawer = document.querySelector('#chatDrawer .drawer-body');
+          if (drawer && !document.getElementById('chatMap')) {
+            const map = document.createElement('div'); map.id='chatMap'; map.className='map'; map.hidden=false;
+            map.innerHTML = '<div class="map-placeholder">🗺️ Bản đồ tương tác — Hiển thị các điểm tham quan được gợi ý</div><div class="legend"><span class="badge tour">🏛️ Tour</span><span class="badge sight">📍 Điểm tham quan</span><span class="badge food">🍽️ Ăn uống</span></div><div id="chatMarkerList" class="markers"></div>';
+            const tools = drawer.querySelector('.chat-tools') || drawer.querySelector('.composer');
+            drawer.insertBefore(map, tools);
+          }
+          const box = document.getElementById('chatMarkerList');
+          if (box) {
+            const markers = (state.results.markers||[]);
+            box.innerHTML = markers.map(m=>`<div class="marker"><div><strong>${m.label}</strong></div><div class="muted">${m.lat.toFixed(3)}, ${m.lng.toFixed(3)}</div><div class="tags"><span class="tag">${m.kind}</span></div></div>`).join('') || '<div class="marker">Chưa có điểm hiển thị</div>';
+          }
+          const cm = document.getElementById('chatMap'); if (cm) cm.hidden = false;
         }
-        const box = document.getElementById('chatMarkerList');
-        if (box) {
-          const markers = (state.results.markers||[]);
-          box.innerHTML = markers.map(m=>`<div class="marker"><div><strong>${m.label}</strong></div><div class="muted">${m.lat.toFixed(3)}, ${m.lng.toFixed(3)}</div><div class="tags"><span class="tag">${m.kind}</span></div></div>`).join('') || '<div class="marker">Chưa có điểm hiển thị</div>';
-        }
-        const cm = document.getElementById('chatMap'); if (cm) cm.hidden = false;
-      }
-    } catch {}
+      } catch {}
+      
+    } catch (error) {
+      hideTypingIndicator();
+      console.error('Reply error:', error);
+      const errorMsg = 'Xin lỗi, tôi gặp lỗi khi xử lý yêu cầu của bạn. Vui lòng thử lại.';
+      state.chat.history.push({ role:'assistant', text: errorMsg });
+      save(KEY_SESSION, state.chat);
+      renderChat();
+    }
+  }
+
+  // Typing indicator functions
+  function showTypingIndicator() {
+    const chatBox = $('#chatBox');
+    if (!chatBox) return;
+    
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typingIndicator';
+    typingDiv.className = 'msg assistant';
+    typingDiv.innerHTML = `
+      <div class="bubble">
+        <div class="message-header">
+          <div class="message-avatar">
+            <i data-lucide="sparkles"></i>
+          </div>
+          <span>NeuralNova AI</span>
+        </div>
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    `;
+    
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    if (window.lucide) lucide.createIcons();
+  }
+  
+  function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+      typingIndicator.remove();
+    }
   }
 
   function send(){
@@ -316,8 +551,32 @@
     $('#bookingModal').hidden = true; toast('Đã tạo yêu cầu đặt. Chúng tôi sẽ liên hệ xác nhận.');
   });
 
+  // Check API key configuration
+  function checkAPIConfiguration() {
+    if (!window.DISCOVERY_CONFIG) {
+      console.error('DISCOVERY_CONFIG not found. Please ensure config.js is loaded.');
+      toast('Lỗi cấu hình: Không tìm thấy file config.js');
+      return false;
+    }
+    
+    if (!GROQ_API_KEY) {
+      console.error('GROQ_API_KEY is missing. Please configure your API key in config.js');
+      toast('Lỗi: Thiếu API key. Vui lòng cấu hình API key trong config.js');
+      return false;
+    }
+    
+    console.log('✅ API Configuration loaded successfully');
+    console.log('Model:', MODEL);
+    console.log('Temperature:', TEMPERATURE);
+    console.log('Max Tokens:', MAX_TOKENS);
+    return true;
+  }
+
   // First render
   renderChat(); renderResults(); renderHotelsBox();
+  
+  // Check API configuration
+  checkAPIConfiguration();
   // Ensure composer exists (self-heal if missing)
   try {
     const drawerBody = document.querySelector('#chatDrawer .drawer-body');
@@ -391,8 +650,23 @@
       }
     }
   })();
+  // Clear chat history function
+  window.clearChatHistory = function() {
+    if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử chat?')) {
+      state.chat.history = [];
+      save(KEY_SESSION, state.chat);
+      renderChat();
+      toast('Đã xóa lịch sử chat');
+    }
+  };
+
+  // Enhanced welcome message
   if ((state.chat.history||[]).length===0){
-    state.chat.history.push({ role:'assistant', text:'Xin chào! Hãy nói bạn muốn đi đâu và mong muốn của bạn nhé.' });
-    save(KEY_SESSION, state.chat); renderChat();
+    state.chat.history.push({ 
+      role:'assistant', 
+      text:'Xin chào! Tôi là NeuralNova AI - trợ lý du lịch thông minh được hỗ trợ bởi GPT-OSS. Tôi có thể giúp bạn:\n\n🌟 Gợi ý tour du lịch phù hợp\n🏨 Tìm khách sạn theo yêu cầu\n🗺️ Lên kế hoạch lịch trình chi tiết\n💰 Tư vấn về ngân sách và thời gian\n🍽️ Đề xuất địa điểm ăn uống\n\nHãy cho tôi biết bạn muốn đi đâu và có gì đặc biệt nhé! Tôi sẽ tư vấn một cách chuyên nghiệp và chi tiết nhất.' 
+    });
+    save(KEY_SESSION, state.chat); 
+    renderChat();
   }
 })();

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Groq API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #0f0a1f;
+      color: #fff;
+    }
+    .test-section {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    button {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #6d28d9;
+    }
+    .result {
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .success { color: #22d3ee; }
+    .error { color: #ef4444; }
+    input {
+      width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Groq API</h1>
+  
+  <div class="test-section">
+    <h2>1. Kiểm tra cấu hình</h2>
+    <button onclick="checkConfig()">Kiểm tra Config</button>
+    <div id="configResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>2. Test API với model mặc định (llama-3.3-70b-versatile)</h2>
+    <button onclick="testAPI('llama-3.3-70b-versatile')">Test Llama 3.3</button>
+    <div id="llama33Result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>3. Test API với reasoning model (openai/gpt-oss-20b)</h2>
+    <button onclick="testAPI('openai/gpt-oss-20b')">Test GPT-OSS 20B</button>
+    <div id="gptossResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>4. Test với custom API key</h2>
+    <input type="password" id="customApiKey" placeholder="Nhập API key để test...">
+    <button onclick="testCustomKey()">Test Custom Key</button>
+    <div id="customResult" class="result"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    function checkConfig() {
+      const result = document.getElementById('configResult');
+      const config = window.DISCOVERY_CONFIG;
+      
+      if (!config) {
+        result.innerHTML = '<span class="error">❌ Không tìm thấy DISCOVERY_CONFIG</span>';
+        return;
+      }
+      
+      result.innerHTML = `
+<span class="success">✅ Config loaded</span>
+
+API Key: ${config.GROQ_API_KEY ? '✓ Có (' + config.GROQ_API_KEY.substring(0, 20) + '...)' : '❌ Không có'}
+API URL: ${config.GROQ_API_URL || 'Không có'}
+Model: ${config.MODEL || 'Không có'}
+Temperature: ${config.TEMPERATURE || 'Không có'}
+Max Tokens: ${config.MAX_TOKENS || 'Không có'}
+      `;
+    }
+
+    async function testAPI(model) {
+      const resultId = model === 'llama-3.3-70b-versatile' ? 'llama33Result' : 'gptossResult';
+      const result = document.getElementById(resultId);
+      
+      result.innerHTML = '<span class="success">⏳ Đang gọi API...</span>';
+      
+      try {
+        const apiKey = window.DISCOVERY_CONFIG?.GROQ_API_KEY;
+        const apiUrl = window.DISCOVERY_CONFIG?.GROQ_API_URL || 'https://api.groq.com/openai/v1/chat/completions';
+        
+        if (!apiKey) {
+          result.innerHTML = '<span class="error">❌ Không tìm thấy API key</span>';
+          return;
+        }
+
+        const requestBody = {
+          model: model,
+          messages: [
+            {
+              role: "user",
+              content: "Say 'Hello, I am working!' in Vietnamese"
+            }
+          ],
+          temperature: 0.5,
+          max_completion_tokens: 100,
+          top_p: 1
+        };
+
+        // Add reasoning params for GPT-OSS
+        if (model.includes('gpt-oss')) {
+          requestBody.include_reasoning = false;
+          requestBody.reasoning_effort = 'low';
+        }
+
+        console.log('Request:', {
+          url: apiUrl,
+          model: model,
+          body: requestBody
+        });
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        const responseText = await response.text();
+        console.log('Response status:', response.status);
+        console.log('Response text:', responseText);
+
+        if (!response.ok) {
+          let errorDetails = responseText;
+          try {
+            const errorJson = JSON.parse(responseText);
+            errorDetails = JSON.stringify(errorJson, null, 2);
+          } catch {}
+          
+          result.innerHTML = `<span class="error">❌ Error ${response.status}</span>\n\n${errorDetails}`;
+          return;
+        }
+
+        const data = JSON.parse(responseText);
+        const content = data.choices[0]?.message?.content || 'No content';
+        
+        result.innerHTML = `<span class="success">✅ Success!</span>\n\nModel: ${model}\nResponse: ${content}\n\nFull response:\n${JSON.stringify(data, null, 2)}`;
+        
+      } catch (error) {
+        result.innerHTML = `<span class="error">❌ Error:</span>\n\n${error.message}\n\nStack:\n${error.stack}`;
+      }
+    }
+
+    async function testCustomKey() {
+      const result = document.getElementById('customResult');
+      const customKey = document.getElementById('customApiKey').value.trim();
+      
+      if (!customKey) {
+        result.innerHTML = '<span class="error">❌ Vui lòng nhập API key</span>';
+        return;
+      }
+      
+      result.innerHTML = '<span class="success">⏳ Đang test custom key...</span>';
+      
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${customKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              {
+                role: "user",
+                content: "Say hello in Vietnamese"
+              }
+            ],
+            temperature: 0.5,
+            max_completion_tokens: 50
+          })
+        });
+
+        const responseText = await response.text();
+        
+        if (!response.ok) {
+          let errorDetails = responseText;
+          try {
+            const errorJson = JSON.parse(responseText);
+            errorDetails = JSON.stringify(errorJson, null, 2);
+          } catch {}
+          
+          result.innerHTML = `<span class="error">❌ Custom key không hợp lệ (${response.status})</span>\n\n${errorDetails}`;
+          return;
+        }
+
+        const data = JSON.parse(responseText);
+        const content = data.choices[0]?.message?.content || 'No content';
+        
+        result.innerHTML = `<span class="success">✅ Custom key hợp lệ!</span>\n\nResponse: ${content}`;
+        
+      } catch (error) {
+        result.innerHTML = `<span class="error">❌ Error:</span>\n\n${error.message}`;
+      }
+    }
+
+    // Auto check config on load
+    window.addEventListener('load', () => {
+      checkConfig();
+    });
+  </script>
+</body>
+</html>
