@@ -27,6 +27,12 @@ backend/
 │   ├── validation.php            # Input validation
 │   └── session.php               # Session management
 │
+├── tests/                        # 🧪 Testing & debugging tools
+│   ├── test-connection.php       # Simple connection test
+│   ├── debug.php                 # Comprehensive diagnostics
+│   ├── test-api.html             # Interactive API tester
+│   └── README.md                 # Testing guide
+│
 ├── .htaccess                     # Apache configuration
 └── README.md                     # This file
 ```
@@ -60,12 +66,23 @@ define('DB_PASS', 'your_password');    # Database password
 
 ### 3. Test API
 
+**Option 1: Interactive Web Interface (Recommended)**
+```
+http://localhost/neuralnova/backend/tests/test-api.html
+```
+
+**Option 2: Diagnostics Tool**
+```
+http://localhost/neuralnova/backend/tests/debug.php
+```
+
+**Option 3: cURL Commands**
 ```bash
 # Test health check
-curl https://neuralnova.space/backend/api/auth/check-session.php
+curl http://localhost/neuralnova/backend/api/auth/check-session.php
 
 # Test registration
-curl -X POST https://neuralnova.space/backend/api/auth/register.php \
+curl -X POST http://localhost/neuralnova/backend/api/auth/register.php \
   -H "Content-Type: application/json" \
   -d '{"full_name":"Test User","email":"test@example.com","password":"Test@123","terms_accepted":true}'
 ```

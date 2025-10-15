@@ -105,11 +105,16 @@ backend/
 │   ├── 001_users_table.sql       ✅ Database schema
 │   └── README.md                 ✅ SQL guide
 │
+├── tests/                        ✅ Testing & debugging
+│   ├── test-connection.php       ✅ Connection test
+│   ├── debug.php                 ✅ Diagnostics tool
+│   ├── test-api.html             ✅ Interactive API tester
+│   └── README.md                 ✅ Testing guide
+│
 ├── .htaccess                     ✅ Apache config
 ├── README.md                     ✅ API docs
 ├── DEPLOYMENT.md                 ✅ Deployment guide
-├── BACKEND_SUMMARY.md            ✅ This file
-└── test-api.html                 ✅ API tester
+└── BACKEND_SUMMARY.md            ✅ This file
 ```
 
 ---

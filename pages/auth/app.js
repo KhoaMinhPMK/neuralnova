@@ -4,8 +4,8 @@
 // ===========================================
 
 // ⚠️ CHANGE THIS TO YOUR API URL
-const API_BASE_URL = 'https://neuralnova.space/backend/api'; // Production
-// const API_BASE_URL = 'http://localhost/neuralnova/backend/api'; // Local
+// const API_BASE_URL = 'https://neuralnova.space/backend/api'; // Production
+const API_BASE_URL = 'http://localhost/neuralnova/backend/api'; // Local - ĐANG DÙNG
 
 // UI Toggle
 const sign_in_btn = document.querySelector("#sign-in-btn");
