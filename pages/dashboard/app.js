@@ -167,20 +167,41 @@
             const res = await fetch(`${API_BASE}/posts/feed.php?limit=20&offset=0`, {
                 credentials: 'include'
             });
+            
+            // Check if response is JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await res.text();
+                console.error('❌ Backend returned HTML instead of JSON:', text.substring(0, 500));
+                throw new Error('Backend error - check server logs');
+            }
+            
             const data = await res.json();
 
-            if (data.success && data.posts) {
-                postsData = data.posts;
+            if (data.success) {
+                // Backend success - posts might be empty array
+                postsData = data.posts || [];
+                
+                if (postsData.length === 0) {
+                    console.log('📭 No posts in database yet. Create your first post!');
+                } else {
+                    console.log(`✅ Loaded ${postsData.length} posts from database`);
+                }
+                
                 renderPosts();
             } else {
-                console.error('Failed to load posts:', data.message);
-                // Show empty state or mockup
+                // Backend error
+                console.error('❌ Backend error:', data.message);
                 postsData = [];
                 renderPosts();
+                toast(data.message || 'Failed to load posts', true);
             }
         } catch (error) {
-            console.error('Error loading posts:', error);
-            toast('Failed to load posts', true);
+            // Network or parsing error
+            console.error('❌ Network error loading posts:', error);
+            postsData = [];
+            renderPosts();
+            toast('Failed to connect to server', true);
         }
     }
 
@@ -500,6 +521,15 @@
                 })
             });
             
+            // Check if response is JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await res.text();
+                console.error('❌ Backend returned HTML instead of JSON:', text.substring(0, 500));
+                toast('Backend error - check console', true);
+                return false;
+            }
+            
             const data = await res.json();
             
             if (data.success) {
@@ -532,50 +562,67 @@
         const modal = document.createElement('div');
         modal.className = 'create-post-modal';
         modal.innerHTML = `
-            <div class="modal-overlay"></div>
+            <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Create Post</h3>
-                    <button class="modal-close">&times;</button>
+                    <button class="modal-close" onclick="this.closest('.create-post-modal').remove()">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <textarea id="newPostContent" placeholder="What's on your mind?" rows="5"></textarea>
-                    <input type="text" id="newPostImage" placeholder="Image URL (optional)" />
+                    <div class="modal-user-info">
+                        <img src="${currentUser?.avatar_url || '../../assets/images/logo.png'}" alt="You" class="modal-user-avatar">
+                        <div class="modal-user-name">${currentUser?.full_name || 'User'}</div>
+                    </div>
+                    <textarea id="newPostContent" placeholder="What's on your mind?" rows="5" autofocus></textarea>
+                    <div class="modal-image-input">
+                        <label for="newPostImage">
+                            <i class="fas fa-image"></i> Image URL (optional)
+                        </label>
+                        <input type="text" id="newPostImage" placeholder="https://example.com/image.jpg" />
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-cancel">Cancel</button>
-                    <button class="btn-post">Post</button>
+                    <button class="btn-cancel" onclick="this.closest('.create-post-modal').remove()">Cancel</button>
+                    <button class="btn-post" id="submitPostBtn">Post</button>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
         
-        // Focus textarea
+        // Focus textarea after modal is added to DOM
         setTimeout(() => {
-            $('#newPostContent').focus();
+            const textarea = document.getElementById('newPostContent');
+            if (textarea) textarea.focus();
         }, 100);
         
-        // Close handlers
-        modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
-        modal.querySelector('.btn-cancel').addEventListener('click', () => modal.remove());
-        modal.querySelector('.modal-overlay').addEventListener('click', () => modal.remove());
-        
         // Post handler
-        modal.querySelector('.btn-post').addEventListener('click', async () => {
-            const content = $('#newPostContent').value.trim();
-            const imageUrl = $('#newPostImage').value.trim();
-            
-            if (!content) {
-                toast('Please write something!', true);
-                return;
-            }
-            
-            const success = await createPost(content, imageUrl || null);
-            if (success) {
-                modal.remove();
-            }
-        });
+        const submitBtn = document.getElementById('submitPostBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async () => {
+                const content = document.getElementById('newPostContent').value.trim();
+                const imageUrl = document.getElementById('newPostImage').value.trim();
+                
+                if (!content) {
+                    toast('Please write something!', true);
+                    return;
+                }
+                
+                // Disable button during submission
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Posting...';
+                
+                const success = await createPost(content, imageUrl || null);
+                
+                if (success) {
+                    modal.remove();
+                } else {
+                    // Re-enable button on failure
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Post';
+                }
+            });
+        }
     }
 
     // Post action buttons
