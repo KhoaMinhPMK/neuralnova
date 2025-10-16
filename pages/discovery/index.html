@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khám Phá & Gợi Ý | NeuralNova</title>
+  <title>🌍 Travel Discovery - AI Travel Assistant | NeuralNova</title>
   <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,13 +17,25 @@
 <body>
   <header class="d-header">
     <div class="brand">
-      <img src="../../assets/images/logo.png" alt="NeuralNova" />
-      <span>NeuralNova Discovery</span>
+      <a href="../dashboard/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+        <i class="fas fa-arrow-left" style="font-size: 20px;"></i>
+        <img src="../../assets/images/logo.png" alt="NeuralNova" />
+        <span>🌍 Travel Discovery</span>
+      </a>
     </div>
     <nav class="actions">
-      <button id="openChat" class="btn btn-ai"><img class="mini-logo" src="../../assets/images/logo.png" alt=""/><span>AI</span></button>
-      <button id="openPlan" class="btn">Mở Kế hoạch</button>
-      <button id="saveAll" class="btn primary">Lưu tất cả</button>
+      <button id="openChat" class="btn btn-ai">
+        <i class="fas fa-robot"></i>
+        <span>AI Tư Vấn Du Lịch</span>
+      </button>
+      <button id="openPlan" class="btn">
+        <i class="fas fa-map-marked-alt"></i>
+        <span>Kế Hoạch Của Tôi</span>
+      </button>
+      <a href="../dashboard/index.html" class="btn">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
     </nav>
   </header>
 
@@ -82,15 +96,29 @@
               <span>NeuralNova AI</span>
             </div>
             <div class="message-content">
-              Xin chào! Tôi là NeuralNova AI - trợ lý du lịch thông minh được hỗ trợ bởi GPT-OSS. Tôi có thể giúp bạn:
-              <ul style="margin: 8px 0; padding-left: 20px; color: rgba(255,255,255,.8);">
-                <li>🌟 Gợi ý tour du lịch phù hợp</li>
-                <li>🏨 Tìm khách sạn theo yêu cầu</li>
-                <li>🗺️ Lên kế hoạch lịch trình chi tiết</li>
-                <li>💰 Tư vấn về ngân sách và thời gian</li>
-                <li>🍽️ Đề xuất địa điểm ăn uống</li>
-              </ul>
-              Hãy cho tôi biết bạn muốn đi đâu và có gì đặc biệt nhé! Tôi sẽ tư vấn một cách chuyên nghiệp và chi tiết nhất.
+              Xin chào! 👋 Tôi là NeuralNova AI - trợ lý du lịch thông minh được hỗ trợ bởi Groq LLaMA 3.3 70B!
+              
+              <div style="margin: 12px 0; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                <strong style="color: #4CAF50;">🎯 Chuyên tư vấn du lịch "Độ Trình":</strong>
+                <ul style="margin: 8px 0; padding-left: 20px; color: rgba(255,255,255,.9);">
+                  <li>✈️ <strong>Gợi ý điểm đến</strong> phù hợp với ngân sách & phong cách</li>
+                  <li>🏔️ <strong>Độ khó địa điểm:</strong> Dễ - Trung Bình - Khó - Cực Khó</li>
+                  <li>💰 <strong>Tư vấn chi phí</strong> chi tiết từ A-Z</li>
+                  <li>🗺️ <strong>Lên lịch trình</strong> theo ngày từng bước</li>
+                  <li>🏨 <strong>Khách sạn & homestay</strong> chất lượng tốt</li>
+                  <li>🍜 <strong>Ẩm thực địa phương</strong> phải thử</li>
+                  <li>📸 <strong>Điểm check-in hot</strong> cho Instagram</li>
+                  <li>⚠️ <strong>Tips an toàn</strong> & lưu ý quan trọng</li>
+                </ul>
+              </div>
+              
+              <strong style="color: #FFD700;">💡 Ví dụ câu hỏi:</strong><br/>
+              • "Tôi muốn đi Sapa 3 ngày 2 đêm, budget 5 triệu cho 2 người"<br/>
+              • "Gợi ý địa điểm du lịch biển đẹp trong nước"<br/>
+              • "Tour Phú Quốc có độ khó gì không? Cần chuẩn bị gì?"<br/>
+              • "Lên lịch trình chi tiết đi Đà Lạt cuối tuần"<br/><br/>
+              
+              Hãy cho tôi biết bạn muốn đi đâu, budget bao nhiêu, và độ trình như thế nào nhé! 🚀
             </div>
           </div>
         </div>
