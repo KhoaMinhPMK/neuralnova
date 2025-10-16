@@ -49,25 +49,38 @@ app.get('/', (req, res) => {
 
 // Upload file
 app.post('/upload', upload.single('file'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Không có file!' 
+    try {
+        console.log('📥 Nhận request upload từ:', req.ip);
+        
+        if (!req.file) {
+            console.log('❌ Không có file trong request');
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Không có file!' 
+            });
+        }
+
+        console.log('✅ Upload thành công:', req.file.filename);
+        
+        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+        
+        res.json({
+            success: true,
+            message: 'Upload thành công!',
+            file: {
+                name: req.file.filename,
+                originalName: req.file.originalname,
+                size: req.file.size,
+                url: fileUrl
+            }
+        });
+    } catch (error) {
+        console.error('❌ Lỗi khi upload:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi server: ' + error.message
         });
     }
-
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    
-    res.json({
-        success: true,
-        message: 'Upload thành công!',
-        file: {
-            name: req.file.filename,
-            originalName: req.file.originalname,
-            size: req.file.size,
-            url: fileUrl
-        }
-    });
 });
 
 // Upload nhiều files
@@ -129,6 +142,15 @@ app.delete('/delete/:filename', (req, res) => {
             message: 'File không tồn tại!' 
         });
     }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('❌ Server error:', err);
+    res.status(500).json({
+        success: false,
+        message: 'Lỗi server: ' + err.message
+    });
 });
 
 // Start server
