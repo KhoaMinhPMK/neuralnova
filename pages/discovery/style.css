@@ -1166,6 +1166,18 @@ button.tab[data-tab="places"], button.tab[data-tab="blogs"],
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+/* Typing cursor effect */
+.map-chat-message.ai .bubble:empty::after {
+  content: '▋';
+  animation: typingCursor 0.8s infinite;
+  color: #8b5cf6;
+}
+
+@keyframes typingCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* Map Typing Indicator */
 .typing-indicator {
   display: flex;

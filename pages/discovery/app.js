@@ -1093,8 +1093,8 @@ Hãy tư vấn chuyên nghiệp, chi tiết và đầy cảm hứng để ngư�
     infoCard.hidden = false;
   }
 
-  // Add message to map chat
-  function addMapChatMessage(text, isUser = false) {
+  // Add message to map chat with typing effect
+  function addMapChatMessage(text, isUser = false, useTypingEffect = true) {
     const messagesBox = document.getElementById('mapChatMessages');
     if (!messagesBox) return;
     
@@ -1104,14 +1104,62 @@ Hãy tư vấn chuyên nghiệp, chi tiết và đầy cảm hứng để ngư�
     
     const msgDiv = document.createElement('div');
     msgDiv.className = `map-chat-message ${isUser ? 'user' : 'ai'}`;
-    msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
-    messagesBox.appendChild(msgDiv);
     
-    // Scroll to bottom
-    messagesBox.scrollTop = messagesBox.scrollHeight;
+    if (isUser || !useTypingEffect) {
+      // User messages or no effect - show immediately
+      msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+      messagesBox.appendChild(msgDiv);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    } else {
+      // AI messages - typing effect
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = ''; // Start empty
+      msgDiv.appendChild(bubble);
+      messagesBox.appendChild(msgDiv);
+      
+      // Start typing effect
+      typeWriterEffect(bubble, text, 20, messagesBox); // 20ms per character
+    }
+  }
+  
+  // Typing effect - character by character
+  function typeWriterEffect(element, html, speed = 20, scrollContainer = null) {
+    // Parse HTML to extract plain text
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
     
-    // Save to history
-    mapState.chatHistory.push({ text, isUser });
+    let charIndex = 0;
+    const hasHtml = /<[^>]+>/.test(html);
+    
+    function typeChar() {
+      if (charIndex < plainText.length) {
+        // Show text character by character
+        element.textContent = plainText.substring(0, charIndex + 1);
+        charIndex++;
+        
+        // Auto scroll
+        if (scrollContainer) {
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+        
+        // Continue typing
+        setTimeout(typeChar, speed);
+      } else {
+        // Finished typing - replace with full HTML if needed
+        if (hasHtml) {
+          element.innerHTML = html;
+        }
+        
+        // Final scroll
+        if (scrollContainer) {
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+      }
+    }
+    
+    typeChar();
   }
 
   // Handle map chat send
