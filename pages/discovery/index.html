@@ -7,12 +7,16 @@
   <link rel="icon" type="image/x-icon" href="../../assets/images/logo.ico" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest" defer></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="../../assets/css/variables.css" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3.0" />
 </head>
 <body>
   <header class="d-header">
@@ -24,6 +28,10 @@
       </a>
     </div>
     <nav class="actions">
+      <button id="openMap" class="btn btn-map">
+        <i class="fas fa-map"></i>
+        <span>Map Explorer</span>
+      </button>
       <button id="openChat" class="btn btn-ai">
         <i class="fas fa-robot"></i>
         <span>AI Tư Vấn Du Lịch</span>
@@ -202,8 +210,79 @@
     </div>
   </div>
 
+  <!-- Map Explorer Modal -->
+  <div id="mapExplorer" class="map-explorer" hidden>
+    <div class="map-explorer-container">
+      <!-- Map Container -->
+      <div id="mapContainer" class="map-container"></div>
+      
+      <!-- Close Button -->
+      <button id="closeMap" class="map-close-btn" title="Đóng Map">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <!-- Chat Interface Floating -->
+      <div id="mapChatInterface" class="map-chat-interface">
+        <!-- Chat Messages Box -->
+        <div id="mapChatMessages" class="map-chat-messages">
+          <div class="map-chat-welcome">
+            <div class="welcome-icon">🗺️</div>
+            <h3>Map Explorer AI - Travel Advisory</h3>
+            <p style="margin-bottom: 12px;">🌸 Chuyên gia tư vấn du lịch ngắm hoa với AI!</p>
+            
+            <div style="background: rgba(236,72,153,.1); border: 1px solid rgba(236,72,153,.3); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left;">
+              <strong style="color: #ec4899;">🌸 Hỏi về hoa:</strong>
+              <div style="margin-top: 8px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,.85);">
+                • 🌾 Hoa tam giác mạch (Hà Giang, T10-11)<br/>
+                • 🪷 Hoa sen (Đồng Tháp, T6-8)<br/>
+                • 🌸 Hoa anh đào (Đà Lạt, T3-4)
+              </div>
+            </div>
+            
+            <div style="background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left;">
+              <strong style="color: #10b981;">🗺️ Tìm địa điểm:</strong>
+              <div style="margin-top: 8px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,.85);">
+                Hà Nội, Sài Gòn, Đà Nẵng, Phú Quốc, Sa Pa, Nha Trang...
+              </div>
+            </div>
+            
+            <p style="margin-top: 12px; font-size: 13px; color: rgba(255,255,255,.7);">
+              <strong>💡 Ví dụ:</strong> "Muốn ngắm hoa tam giác mạch", "Hoa sen đẹp ở đâu?"
+            </p>
+          </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="map-chat-input-wrapper">
+          <input 
+            id="mapChatInput" 
+            type="text" 
+            placeholder="Nhập địa điểm bạn muốn khám phá... (VD: Hà Nội, Phú Quốc, Sa Pa)"
+            autocomplete="off"
+          />
+          <button id="mapChatSend" class="map-chat-send-btn">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        
+        <!-- Minimize/Maximize Button -->
+        <button id="toggleMapChat" class="map-chat-toggle" title="Thu gọn/Mở rộng">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      
+      <!-- Location Info Card (appears when zoomed to location) -->
+      <div id="locationInfoCard" class="location-info-card" hidden>
+        <button class="location-info-close" onclick="this.parentElement.hidden=true">
+          <i class="fas fa-times"></i>
+        </button>
+        <div id="locationInfoContent"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="config.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>
 

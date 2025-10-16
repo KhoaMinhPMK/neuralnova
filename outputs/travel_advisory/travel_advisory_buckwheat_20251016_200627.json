@@ -1,0 +1,343 @@
+{
+  "prediction_summary": {
+    "total_locations_found": 42,
+    "quality_rating": "Tốt",
+    "description": "Điều kiện thuận lợi để ngắm hoa",
+    "success_probability": "65%",
+    "best_location_score": "0.8/1.0",
+    "recommendation": "Điều kiện tốt để ngắm hoa. Nên lên kế hoạch sớm để có trải nghiệm tốt nhất."
+  },
+  "flower_information": {
+    "name": "Hoa tam giác mạch",
+    "english_name": "Buckwheat Flower",
+    "blooming_season": "Tháng 10-11",
+    "peak_blooming_time": "Cuối tháng 10",
+    "bloom_duration": "2-3 tuần",
+    "cultural_meaning": "Biểu tượng của tình yêu thuần khiết",
+    "festivals": "Lễ hội hoa tam giác mạch Hà Giang",
+    "best_viewing_conditions": {
+      "weather": "Nắng nhẹ, không mưa",
+      "time_of_day": "Sáng sớm (6-9h) và chiều tà (16-18h)",
+      "photography_tips": "Ánh sáng vàng, góc chụp từ trên cao"
+    }
+  },
+  "top_destinations": [
+    {
+      "rank": 1,
+      "location_id": "HS_0013",
+      "coordinates": {
+        "latitude": 22.85,
+        "longitude": 105.65,
+        "google_maps_link": "https://maps.google.com/?q=22.8500,105.6500"
+      },
+      "prediction_score": "0.758/1.0",
+      "rating": "⭐⭐⭐⭐ Rất tốt",
+      "conditions": {
+        "temperature": {
+          "value": "23.7°C",
+          "status": "Lý tưởng",
+          "description": "Nhiệt độ hoàn hảo cho ngắm hoa"
+        },
+        "vegetation": {
+          "ndvi_index": "0.80",
+          "status": "Tuyệt vời",
+          "description": "Thảm thực vật rất xanh tốt"
+        }
+      },
+      "visit_recommendation": "Ưu tiên số 1 - Không thể bỏ qua!",
+      "estimated_region": "Hà Giang",
+      "accessibility": "Cần phương tiện cá nhân hoặc tour"
+    },
+    {
+      "rank": 2,
+      "location_id": "HS_0011",
+      "coordinates": {
+        "latitude": 22.45,
+        "longitude": 105.05,
+        "google_maps_link": "https://maps.google.com/?q=22.4500,105.0500"
+      },
+      "prediction_score": "0.720/1.0",
+      "rating": "⭐⭐⭐⭐ Rất tốt",
+      "conditions": {
+        "temperature": {
+          "value": "24.7°C",
+          "status": "Lý tưởng",
+          "description": "Nhiệt độ hoàn hảo cho ngắm hoa"
+        },
+        "vegetation": {
+          "ndvi_index": "0.57",
+          "status": "Tốt",
+          "description": "Thảm thực vật khỏe mạnh"
+        }
+      },
+      "visit_recommendation": "Nên đến - Trong top địa điểm đẹp nhất",
+      "estimated_region": "Hà Giang",
+      "accessibility": "Cần phương tiện cá nhân hoặc tour"
+    },
+    {
+      "rank": 3,
+      "location_id": "HS_0042",
+      "coordinates": {
+        "latitude": 22.45,
+        "longitude": 105.15,
+        "google_maps_link": "https://maps.google.com/?q=22.4500,105.1500"
+      },
+      "prediction_score": "0.712/1.0",
+      "rating": "⭐⭐⭐⭐ Rất tốt",
+      "conditions": {
+        "temperature": {
+          "value": "23.1°C",
+          "status": "Lý tưởng",
+          "description": "Nhiệt độ hoàn hảo cho ngắm hoa"
+        },
+        "vegetation": {
+          "ndvi_index": "0.71",
+          "status": "Tuyệt vời",
+          "description": "Thảm thực vật rất xanh tốt"
+        }
+      },
+      "visit_recommendation": "Nên đến - Trong top địa điểm đẹp nhất",
+      "estimated_region": "Hà Giang",
+      "accessibility": "Cần phương tiện cá nhân hoặc tour"
+    },
+    {
+      "rank": 4,
+      "location_id": "HS_0025",
+      "coordinates": {
+        "latitude": 22.45,
+        "longitude": 105.95,
+        "google_maps_link": "https://maps.google.com/?q=22.4500,105.9500"
+      },
+      "prediction_score": "0.699/1.0",
+      "rating": "⭐⭐⭐ Tốt",
+      "conditions": {
+        "temperature": {
+          "value": "24.0°C",
+          "status": "Lý tưởng",
+          "description": "Nhiệt độ hoàn hảo cho ngắm hoa"
+        },
+        "vegetation": {
+          "ndvi_index": "0.48",
+          "status": "Tốt",
+          "description": "Thảm thực vật khỏe mạnh"
+        }
+      },
+      "visit_recommendation": "Có thể ghé thăm nếu có thời gian",
+      "estimated_region": "Hà Giang",
+      "accessibility": "Cần phương tiện cá nhân hoặc tour"
+    },
+    {
+      "rank": 5,
+      "location_id": "HS_0001",
+      "coordinates": {
+        "latitude": 22.85,
+        "longitude": 104.95,
+        "google_maps_link": "https://maps.google.com/?q=22.8500,104.9500"
+      },
+      "prediction_score": "0.697/1.0",
+      "rating": "⭐⭐⭐ Tốt",
+      "conditions": {
+        "temperature": {
+          "value": "18.6°C",
+          "status": "Lý tưởng",
+          "description": "Nhiệt độ hoàn hảo cho ngắm hoa"
+        },
+        "vegetation": {
+          "ndvi_index": "0.78",
+          "status": "Tuyệt vời",
+          "description": "Thảm thực vật rất xanh tốt"
+        }
+      },
+      "visit_recommendation": "Có thể ghé thăm nếu có thời gian",
+      "estimated_region": "Hà Giang",
+      "accessibility": "Cần phương tiện cá nhân hoặc tour"
+    }
+  ],
+  "travel_recommendations": {
+    "best_travel_period": {
+      "current_period": "2024-10",
+      "optimal_period": "Cuối tháng 10",
+      "bloom_duration": "2-3 tuần",
+      "advice": "Thời gian hiện tại (2024-10) phù hợp với mùa hoa nở"
+    },
+    "recommended_duration": "4-7 ngày (để khám phá toàn diện)",
+    "travel_style": "Leisure Tour - Kết hợp ngắm hoa và nghỉ dưỡng",
+    "group_size": "Phù hợp cho cá nhân, cặp đôi, hoặc nhóm nhỏ (2-6 người)",
+    "budget_estimate": {
+      "budget_level": "Cao",
+      "per_person": "3-5 triệu VNĐ",
+      "breakdown": "Di chuyển 40%, Lưu trú 35%, Ăn uống 15%, Khác 10%"
+    },
+    "difficulty_level": {
+      "physical_difficulty": "Trung bình",
+      "technical_difficulty": "Dễ",
+      "weather_challenge": "Trung bình",
+      "overall_rating": "Phù hợp cho hầu hết du khách",
+      "requirements": "Sức khỏe tốt, kinh nghiệm đi núi cơ bản"
+    },
+    "must_bring_items": [
+      "Máy ảnh/điện thoại có camera tốt",
+      "Áo ấm (thời tiết miền núi thay đổi)",
+      "Giày trekking chống trượt",
+      "Kem chống nắng",
+      "Thuốc cá nhân",
+      "Pin dự phòng"
+    ]
+  },
+  "practical_information": {
+    "transportation": {
+      "from_hanoi": {
+        "by_motorbike": "6-7 giờ, cung đường đẹp nhưng khó",
+        "by_car": "5-6 giờ, an toàn và thoải mái",
+        "by_bus": "7-8 giờ, giá rẻ nhưng ít linh hoạt"
+      },
+      "local_transport": "Xe máy thuê (150-200k/ngày), xe ôm, đi bộ"
+    },
+    "accommodation": {
+      "homestay": "200-400k/người/đêm, trải nghiệm văn hóa",
+      "hotel": "500-800k/phòng/đêm, tiện nghi đầy đủ",
+      "resort": "1-3 triệu/phòng/đêm, sang trọng"
+    },
+    "food_and_dining": {
+      "local_specialties": [
+        "Thắng cố",
+        "Bánh cuốn",
+        "Mật ong rừng",
+        "Rượu ngô"
+      ],
+      "average_meal_cost": "50-150k/bữa",
+      "dining_tips": "Thử món địa phương, mang theo đồ ăn nhẹ khi đi xa"
+    },
+    "safety_and_health": {
+      "weather_precautions": "Thời tiết miền núi thay đổi nhanh",
+      "road_conditions": "Đường cong nhiều khúc, cần lái xe cẩn thận",
+      "health_tips": "Mang theo thuốc say xe, thuốc cảm lạnh",
+      "emergency_contacts": "Cứu hộ: 115, Cảnh sát: 113"
+    }
+  },
+  "weather_and_timing": {
+    "current_conditions": {
+      "average_temperature": "22.8°C",
+      "weather_description": "Mát mẻ, dễ chịu",
+      "comfort_level": "Rất thoải mái"
+    },
+    "best_visiting_times": {
+      "daily_schedule": {
+        "sunrise": "6:00-8:00 - Ánh sáng vàng đẹp nhất",
+        "morning": "8:00-11:00 - Mát mẻ, thoải mái đi lại",
+        "afternoon": "14:00-16:00 - Nắng gắt, nên nghỉ ngơi",
+        "sunset": "16:30-18:30 - Ánh sáng đẹp, nhiệt độ dễ chịu",
+        "evening": "19:00+ - Lạnh, cần áo ấm"
+      },
+      "weekly_pattern": "Cuối tuần đông khách hơn, nên đi vào thứ 2-5",
+      "seasonal_advice": "Tháng 10-11"
+    },
+    "weather_forecast_tips": [
+      "Kiểm tra thời tiết trước khi đi",
+      "Mang theo áo mưa nếu có dự báo mưa",
+      "Tránh đi vào ngày có sương mù dày"
+    ]
+  },
+  "photography_guide": {
+    "best_photography_spots": [
+      {
+        "location": "Điểm #1",
+        "coordinates": "22.850, 105.650",
+        "photography_score": "0.76/1.0",
+        "recommended_angles": [
+          "Toàn cảnh từ trên cao",
+          "Cận cảnh chi tiết",
+          "Góc nghiêng nghệ thuật"
+        ],
+        "best_time": "Sáng sớm (6-9h) và chiều tà (16-18h)"
+      },
+      {
+        "location": "Điểm #2",
+        "coordinates": "22.450, 105.050",
+        "photography_score": "0.72/1.0",
+        "recommended_angles": [
+          "Toàn cảnh từ trên cao",
+          "Cận cảnh chi tiết",
+          "Góc nghiêng nghệ thuật"
+        ],
+        "best_time": "Sáng sớm (6-9h) và chiều tà (16-18h)"
+      },
+      {
+        "location": "Điểm #3",
+        "coordinates": "22.450, 105.150",
+        "photography_score": "0.71/1.0",
+        "recommended_angles": [
+          "Toàn cảnh từ trên cao",
+          "Cận cảnh chi tiết",
+          "Góc nghiêng nghệ thuật"
+        ],
+        "best_time": "Sáng sớm (6-9h) và chiều tà (16-18h)"
+      }
+    ],
+    "camera_settings": {
+      "landscape_shots": "f/8-11, ISO 100-400, focus infinity",
+      "close_up_flowers": "f/2.8-5.6, ISO 100-800, macro lens",
+      "golden_hour": "f/4-8, ISO 100-400, warm white balance"
+    },
+    "composition_tips": [
+      "Sử dụng rule of thirds",
+      "Tìm foreground thú vị",
+      "Chụp từ nhiều góc độ khác nhau",
+      "Bao gồm cả cảnh quan và chi tiết"
+    ],
+    "equipment_recommendations": [
+      "Camera DSLR/Mirrorless + lens 24-70mm",
+      "Tripod cho chụp landscape",
+      "Polarizing filter giảm phản chiếu",
+      "Extra batteries (lạnh làm pin hết nhanh)"
+    ]
+  },
+  "cultural_context": {
+    "cultural_significance": "Biểu tượng của tình yêu thuần khiết",
+    "local_traditions": {
+      "festivals": "Lễ hội hoa tam giác mạch Hà Giang",
+      "customs": "Tôn trọng văn hóa địa phương, xin phép trước khi chụp ảnh người dân",
+      "etiquette": "Không hái hoa, không xả rác, giữ gìn môi trường"
+    },
+    "historical_context": "Vùng đất có lịch sử lâu đời với nhiều dân tộc thiểu số",
+    "local_communities": {
+      "ethnic_groups": [
+        "H'Mông",
+        "Tày",
+        "Nùng",
+        "Lô Lô"
+      ],
+      "interaction_tips": "Thân thiện, tôn trọng, học vài câu chào bằng tiếng địa phương",
+      "support_local": "Mua sản phẩm thủ công, ăn tại quán địa phương"
+    }
+  },
+  "travel_planning": {
+    "recommended_trip_type": "Expedition Tour",
+    "suggested_duration": "4-7 ngày",
+    "itinerary_overview": "Khám phá toàn diện nhiều điểm",
+    "sample_itinerary": {
+      "day_1": "Hà Nội → Hà Giang → Check-in → Khám phá trung tâm",
+      "day_2": "Hà Giang → Quản Bạ → Yên Minh → Ngắm hoa tại các điểm top",
+      "day_3": "Đồng Văn → Lũng Cú → Mèo Vạc → Chụp ảnh hoàng hôn",
+      "day_4": "Mèo Vạc → Hà Giang → Hà Nội"
+    },
+    "booking_timeline": {
+      "advance_booking": "2-4 tuần trước",
+      "peak_season_booking": "1-2 tháng trước",
+      "last_minute": "Có thể nhưng lựa chọn hạn chế"
+    },
+    "group_recommendations": {
+      "solo_travel": "Phù hợp, nhưng cần cẩn thận về an toàn",
+      "couple_travel": "Lý tưởng cho honeymoon/anniversary",
+      "family_travel": "Phù hợp với trẻ em trên 8 tuổi",
+      "group_travel": "Tốt nhất 4-8 người"
+    }
+  },
+  "metadata": {
+    "generated_at": "2025-10-16T20:06:27.805090",
+    "data_source": "AI Satellite Analysis + Environmental Data",
+    "confidence_level": "Cao (80-90%)",
+    "prediction_period": "2024-10",
+    "total_locations_analyzed": 42
+  }
+}

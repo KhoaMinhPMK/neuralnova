@@ -1,0 +1,13 @@
+﻿index,flower,location,time,total_hotspots,mean_kq_score,max_kq_score,processing_time,output_file,status
+1,buckwheat,"Hà Giang, Việt Nam",2024-10,42,0.6514345648726266,0.7576145051405934,9.130388259887695,outputs\hotspots_buckwheat_20251016_200627.geojson,SUCCESS
+2,buckwheat,"Hà Giang, Việt Nam",2024-11,46,0.6600985208056198,0.7297307113509303,12.031999826431274,outputs\hotspots_buckwheat_20251016_200641.geojson,SUCCESS
+3,buckwheat,"Cao Bằng, Việt Nam",2024-10,44,0.6556074558725143,0.7119128719035418,8.083313226699829,outputs\hotspots_buckwheat_20251016_200649.geojson,SUCCESS
+4,buckwheat,"Lạng Sơn, Việt Nam",2024-10,41,0.656643165596749,0.7411397189347844,7.706995725631714,outputs\hotspots_buckwheat_20251016_200656.geojson,SUCCESS
+5,lotus,"Đồng Tháp, Việt Nam",2024-06,45,0.6574846011716793,0.7269726408504379,10.278738975524902,outputs\hotspots_lotus_20251016_200707.geojson,SUCCESS
+6,lotus,"Đồng Tháp, Việt Nam",2024-07,47,0.6515242810646652,0.7246188860571512,8.007999897003174,outputs\hotspots_lotus_20251016_200715.geojson,SUCCESS
+7,lotus,"An Giang, Việt Nam",2024-07,48,0.6562331050473146,0.7246188860571512,7.243995904922485,outputs\hotspots_lotus_20251016_200722.geojson,SUCCESS
+8,lotus,"Cần Thơ, Việt Nam",2024-08,46,0.6563851048736541,0.7576080590363721,7.205049753189087,outputs\hotspots_lotus_20251016_200729.geojson,SUCCESS
+9,cherry_blossom,"Đà Lạt, Lâm Đồng",2024-03,46,0.6686163223797777,0.7418098673799918,11.538991451263428,outputs\hotspots_cherry_blossom_20251016_200741.geojson,SUCCESS
+10,cherry_blossom,"Đà Lạt, Lâm Đồng",2024-04,45,0.6684719173578233,0.7389924554264001,9.408597230911255,outputs\hotspots_cherry_blossom_20251016_200750.geojson,SUCCESS
+11,cherry_blossom,"Sa Pa, Lào Cai",2024-03,45,0.6614311570667634,0.7543873444695268,7.380998849868774,outputs\hotspots_cherry_blossom_20251016_200758.geojson,SUCCESS
+12,cherry_blossom,"Mộc Châu, Sơn La",2024-03,47,0.6664356897742173,0.7418098673799918,8.195001602172852,outputs\hotspots_cherry_blossom_20251016_200806.geojson,SUCCESS

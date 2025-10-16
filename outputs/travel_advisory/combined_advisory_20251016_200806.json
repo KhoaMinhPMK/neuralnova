@@ -1,0 +1,265 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-16T20:08:06.852775",
+    "type": "combined_travel_advisory",
+    "total_predictions": 12,
+    "flowers_analyzed": [
+      "buckwheat",
+      "lotus",
+      "cherry_blossom"
+    ]
+  },
+  "executive_summary": {
+    "total_hotspots_found": 542,
+    "best_overall_location": {
+      "index": 9,
+      "flower": "cherry_blossom",
+      "location": "Đà Lạt, Lâm Đồng",
+      "time": "2024-03",
+      "total_hotspots": 46,
+      "mean_kq_score": 0.6686163223797777,
+      "max_kq_score": 0.7418098673799918,
+      "processing_time": 11.538991451263428,
+      "output_file": "outputs\\hotspots_cherry_blossom_20251016_200741.geojson",
+      "status": "SUCCESS"
+    },
+    "recommendations_by_season": {
+      "Mùa thu (Tháng 10-11)": {
+        "flower": "buckwheat",
+        "best_location": "Hà Giang, Việt Nam",
+        "best_time": "2024-11",
+        "expected_hotspots": 46,
+        "quality_score": 0.6600985208056198
+      },
+      "Mùa hè (Tháng 6-8)": {
+        "flower": "lotus",
+        "best_location": "Đồng Tháp, Việt Nam",
+        "best_time": "2024-06",
+        "expected_hotspots": 45,
+        "quality_score": 0.6574846011716793
+      },
+      "Mùa xuân (Tháng 3-4)": {
+        "flower": "cherry_blossom",
+        "best_location": "Đà Lạt, Lâm Đồng",
+        "best_time": "2024-03",
+        "expected_hotspots": 46,
+        "quality_score": 0.6686163223797777
+      }
+    }
+  },
+  "detailed_analysis": {
+    "buckwheat": {
+      "flower_name": "Hoa tam giác mạch",
+      "total_locations_analyzed": 4,
+      "best_location": {
+        "location": "Hà Giang, Việt Nam",
+        "time": "2024-11",
+        "kq_score": 0.6600985208056198,
+        "hotspots": 46
+      },
+      "all_results": [
+        {
+          "index": 1,
+          "flower": "buckwheat",
+          "location": "Hà Giang, Việt Nam",
+          "time": "2024-10",
+          "total_hotspots": 42,
+          "mean_kq_score": 0.6514345648726266,
+          "max_kq_score": 0.7576145051405934,
+          "processing_time": 9.130388259887695,
+          "output_file": "outputs\\hotspots_buckwheat_20251016_200627.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 2,
+          "flower": "buckwheat",
+          "location": "Hà Giang, Việt Nam",
+          "time": "2024-11",
+          "total_hotspots": 46,
+          "mean_kq_score": 0.6600985208056198,
+          "max_kq_score": 0.7297307113509303,
+          "processing_time": 12.031999826431274,
+          "output_file": "outputs\\hotspots_buckwheat_20251016_200641.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 3,
+          "flower": "buckwheat",
+          "location": "Cao Bằng, Việt Nam",
+          "time": "2024-10",
+          "total_hotspots": 44,
+          "mean_kq_score": 0.6556074558725143,
+          "max_kq_score": 0.7119128719035418,
+          "processing_time": 8.083313226699829,
+          "output_file": "outputs\\hotspots_buckwheat_20251016_200649.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 4,
+          "flower": "buckwheat",
+          "location": "Lạng Sơn, Việt Nam",
+          "time": "2024-10",
+          "total_hotspots": 41,
+          "mean_kq_score": 0.656643165596749,
+          "max_kq_score": 0.7411397189347844,
+          "processing_time": 7.706995725631714,
+          "output_file": "outputs\\hotspots_buckwheat_20251016_200656.geojson",
+          "status": "SUCCESS"
+        }
+      ],
+      "travel_advice": {
+        "best_destination": "Hà Giang, Việt Nam",
+        "optimal_timing": "2024-11",
+        "expected_experience": "Trung bình 43 điểm ngắm hoa",
+        "success_probability": "66%",
+        "special_notes": [
+          "Mang theo áo ấm - thời tiết miền núi lạnh",
+          "Đường đi khó, nên có kinh nghiệm lái xe",
+          "Thời gian nở ngắn, cần theo dõi thời tiết"
+        ]
+      }
+    },
+    "lotus": {
+      "flower_name": "Hoa sen",
+      "total_locations_analyzed": 4,
+      "best_location": {
+        "location": "Đồng Tháp, Việt Nam",
+        "time": "2024-06",
+        "kq_score": 0.6574846011716793,
+        "hotspots": 45
+      },
+      "all_results": [
+        {
+          "index": 5,
+          "flower": "lotus",
+          "location": "Đồng Tháp, Việt Nam",
+          "time": "2024-06",
+          "total_hotspots": 45,
+          "mean_kq_score": 0.6574846011716793,
+          "max_kq_score": 0.7269726408504379,
+          "processing_time": 10.278738975524902,
+          "output_file": "outputs\\hotspots_lotus_20251016_200707.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 6,
+          "flower": "lotus",
+          "location": "Đồng Tháp, Việt Nam",
+          "time": "2024-07",
+          "total_hotspots": 47,
+          "mean_kq_score": 0.6515242810646652,
+          "max_kq_score": 0.7246188860571512,
+          "processing_time": 8.007999897003174,
+          "output_file": "outputs\\hotspots_lotus_20251016_200715.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 7,
+          "flower": "lotus",
+          "location": "An Giang, Việt Nam",
+          "time": "2024-07",
+          "total_hotspots": 48,
+          "mean_kq_score": 0.6562331050473146,
+          "max_kq_score": 0.7246188860571512,
+          "processing_time": 7.243995904922485,
+          "output_file": "outputs\\hotspots_lotus_20251016_200722.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 8,
+          "flower": "lotus",
+          "location": "Cần Thơ, Việt Nam",
+          "time": "2024-08",
+          "total_hotspots": 46,
+          "mean_kq_score": 0.6563851048736541,
+          "max_kq_score": 0.7576080590363721,
+          "processing_time": 7.205049753189087,
+          "output_file": "outputs\\hotspots_lotus_20251016_200729.geojson",
+          "status": "SUCCESS"
+        }
+      ],
+      "travel_advice": {
+        "best_destination": "Đồng Tháp, Việt Nam",
+        "optimal_timing": "2024-06",
+        "expected_experience": "Trung bình 46 điểm ngắm hoa",
+        "success_probability": "66%",
+        "special_notes": [
+          "Đi sớm (5-8h sáng) để hoa nở đẹp nhất",
+          "Mang theo kem chống nắng và nón",
+          "Có thể kết hợp với tour du lịch sông nước"
+        ]
+      }
+    },
+    "cherry_blossom": {
+      "flower_name": "Hoa anh đào",
+      "total_locations_analyzed": 4,
+      "best_location": {
+        "location": "Đà Lạt, Lâm Đồng",
+        "time": "2024-03",
+        "kq_score": 0.6686163223797777,
+        "hotspots": 46
+      },
+      "all_results": [
+        {
+          "index": 9,
+          "flower": "cherry_blossom",
+          "location": "Đà Lạt, Lâm Đồng",
+          "time": "2024-03",
+          "total_hotspots": 46,
+          "mean_kq_score": 0.6686163223797777,
+          "max_kq_score": 0.7418098673799918,
+          "processing_time": 11.538991451263428,
+          "output_file": "outputs\\hotspots_cherry_blossom_20251016_200741.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 10,
+          "flower": "cherry_blossom",
+          "location": "Đà Lạt, Lâm Đồng",
+          "time": "2024-04",
+          "total_hotspots": 45,
+          "mean_kq_score": 0.6684719173578233,
+          "max_kq_score": 0.7389924554264001,
+          "processing_time": 9.408597230911255,
+          "output_file": "outputs\\hotspots_cherry_blossom_20251016_200750.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 11,
+          "flower": "cherry_blossom",
+          "location": "Sa Pa, Lào Cai",
+          "time": "2024-03",
+          "total_hotspots": 45,
+          "mean_kq_score": 0.6614311570667634,
+          "max_kq_score": 0.7543873444695268,
+          "processing_time": 7.380998849868774,
+          "output_file": "outputs\\hotspots_cherry_blossom_20251016_200758.geojson",
+          "status": "SUCCESS"
+        },
+        {
+          "index": 12,
+          "flower": "cherry_blossom",
+          "location": "Mộc Châu, Sơn La",
+          "time": "2024-03",
+          "total_hotspots": 47,
+          "mean_kq_score": 0.6664356897742173,
+          "max_kq_score": 0.7418098673799918,
+          "processing_time": 8.195001602172852,
+          "output_file": "outputs\\hotspots_cherry_blossom_20251016_200806.geojson",
+          "status": "SUCCESS"
+        }
+      ],
+      "travel_advice": {
+        "best_destination": "Đà Lạt, Lâm Đồng",
+        "optimal_timing": "2024-03",
+        "expected_experience": "Trung bình 46 điểm ngắm hoa",
+        "success_probability": "67%",
+        "special_notes": [
+          "Thời tiết mát mẻ, dễ chịu",
+          "Thời gian nở rất ngắn (1-2 tuần)",
+          "Nên book accommodation sớm vì mùa du lịch cao điểm"
+        ]
+      }
+    }
+  }
+}
