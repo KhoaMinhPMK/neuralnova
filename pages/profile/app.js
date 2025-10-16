@@ -1,6 +1,7 @@
 // Profile Page - Facebook Dark Mode Style
 (() => {
   const API_BASE = 'https://neuralnova.space/backend/api';
+  const FILE_SERVER = 'https://neuralnova.space:3000'; // Node.js file server
   let currentUser = null;
   
   // Toast notification
@@ -80,11 +81,11 @@
       const formData = new FormData();
       formData.append('cover', file);
       
-      console.log('📤 Uploading cover:', file.name, file.size, 'bytes');
+      console.log('📤 Uploading cover to Node.js server:', file.name, file.size, 'bytes');
       
-      const response = await fetch(`${API_BASE}/profile/upload-cover.php`, {
+      // Step 1: Upload to Node.js file server
+      const response = await fetch(`${FILE_SERVER}/upload/cover`, {
         method: 'POST',
-        credentials: 'include',
         body: formData
       });
       
@@ -104,9 +105,25 @@
       const data = await response.json();
       console.log('📦 Cover response:', data);
       
-      if (data.success) {
-        document.getElementById('coverImg').src = data.cover_url;
-        toast('Cover photo updated!');
+      if (data.success && data.file) {
+        const coverUrl = data.file.url;
+        
+        // Step 2: Save URL to database via PHP API
+        const saveResponse = await fetch(`${API_BASE}/profile/update.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({ cover_url: coverUrl }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const saveData = await saveResponse.json();
+        
+        if (saveData.success) {
+          document.getElementById('coverImg').src = coverUrl;
+          toast('Cover photo updated!');
+        } else {
+          toast('Failed to save: ' + (saveData.error || 'Unknown error'));
+        }
       } else {
         toast('Upload failed: ' + (data.error || 'Unknown error'));
       }
@@ -139,11 +156,11 @@
       const formData = new FormData();
       formData.append('avatar', file);
       
-      console.log('📤 Uploading avatar:', file.name, file.size, 'bytes');
+      console.log('📤 Uploading avatar to Node.js server:', file.name, file.size, 'bytes');
       
-      const response = await fetch(`${API_BASE}/profile/upload-avatar.php`, {
+      // Step 1: Upload to Node.js file server
+      const response = await fetch(`${FILE_SERVER}/upload/avatar`, {
         method: 'POST',
-        credentials: 'include',
         body: formData
       });
       
@@ -163,12 +180,27 @@
       const data = await response.json();
       console.log('📦 Avatar response:', data);
       
-      if (data.success) {
-        const avatarUrl = data.avatar_url;
-        document.getElementById('profilePicture').src = avatarUrl;
-        document.getElementById('navAvatar').src = avatarUrl;
-        document.getElementById('createPostAvatar').src = avatarUrl;
-        toast('Profile picture updated!');
+      if (data.success && data.file) {
+        const avatarUrl = data.file.url;
+        
+        // Step 2: Save URL to database via PHP API
+        const saveResponse = await fetch(`${API_BASE}/profile/update.php`, {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({ avatar_url: avatarUrl }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const saveData = await saveResponse.json();
+        
+        if (saveData.success) {
+          document.getElementById('profilePicture').src = avatarUrl;
+          document.getElementById('navAvatar').src = avatarUrl;
+          document.getElementById('createPostAvatar').src = avatarUrl;
+          toast('Profile picture updated!');
+        } else {
+          toast('Failed to save: ' + (saveData.error || 'Unknown error'));
+        }
       } else {
         toast('Upload failed: ' + (data.error || 'Unknown error'));
       }
