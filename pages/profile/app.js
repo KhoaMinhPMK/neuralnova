@@ -70,9 +70,17 @@
     const file = e.target.files[0];
     if (!file) return;
     
+    // Validate file size (max 10MB for cover)
+    if (file.size > 10 * 1024 * 1024) {
+      toast('File too large. Max 10MB');
+      return;
+    }
+    
     try {
       const formData = new FormData();
       formData.append('cover', file);
+      
+      console.log('📤 Uploading cover:', file.name, file.size, 'bytes');
       
       const response = await fetch(`${API_BASE}/profile/upload-cover.php`, {
         method: 'POST',
@@ -80,7 +88,18 @@
         body: formData
       });
       
+      console.log('📡 Cover upload status:', response.status);
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Backend error (cover):', text.substring(0, 500));
+        toast('Upload failed - check Console');
+        return;
+      }
+      
       const data = await response.json();
+      console.log('📦 Cover response:', data);
       
       if (data.success) {
         document.getElementById('coverImg').src = data.cover_url;
@@ -89,7 +108,7 @@
         toast('Upload failed: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Cover upload error:', error);
+      console.error('❌ Cover upload error:', error);
       toast('Upload failed');
     }
   });
@@ -107,9 +126,17 @@
     const file = e.target.files[0];
     if (!file) return;
     
+    // Validate file size (max 5MB for avatar)
+    if (file.size > 5 * 1024 * 1024) {
+      toast('File too large. Max 5MB');
+      return;
+    }
+    
     try {
       const formData = new FormData();
       formData.append('avatar', file);
+      
+      console.log('📤 Uploading avatar:', file.name, file.size, 'bytes');
       
       const response = await fetch(`${API_BASE}/profile/upload-avatar.php`, {
         method: 'POST',
@@ -117,7 +144,18 @@
         body: formData
       });
       
+      console.log('📡 Avatar upload status:', response.status);
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Backend error (avatar):', text.substring(0, 500));
+        toast('Upload failed - check Console');
+        return;
+      }
+      
       const data = await response.json();
+      console.log('📦 Avatar response:', data);
       
       if (data.success) {
         const avatarUrl = data.avatar_url;
@@ -129,7 +167,7 @@
         toast('Upload failed: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Avatar upload error:', error);
+      console.error('❌ Avatar upload error:', error);
       toast('Upload failed');
     }
   });
@@ -257,7 +295,7 @@
               <div class="intro-item">
                 <i class="fas fa-heart"></i>
                 <span>${interests}</span>
-              </div>
+        </div>
             `;
           }
           
@@ -266,7 +304,7 @@
               <div class="intro-item">
                 <i class="fas fa-map-marker-alt"></i>
                 <span>${prof.country}</span>
-              </div>
+          </div>
             `;
           }
           
@@ -275,7 +313,7 @@
               <div class="intro-item">
                 <i class="fas fa-envelope"></i>
                 <span>${prof.email}</span>
-              </div>
+        </div>
             `;
           }
           
@@ -339,6 +377,14 @@
       const response = await fetch(`${API_BASE}/profile/badges.php`, {
         credentials: 'include'
       });
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Badges API error:', text.substring(0, 500));
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success && data.badges) {
@@ -348,12 +394,12 @@
             <div class="badge" style="border-color: ${badge.color}">
               <i class="fas fa-${badge.icon}"></i>
               ${badge.name}
-        </div>
+            </div>
           `).join('');
         }
       }
     } catch (error) {
-      console.error('Badges error:', error);
+      console.error('❌ Badges error:', error);
     }
   }
   
@@ -363,6 +409,14 @@
       const response = await fetch(`${API_BASE}/profile/timeline.php`, {
         credentials: 'include'
       });
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Timeline API error:', text.substring(0, 500));
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success && data.stats) {
@@ -389,7 +443,7 @@
         }
       }
     } catch (error) {
-      console.error('Stats error:', error);
+      console.error('❌ Stats error:', error);
     }
   }
   
