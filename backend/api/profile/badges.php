@@ -3,10 +3,42 @@
 define('API_ACCESS', true);
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
-require_once '../../includes/cors.php';
 
-// Handle CORS
-handleCors(['GET', 'OPTIONS']);
+// Set headers
+header('Content-Type: application/json');
+
+// CORS headers
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://neuralnova.space',
+    'http://neuralnova.space'
+];
+
+$originAllowed = false;
+foreach ($allowedOrigins as $allowed) {
+    if ($origin === $allowed || strpos($origin, $allowed . ':') === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+        $originAllowed = true;
+        break;
+    }
+}
+
+if (!$originAllowed && $origin) {
+    if (strpos($origin, 'http://localhost') === 0 || strpos($origin, 'http://127.0.0.1') === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
+}
+
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Initialize session
 initSession();

@@ -93,7 +93,10 @@
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        console.error('❌ Backend error (cover):', text.substring(0, 500));
+        console.error('❌ Backend error (cover):');
+        console.error('━'.repeat(80));
+        console.error(text);
+        console.error('━'.repeat(80));
         toast('Upload failed - check Console');
         return;
       }
@@ -149,7 +152,10 @@
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        console.error('❌ Backend error (avatar):', text.substring(0, 500));
+        console.error('❌ Backend error (avatar):');
+        console.error('━'.repeat(80));
+        console.error(text);
+        console.error('━'.repeat(80));
         toast('Upload failed - check Console');
         return;
       }
