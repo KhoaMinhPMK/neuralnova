@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📤 Test Upload File</h1>
+    
+    <input type="text" id="serverUrl" value="http://localhost:3001" placeholder="Server URL" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+    
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function uploadFile() {
+            const serverUrl = document.getElementById('serverUrl').value;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Chọn file trước!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                document.getElementById('result').innerHTML = 'Đang upload...';
+                
+                const response = await fetch(serverUrl + '/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('result').innerHTML = `
+                        <h3>✅ Upload thành công!</h3>
+                        <p><strong>URL:</strong> <a href="${data.file.url}" target="_blank">${data.file.url}</a></p>
+                        <img src="${data.file.url}" alt="Uploaded file">
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <h3>❌ Lỗi!</h3>
+                        <p>${data.message}</p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3>❌ Lỗi kết nối!</h3>
+                    <p>${error.message}</p>
+                    <p>Kiểm tra xem server đã chạy chưa.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

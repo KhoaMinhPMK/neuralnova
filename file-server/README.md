@@ -1,255 +1,83 @@
-# NeuralNova File Upload Server
+# 📤 Simple File Server
 
-Node.js microservice for handling file uploads with automatic optimization.
+Server đơn giản để upload và lưu file.
 
-## 🚀 **Features**
+## 🚀 Cài đặt & Chạy
 
-- ✅ Image upload & auto-optimization (WebP conversion)
-- ✅ Video upload support (MP4, WebM)
-- ✅ Auto-resize & compression
-- ✅ Rate limiting & security
-- ✅ CORS configured
-- ✅ PM2 cluster mode
-
----
-
-## 📦 **Installation**
-
-### **1. Install Dependencies**:
 ```bash
-cd file-server
+# 1. Cài packages
 npm install
+
+# 2. Chạy server
+npm start
 ```
 
-### **2. Create Upload Directories**:
+Server chạy tại: http://localhost:3001
+
+## 📡 API
+
+### Upload file
 ```bash
-mkdir -p uploads/avatars
-mkdir -p uploads/covers
-mkdir -p uploads/posts
+curl -X POST http://localhost:3001/upload -F "file=@image.jpg"
 ```
 
-### **3. Setup Environment** (optional):
+### Upload nhiều files
 ```bash
-cp .env.example .env
-# Edit .env with your settings
+curl -X POST http://localhost:3001/upload-multiple -F "files=@image1.jpg" -F "files=@image2.jpg"
 ```
 
----
+### Xem file
+```
+http://localhost:3001/uploads/filename.jpg
+```
 
-## 🔧 **Development**
-
-### **Start Dev Server**:
+### Liệt kê files
 ```bash
-npm run dev
+curl http://localhost:3001/list
 ```
 
-Server runs on: `http://localhost:3000`
-
-### **Test Endpoints**:
+### Xóa file
 ```bash
-# Health check
-curl http://localhost:3000/health
-
-# Upload avatar
-curl -F "avatar=@test.jpg" http://localhost:3000/upload/avatar
-
-# Upload cover
-curl -F "cover=@test.jpg" http://localhost:3000/upload/cover
-
-# Upload post media
-curl -F "media=@test.jpg" http://localhost:3000/upload/post
+curl -X DELETE http://localhost:3001/delete/filename.jpg
 ```
 
----
+## 💻 Sử dụng trong JavaScript
 
-## 🚀 **Production Deployment**
-
-### **1. Install PM2**:
-```bash
-npm install -g pm2
-```
-
-### **2. Start with PM2**:
-```bash
-npm run pm2:start
-```
-
-### **3. Setup Auto-start**:
-```bash
-pm2 startup
-pm2 save
-```
-
-### **4. Monitor**:
-```bash
-pm2 list
-pm2 logs neuralnova-files
-pm2 monit
-```
-
----
-
-## 🌐 **Nginx Reverse Proxy**
-
-Add to your Nginx config:
-
-```nginx
-# File server
-location /file-server/ {
-    proxy_pass http://localhost:3000/;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    client_max_body_size 50M;
-}
-
-# Static uploads
-location /uploads/ {
-    alias /path/to/neuralnova/file-server/uploads/;
-    expires 30d;
-    add_header Cache-Control "public, immutable";
-}
-```
-
-Reload Nginx:
-```bash
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
----
-
-## 📡 **API Endpoints**
-
-### **POST /upload/avatar**
-Upload user avatar (auto-resize to 500x500px)
-
-**Request**:
-```bash
-curl -X POST \
-  -F "avatar=@image.jpg" \
-  https://neuralnova.space:3000/upload/avatar
-```
-
-**Response**:
-```json
-{
-  "success": true,
-  "file": {
-    "url": "https://neuralnova.space:3000/uploads/avatars/avatar-123456.webp",
-    "filename": "avatar-123456.webp",
-    "size": 45678,
-    "type": "image/webp",
-    "dimensions": { "width": 500, "height": 500 }
-  }
-}
-```
-
-### **POST /upload/cover**
-Upload cover photo (auto-resize to 1200x400px)
-
-### **POST /upload/post**
-Upload post media (max 1920x1920px for images, no resize for videos)
-
-### **DELETE /delete/:type/:filename**
-Delete uploaded file
-
-### **GET /info/:type/:filename**
-Get file metadata
-
-### **GET /health**
-Health check endpoint
-
----
-
-## 🔒 **Security**
-
-- ✅ Helmet.js security headers
-- ✅ Rate limiting (100 requests per 15 min)
-- ✅ File type validation
-- ✅ File size limits
-- ✅ CORS whitelist
-- ✅ Auto image optimization
-- ✅ Compression enabled
-
----
-
-## 📊 **File Limits**
-
-| Type | Max Size | Dimensions |
-|------|----------|------------|
-| Avatar | 5MB | 500x500px (auto-resize) |
-| Cover | 10MB | 1200x400px (auto-resize) |
-| Post Image | 50MB | Max 1920x1920px |
-| Post Video | 50MB | No resize |
-
----
-
-## 🛠️ **Troubleshooting**
-
-### **Port already in use**:
-```bash
-# Kill process on port 3000
-lsof -ti:3000 | xargs kill -9
-# Or
-npx kill-port 3000
-```
-
-### **Permission denied**:
-```bash
-chmod -R 755 uploads/
-```
-
-### **PM2 not starting**:
-```bash
-pm2 delete neuralnova-files
-pm2 start ecosystem.config.js
-```
-
----
-
-## 📈 **Performance**
-
-- **Cluster mode**: 2 instances for load balancing
-- **Memory limit**: 500MB per instance
-- **Auto-restart**: On crash or high memory
-- **Compression**: Gzip enabled
-- **Image optimization**: WebP conversion (30-50% smaller)
-
----
-
-## 🔗 **Integration with PHP Backend**
-
-### **Frontend uploads to Node.js**:
 ```javascript
+// Upload file
 const formData = new FormData();
-formData.append('avatar', file);
+formData.append('file', fileInput.files[0]);
 
-const response = await fetch('https://neuralnova.space:3000/upload/avatar', {
+const response = await fetch('http://localhost:3001/upload', {
   method: 'POST',
   body: formData
 });
 
-const data = await response.json();
-// data.file.url → Save to database via PHP API
+const result = await response.json();
+console.log(result.file.url); // URL của file
 ```
 
-### **PHP saves URL to database**:
-```php
-// Receive URL from frontend
-$avatarUrl = $_POST['avatar_url'];
+## 🌐 Deploy lên VPS Windows
 
-// Save to database
-$stmt = $pdo->prepare("UPDATE users SET avatar_url = ? WHERE id = ?");
-$stmt->execute([$avatarUrl, $userId]);
-```
+1. **Cài Node.js** trên VPS: https://nodejs.org/
+2. **Upload folder này** lên VPS
+3. **Mở PowerShell** và chạy:
+   ```powershell
+   cd C:\path\to\file-server
+   npm install
+   npm start
+   ```
+4. **Mở port 3001**:
+   ```powershell
+   New-NetFirewallRule -DisplayName "File Server" -Direction Inbound -LocalPort 3001 -Protocol TCP -Action Allow
+   ```
+5. **Truy cập**: http://IP-VPS:3001
 
----
+## 📝 Lưu ý
 
-**Created**: 2025-10-16  
-**Version**: 1.0.0  
-**Status**: Ready for deployment 🚀
+- Files được lưu trong thư mục `uploads/`
+- Max file size: 10MB
+- Port mặc định: 3001 (đổi trong server.js nếu cần)
+- CORS: Cho phép tất cả origins
+
+Xong! 🎉
