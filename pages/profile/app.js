@@ -1,7 +1,21 @@
 // Profile Page - Facebook Dark Mode Style
 (() => {
-  const API_BASE = 'https://neuralnova.space/backend/api';
-  const FILE_SERVER = 'https://neuralnova.space:3000'; // Node.js file server
+  // Auto-detect environment
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  // API Configuration
+  const API_BASE = isLocal 
+    ? 'http://localhost/neuralnova/backend/api'
+    : 'https://neuralnova.space/backend/api';
+  
+  const FILE_SERVER = isLocal
+    ? 'http://localhost:3000'
+    : 'https://neuralnova.space:3000';
+  
+  console.log('🔧 Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
+  console.log('🔗 API Base:', API_BASE);
+  console.log('📁 File Server:', FILE_SERVER);
+  
   let currentUser = null;
   
   // Toast notification

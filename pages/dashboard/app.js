@@ -14,10 +14,16 @@
         }, 3000);
     };
 
-    // API Base URL
-    const API_BASE = window.location.hostname === 'localhost'
+    // Auto-detect environment
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    const API_BASE = isLocal
         ? 'http://localhost/neuralnova/backend/api'
         : 'https://neuralnova.space/backend/api';
+    
+    const FILE_SERVER = isLocal
+        ? 'http://localhost:3000'
+        : 'https://neuralnova.space:3000';
 
     // LocalStorage Helpers
     function saveUserToLocalStorage(userData) {
