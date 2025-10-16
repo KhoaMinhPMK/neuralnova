@@ -168,33 +168,147 @@
   }
 
   function sampleData(criteria){
-    // Minimal mock data based on theme
+    // Enhanced mock data with more variety
     const theme = criteria.theme;
     let baseCity = 'Đà Lạt';
     if (theme==='biển') baseCity = 'Phú Quốc';
     if (theme==='trekking') baseCity = 'Sa Pa';
 
     const tours = [
-      { id:'T-'+Date.now(), name:`${theme==='biển'?'Khám phá bờ biển': theme==='trekking'?'Trekking thư giãn':'City break'} ${baseCity}`, region: baseCity, theme:[theme], durationDays: criteria.days||3, priceFrom: criteria.budget? 3000000 : 2500000, rating: 4.6,
-        includes:['xe đưa đón','vé tham quan'], excludes:['chi phí cá nhân'], schedule:[{day:1,title:'Ngày 1'}, {day:2,title:'Ngày 2'}], coords:[{lat:10.2,lng:103.95}] },
-      { id:'T2-'+Date.now(), name:`Trải nghiệm địa phương ${baseCity}`, region: baseCity, theme:['văn hóa'], durationDays:(criteria.days||2), priceFrom: 2200000, rating: 4.5,
-        includes:['hướng dẫn viên'], excludes:['ăn tối'], schedule:[{day:1,title:'Khởi hành'}], coords:[{lat:10.23,lng:103.98}] }
+      { 
+        id:'T-'+Date.now(), 
+        name:`${theme==='biển'?'🏖️ Khám phá thiên đường biển': theme==='trekking'?'⛰️ Chinh phục núi rừng':'🌆 Khám phá thành phố'} ${baseCity}`, 
+        region: baseCity, 
+        theme:[theme], 
+        durationDays: criteria.days||3, 
+        priceFrom: criteria.budget? 3000000 : 2500000, 
+        rating: 4.6,
+        difficulty: theme==='trekking'? '⭐⭐⭐ Khó' : theme==='biển'? '⭐ Dễ' : '⭐⭐ Trung Bình',
+        includes:['xe đưa đón','vé tham quan','hướng dẫn viên','bảo hiểm'], 
+        excludes:['chi phí cá nhân','đồ uống'], 
+        schedule:[
+          {day:1,title:'Ngày 1: Khởi hành - Check-in', activities:['Di chuyển','Nhận phòng','Nghỉ ngơi','Khám phá địa phương']}, 
+          {day:2,title:'Ngày 2: Tham quan chính', activities:['Ăn sáng','Điểm tham quan A','Điểm tham quan B','Ăn tối']},
+          {day:3,title:'Ngày 3: Trở về', activities:['Ăn sáng','Mua sắm','Check-out','Về nhà']}
+        ], 
+        coords:[{lat:10.2,lng:103.95}],
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'
+      },
+      { 
+        id:'T2-'+Date.now(), 
+        name:`🎭 Trải nghiệm văn hóa địa phương ${baseCity}`, 
+        region: baseCity, 
+        theme:['văn hóa'], 
+        durationDays:(criteria.days||2), 
+        priceFrom: 2200000, 
+        rating: 4.5,
+        difficulty: '⭐ Dễ',
+        includes:['hướng dẫn viên','vé tham quan','ăn trưa'], 
+        excludes:['ăn tối','di chuyển cá nhân'], 
+        schedule:[
+          {day:1,title:'Ngày 1: Khám phá văn hóa', activities:['Chợ địa phương','Làng nghề','Ẩm thực đường phố']},
+          {day:2,title:'Ngày 2: Di sản & Lịch sử', activities:['Bảo tàng','Di tích lịch sử','Trung tâm văn hóa']}
+        ], 
+        coords:[{lat:10.23,lng:103.98}],
+        image: 'https://images.unsplash.com/photo-1523906630133-f6934a1ab2b9?w=400'
+      },
+      { 
+        id:'T3-'+Date.now(), 
+        name:`🍜 Tour ẩm thực ${baseCity}`, 
+        region: baseCity, 
+        theme:['ẩm thực'], 
+        durationDays:1, 
+        priceFrom: 890000, 
+        rating: 4.8,
+        difficulty: '⭐ Dễ',
+        includes:['hướng dẫn viên','5-7 món ăn','nước uống','xe đưa đón'], 
+        excludes:['chi phí cá nhân'], 
+        schedule:[
+          {day:1,title:'Tour ẩm thực buổi tối', activities:['Phở','Bánh mì','Bún chả','Chè','Cà phê']}
+        ], 
+        coords:[{lat:10.19,lng:103.93}],
+        image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400'
+      },
+      { 
+        id:'T4-'+Date.now(), 
+        name:`📸 Photography Tour ${baseCity}`, 
+        region: baseCity, 
+        theme:['nhiếp ảnh'], 
+        durationDays:2, 
+        priceFrom: 3500000, 
+        rating: 4.7,
+        difficulty: '⭐⭐ Trung Bình',
+        includes:['Nhiếp ảnh gia chuyên nghiệp','Xe riêng','In ảnh miễn phí'], 
+        excludes:['Thiết bị camera','Ăn uống'], 
+        schedule:[
+          {day:1,title:'Golden Hour Morning', activities:['Sunrise shoot','Landscape','Local life']},
+          {day:2,title:'Night Photography', activities:['Sunset','Night market','Long exposure']}
+        ], 
+        coords:[{lat:10.22,lng:103.97}],
+        image: 'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=400'
+      },
+      { 
+        id:'T5-'+Date.now(), 
+        name:`🚴 Adventure & Sport ${baseCity}`, 
+        region: baseCity, 
+        theme:['thể thao','mạo hiểm'], 
+        durationDays:3, 
+        priceFrom: 4500000, 
+        rating: 4.9,
+        difficulty: '⭐⭐⭐⭐ Cực Khó',
+        includes:['Thiết bị an toàn','Huấn luyện viên','Bảo hiểm cao cấp'], 
+        excludes:['Chi phí cá nhân','Quần áo thể thao'], 
+        schedule:[
+          {day:1,title:'Trekking & Camping', activities:['Trekking 8km','Dựng lều','BBQ']},
+          {day:2,title:'Rock Climbing', activities:['Huấn luyện','Leo núi','Rappelling']},
+          {day:3,title:'Water Sports', activities:['Kayaking','Snorkeling','Diving']}
+        ], 
+        coords:[{lat:10.18,lng:103.99}],
+        image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400'
+      },
+      { 
+        id:'T6-'+Date.now(), 
+        name:`🧘 Wellness & Retreat ${baseCity}`, 
+        region: baseCity, 
+        theme:['wellness','thư giãn'], 
+        durationDays:4, 
+        priceFrom: 6800000, 
+        rating: 4.8,
+        difficulty: '⭐ Dễ',
+        includes:['Yoga class','Spa treatment','Healthy meals','Meditation'], 
+        excludes:['Dịch vụ spa cao cấp','Đồ uống có cồn'], 
+        schedule:[
+          {day:1,title:'Arrival & Detox', activities:['Check-in','Yoga buổi chiều','Bữa tối detox']},
+          {day:2,title:'Mind & Body', activities:['Yoga sunrise','Spa treatment','Meditation']},
+          {day:3,title:'Nature Connection', activities:['Forest bathing','Organic farm visit','Sound healing']},
+          {day:4,title:'Farewell', activities:['Final yoga','Brunch','Check-out']}
+        ], 
+        coords:[{lat:10.16,lng:103.92}],
+        image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400'
+      }
     ];
 
     const places = [
-      { id:'P1', name: theme==='biển'?'Bãi Sao':'Đỉnh Langbiang', type:'sight', lat: theme==='biển'?10.05:12.02, lng: theme==='biển'?103.96:108.44, tags:[theme,'ảnh đẹp'], rating: 4.5 },
-      { id:'P2', name:'Cafe View', type:'cafe', lat: theme==='biển'?10.21:11.94, lng: theme==='biển'?103.94:108.43, tags:['ngắm cảnh'], rating:4.4 }
+      { id:'P1', name: theme==='biển'?'Bãi Sao - Biển đẹp nhất':'Đỉnh Langbiang - View 360°', type:'sight', lat: theme==='biển'?10.05:12.02, lng: theme==='biển'?103.96:108.44, tags:[theme,'ảnh đẹp','hot'], rating: 4.5 },
+      { id:'P2', name:'Cafe View Hoàng Hôn', type:'cafe', lat: theme==='biển'?10.21:11.94, lng: theme==='biển'?103.94:108.43, tags:['ngắm cảnh','coffee'], rating:4.4 },
+      { id:'P3', name:'Chợ Đêm Địa Phương', type:'market', lat: theme==='biển'?10.19:11.95, lng: theme==='biển'?103.95:108.42, tags:['ăn uống','mua sắm','văn hóa'], rating:4.6 },
+      { id:'P4', name:'Nhà Hàng Hải Sản Fresh', type:'restaurant', lat: theme==='biển'?10.17:11.93, lng: theme==='biển'?103.97:108.45, tags:['hải sản','ngon','giá tốt'], rating:4.7 }
     ];
 
     const blogs = [
-      { id:'B1', title:`Top homestay ${baseCity}`, slug:'top-homestay', tags:[baseCity,'lưu trú'], summary:'Danh sách homestay view đẹp', coverImg:'', readTimeMin:6 },
-      { id:'B2', title:`Kinh nghiệm ăn uống ${baseCity}`, slug:'food-guide', tags:['ẩm thực'], summary:'Điểm ăn nổi bật', coverImg:'', readTimeMin:5 }
+      { id:'B1', title:`Top 10 Homestay View Đẹp ${baseCity} 2025`, slug:'top-homestay', tags:[baseCity,'lưu trú','2025'], summary:'Danh sách homestay view đẹp, giá tốt, được review cao', coverImg:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300', readTimeMin:6 },
+      { id:'B2', title:`Kinh nghiệm ăn uống ${baseCity} A-Z`, slug:'food-guide', tags:['ẩm thực','kinh nghiệm'], summary:'Điểm ăn nổi bật từ bình dân đến cao cấp', coverImg:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300', readTimeMin:5 },
+      { id:'B3', title:`Budget 5 triệu du lịch ${baseCity} 3N2Đ`, slug:'budget-guide', tags:['budget','tiết kiệm'], summary:'Chi tiết chi phí từng hạng mục, tips tiết kiệm', coverImg:'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=300', readTimeMin:8 }
     ];
 
-    // hotels
+    // hotels - more variety
     const hotels = [
-      { id:'H1', name:`Resort gần biển ${baseCity}`, city: baseCity, stars: criteria.stars||4, pricePerNight: 950000, rating:4.5, amenities:['hồ bơi','buffet sáng','gần biển'] },
-      { id:'H2', name:`Khách sạn trung tâm ${baseCity}`, city: baseCity, stars: 3, pricePerNight: 650000, rating:4.2, amenities:['gần chợ','wifi','gia đình'] }
+      { id:'H1', name:`🌟 Luxury Resort & Spa ${baseCity}`, city: baseCity, stars: 5, pricePerNight: 2450000, rating:4.9, amenities:['hồ bơi vô cực','spa','buffet sáng','gym','view biển'], image:'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
+      { id:'H2', name:`🏨 Premium Hotel ${baseCity} Downtown`, city: baseCity, stars: 4, pricePerNight: 1250000, rating:4.6, amenities:['gần biển','buffet sáng','wifi','rooftop bar'], image:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' },
+      { id:'H3', name:`🏡 Cozy Homestay & Cafe`, city: baseCity, stars: 3, pricePerNight: 650000, rating:4.7, amenities:['gia đình','ấm cúng','ăn sáng','cafe','sân vườn'], image:'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400' },
+      { id:'H4', name:`🏖️ Beachfront Bungalow`, city: baseCity, stars: 3, pricePerNight: 890000, rating:4.5, amenities:['gần biển 50m','view đẹp','yên tĩnh','bãi biển riêng'], image:'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400' },
+      { id:'H5', name:`🌴 Garden Villa & Pool`, city: baseCity, stars: 4, pricePerNight: 1680000, rating:4.8, amenities:['hồ bơi riêng','sân vườn','BBQ','4 phòng ngủ'], image:'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400' },
+      { id:'H6', name:`🏔️ Mountain View Lodge`, city: baseCity, stars: 3, pricePerNight: 750000, rating:4.4, amenities:['view núi','trekking','lửa trại','ăn sáng'], image:'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400' }
     ];
 
     // Derive markers from tours/places
@@ -221,20 +335,32 @@
     const { tours, hotels, places, blogs, markers } = state.results;
 
     toursBox.innerHTML = (tours||[]).map(t=>`
-      <div class="card">
-        <div class="row"><strong>${t.name}</strong><span>⭐ ${t.rating||'-'}</span></div>
-        <div class="row">
-          <div class="tags">
-            ${(t.theme||[]).map(x=>`<span class="tag">${x}</span>`).join('')}
-            <span class="tag">${t.durationDays||'-'}N</span>
+      <div class="card tour-card" data-tour-id="${t.id}">
+        ${t.image ? `<div class="card-image" style="background-image: url('${t.image}')"><div class="card-badge">${t.difficulty||''}</div></div>` : ''}
+        <div class="card-content">
+          <div class="card-header">
+            <strong class="card-title">${t.name}</strong>
+            <div class="card-rating">⭐ ${t.rating||'-'}</div>
           </div>
-          <div>
-            <button class="btn" data-act="save" data-type="tour" data-id="${t.id}">Lưu</button>
+          <div class="card-meta">
+            <span>📅 ${t.durationDays||'-'} ngày</span>
+            <span>•</span>
+            <span class="card-price">Từ ${Number(t.priceFrom||0).toLocaleString('vi-VN')}đ</span>
+          </div>
+          <div class="tags">
+            ${(t.theme||[]).map(x=>`<span class="tag tag-theme">${x}</span>`).join('')}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-secondary" data-act="save" data-type="tour" data-id="${t.id}">
+              <i data-lucide="bookmark"></i> Lưu
+            </button>
+            <button class="btn btn-primary" data-act="book" data-id="${t.id}">
+              <i data-lucide="calendar-check"></i> Đặt ngay
+            </button>
           </div>
         </div>
-        <div class="muted">Từ ${Number(t.priceFrom||0).toLocaleString('vi-VN')}đ</div>
       </div>
-    `).join('') || '<div class="card">Chưa có tour phù hợp</div>';
+    `).join('') || '<div class="card empty-card"><p>🔍 Chưa có tour phù hợp với tiêu chí của bạn</p><p class="muted">Hãy thử chat với AI để tìm tour phù hợp!</p></div>';
 
     // Only render if elements exist
     if (placesBox) {
@@ -271,14 +397,6 @@
     }
 
     if (window.lucide) lucide.createIcons();
-    // Ensure tour book buttons exist (inject if missing)
-    (tours||[]).forEach(t=>{
-      const saveBtn = toursBox.querySelector(`button[data-type="tour"][data-id="${t.id}"]`);
-      const actionsBox = saveBtn ? saveBtn.parentElement : null;
-      if (actionsBox && !actionsBox.querySelector('[data-act="book"]')){
-        const b = document.createElement('button'); b.className='btn primary'; b.dataset.act='book'; b.dataset.id=t.id; b.textContent='Đặt tour'; actionsBox.appendChild(b);
-      }
-    });
 
     // Wire save & book buttons
     $$('#tourList [data-act="save"], #placeList [data-act="save"], #blogList [data-act="save"], #hotelList [data-act="save"]').forEach(btn=>{
@@ -497,15 +615,6 @@ Hãy tư vấn chuyên nghiệp, chi tiết và đầy cảm hứng để ngư�
       card.style.display = show? '' : 'none';
     });
   }
-  function ensureItineraryButtons(){
-    document.querySelectorAll('#tourList [data-act="book"]').forEach(btn=>{
-      const wrap = btn.parentElement; if (!wrap) return;
-      if (!wrap.querySelector('[data-act="itinerary"]')){
-        const i = document.createElement('button'); i.className='btn'; i.dataset.act='itinerary'; i.dataset.id=btn.dataset.id; i.textContent='Xem lịch trình'; wrap.appendChild(i);
-        i.addEventListener('click', ()=> openItinerary(btn.dataset.id));
-      }
-    });
-  }
 
   // Tabs
   $$('.tab').forEach(btn=>{
@@ -516,26 +625,41 @@ Hãy tư vấn chuyên nghiệp, chi tiết và đầy cảm hứng để ngư�
       const tours = document.getElementById('panel-tours'); const hotels=document.getElementById('panel-hotels');
       if (tours) tours.hidden = key!=='tours';
       if (hotels) hotels.hidden = key!=='hotels';
-      if (key==='tours'){ setupTourFilters(); applyBudgetFilter(); ensureItineraryButtons(); }
+      if (key==='tours'){ setupTourFilters(); applyBudgetFilter(); }
+      if (key==='hotels'){ renderHotelsBox(); }
     });
   });
 
   // Render hotels list
   function renderHotelsBox(){
-    const hotelsBox = $('#hotelList'); const hotels = state.results.hotels||[];
+    const hotelsBox = $('#hotelList'); 
+    if (!hotelsBox) return;
+    const hotels = state.results.hotels||[];
     hotelsBox.innerHTML = hotels.map(h=>`
-      <div class="card">
-        <div class="row"><strong>${h.name}</strong><span>⭐ ${h.stars || '-'} | ${h.rating || '-'}</span></div>
-        <div class="tags">${(h.amenities||[]).map(x=>`<span class="tag">${x}</span>`).join('')}</div>
-        <div class="row">
-          <div class="muted">Từ ${Number(h.pricePerNight||0).toLocaleString('vi-VN')}đ/đêm</div>
-          <div>
-            <button class="btn" data-act="save" data-type="hotel" data-id="${h.id}">Lưu</button>
-            <button class="btn primary" data-act="book" data-id="${h.id}">Đặt phòng</button>
+      <div class="card hotel-card" data-hotel-id="${h.id}">
+        ${h.image ? `<div class="card-image" style="background-image: url('${h.image}')"><div class="card-stars">${'⭐'.repeat(h.stars||3)}</div></div>` : ''}
+        <div class="card-content">
+          <div class="card-header">
+            <strong class="card-title">${h.name}</strong>
+            <div class="card-rating">⭐ ${h.rating || '-'}</div>
+          </div>
+          <div class="card-meta">
+            <span class="card-price-large">${Number(h.pricePerNight||0).toLocaleString('vi-VN')}đ<span class="per-night">/đêm</span></span>
+          </div>
+          <div class="tags">
+            ${(h.amenities||[]).map(x=>`<span class="tag tag-amenity">${x}</span>`).join('')}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-secondary" data-act="save" data-type="hotel" data-id="${h.id}">
+              <i data-lucide="heart"></i> Yêu thích
+            </button>
+            <button class="btn btn-primary" data-act="book" data-id="${h.id}">
+              <i data-lucide="bed"></i> Đặt phòng
+            </button>
           </div>
         </div>
       </div>
-    `).join('') || '<div class="card">Chưa có khách sạn</div>';
+    `).join('') || '<div class="card empty-card"><p>🏨 Chưa có khách sạn phù hợp</p><p class="muted">Hãy chat với AI để tìm chỗ ở tốt nhất!</p></div>';
   }
 
   function openBooking(kind, id){
@@ -558,18 +682,103 @@ Hãy tư vấn chuyên nghiệp, chi tiết và đầy cảm hứng để ngư�
     e.preventDefault();
     if (!state.booking) return;
     const bookings = load('nn_bookings', []);
+    
+    let bookingDetails = {};
+    let itemName = '';
+    let totalPrice = 0;
+    
     if (state.booking.kind==='tour'){
-      const date = $('#tourDate').value; const adults = Number($('#tourAdults').value||0); const kids = Number($('#tourKids').value||0);
-      if (!date || adults<1){ toast('Chọn ngày và số khách hợp lệ'); return; }
-      bookings.push({ id:'BK'+Date.now(), type:'tour', refId: state.booking.id, date, adults, kids, at: new Date().toISOString() });
+      const date = $('#tourDate').value; 
+      const adults = Number($('#tourAdults').value||0); 
+      const kids = Number($('#tourKids').value||0);
+      if (!date || adults<1){ toast('⚠️ Vui lòng chọn ngày và số khách hợp lệ'); return; }
+      
+      const tour = (state.results.tours||[]).find(x=>x.id===state.booking.id);
+      itemName = tour?.name || 'Tour';
+      totalPrice = (tour?.priceFrom||0) * adults;
+      
+      bookingDetails = { 
+        id:'BK'+Date.now(), 
+        type:'tour', 
+        refId: state.booking.id, 
+        itemName,
+        date, 
+        adults, 
+        kids,
+        totalPrice,
+        status: 'pending',
+        at: new Date().toISOString() 
+      };
+      bookings.push(bookingDetails);
     } else {
-      const ci = $('#hotelCheckin').value; const co = $('#hotelCheckout').value; const guests = Number($('#hotelGuests').value||0); const rooms = Number($('#hotelRooms').value||0); const prefs = $('#hotelPrefs').value||'';
-      if (!ci || !co || guests<1 || rooms<1){ toast('Điền ngày check‑in/out và số khách/phòng hợp lệ'); return; }
-      bookings.push({ id:'BK'+Date.now(), type:'hotel', refId: state.booking.id, checkin:ci, checkout:co, guests, rooms, prefs, at: new Date().toISOString() });
+      const ci = $('#hotelCheckin').value; 
+      const co = $('#hotelCheckout').value; 
+      const guests = Number($('#hotelGuests').value||0); 
+      const rooms = Number($('#hotelRooms').value||0); 
+      const prefs = $('#hotelPrefs').value||'';
+      
+      if (!ci || !co || guests<1 || rooms<1){ toast('⚠️ Vui lòng điền đầy đủ thông tin'); return; }
+      
+      const hotel = (state.results.hotels||[]).find(x=>x.id===state.booking.id);
+      itemName = hotel?.name || 'Hotel';
+      
+      // Calculate nights
+      const checkin = new Date(ci);
+      const checkout = new Date(co);
+      const nights = Math.max(1, Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24)));
+      totalPrice = (hotel?.pricePerNight||0) * nights * rooms;
+      
+      bookingDetails = { 
+        id:'BK'+Date.now(), 
+        type:'hotel', 
+        refId: state.booking.id,
+        itemName,
+        checkin:ci, 
+        checkout:co, 
+        nights,
+        guests, 
+        rooms, 
+        prefs,
+        totalPrice,
+        status: 'pending',
+        at: new Date().toISOString() 
+      };
+      bookings.push(bookingDetails);
     }
+    
     localStorage.setItem('nn_bookings', JSON.stringify(bookings));
-    $('#bookingModal').hidden = true; toast('Đã tạo yêu cầu đặt. Chúng tôi sẽ liên hệ xác nhận.');
+    $('#bookingModal').hidden = true; 
+    
+    // Show detailed confirmation
+    showBookingConfirmation(bookingDetails);
   });
+  
+  // Booking confirmation notification
+  function showBookingConfirmation(booking) {
+    const confirmMsg = document.createElement('div');
+    confirmMsg.className = 'booking-confirmation';
+    confirmMsg.innerHTML = `
+      <div class="booking-confirmation-content">
+        <div class="booking-check">✓</div>
+        <h3>🎉 Đặt thành công!</h3>
+        <p><strong>${booking.itemName}</strong></p>
+        ${booking.type === 'tour' 
+          ? `<p>📅 Ngày: ${booking.date}</p><p>👥 ${booking.adults} người lớn${booking.kids ? `, ${booking.kids} trẻ em` : ''}</p>` 
+          : `<p>📅 ${booking.checkin} → ${booking.checkout} (${booking.nights} đêm)</p><p>🛏️ ${booking.rooms} phòng • ${booking.guests} khách</p>`
+        }
+        <p class="booking-total">💰 Tổng tiền: <strong>${(booking.totalPrice||0).toLocaleString('vi-VN')}đ</strong></p>
+        <p class="booking-note">Mã đặt: <code>${booking.id}</code></p>
+        <p class="muted">Chúng tôi sẽ liên hệ xác nhận trong 24h</p>
+        <button class="btn btn-primary" onclick="this.parentElement.parentElement.remove()">Đóng</button>
+      </div>
+    `;
+    document.body.appendChild(confirmMsg);
+    
+    // Auto remove after 10 seconds
+    setTimeout(() => {
+      if (confirmMsg.parentElement) confirmMsg.remove();
+    }, 10000);
+  }
 
   // Check API key configuration
   function checkAPIConfiguration() {
