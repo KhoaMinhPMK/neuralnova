@@ -209,8 +209,10 @@
       });
       const profileData = await profileResponse.json();
       
-      if (profileData.success) {
-        const prof = profileData.profile;
+      console.log('📦 Profile data:', profileData);
+      
+      if (profileData.success && profileData.user) {
+        const prof = profileData.user;
         const avatarUrl = prof.avatar_url || '../../assets/images/logo.png';
         const coverUrl = prof.cover_url || '../../assets/images/nature1.jpg';
         
@@ -220,6 +222,12 @@
         document.getElementById('createPostAvatar').src = avatarUrl;
         document.getElementById('coverImg').src = coverUrl;
         document.getElementById('profileName').textContent = prof.full_name || 'User';
+        
+        // Update friends count with posts count
+        const friendsCount = prof.stats?.posts || 0;
+        document.getElementById('profileFriends').textContent = `${friendsCount} posts`;
+        
+        console.log('✅ Profile loaded:', prof.full_name, 'Posts:', friendsCount);
         
         // Update bio
         const bioDisplay = document.getElementById('bioDisplay');
@@ -234,11 +242,13 @@
         let detailsHTML = '';
         
         if (prof.interests) {
+          // interests is array from API
+          const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : prof.interests;
           detailsHTML += `
             <div class="intro-item">
               <i class="fas fa-heart"></i>
-              <span>${prof.interests}</span>
-        </div>
+              <span>${interests}</span>
+            </div>
           `;
         }
         
@@ -267,11 +277,15 @@
           document.getElementById('bio').value = prof.bio || '';
         }
         if (document.getElementById('interests')) {
-          document.getElementById('interests').value = prof.interests || '';
+          // interests is array from API
+          const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : (prof.interests || '');
+          document.getElementById('interests').value = interests;
         }
         if (document.getElementById('countrySel')) {
           document.getElementById('countrySel').value = prof.country || '';
         }
+      } else {
+        console.error('❌ Profile load failed:', profileData.error || 'No user data');
       }
       
       // Load badges
@@ -352,29 +366,54 @@
   // Load posts
   async function loadPosts() {
     try {
-      if (!currentUser) return;
+      if (!currentUser) {
+        console.log('⚠️ No currentUser, skipping posts load');
+        return;
+      }
       
-      const response = await fetch(`${API_BASE}/posts/feed.php?user_id=${currentUser.id}&limit=50`, {
+      const url = `${API_BASE}/posts/feed.php?user_id=${currentUser.id}&limit=50`;
+      console.log('🔄 Loading posts from:', url);
+      
+      const response = await fetch(url, {
         credentials: 'include'
       });
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Backend error:', text.substring(0, 500));
+        return;
+      }
+      
       const data = await response.json();
+      console.log('📦 Posts data:', data);
       
       if (data.success && data.posts) {
+        console.log('✅ Loaded', data.posts.length, 'posts');
         renderPosts(data.posts);
         
         // Update photos grid
         const photos = data.posts.filter(p => p.image_url).slice(0, 9);
         renderPhotos(photos);
+      } else {
+        console.log('⚠️ No posts or error:', data.message || 'Unknown');
+        renderPosts([]);
       }
     } catch (error) {
-      console.error('Load posts error:', error);
+      console.error('❌ Load posts error:', error);
+      renderPosts([]);
     }
   }
   
   // Render posts
   function renderPosts(posts) {
     const postsFeed = document.getElementById('postsFeed');
-    if (!postsFeed) return;
+    if (!postsFeed) {
+      console.log('⚠️ postsFeed element not found');
+      return;
+    }
+    
+    console.log('🎨 Rendering', posts.length, 'posts');
     
     if (!posts || posts.length === 0) {
       postsFeed.innerHTML = '<div class="card"><p style="text-align:center;color:#b0b3b8;padding:40px 20px;">No posts yet. Create your first post!</p></div>';
