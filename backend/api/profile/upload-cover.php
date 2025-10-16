@@ -83,21 +83,49 @@ try {
         exit;
     }
     
-    // Optional: Validate image dimensions (e.g., minimum 800x200, max 3000x1000)
+    // Optional: Validate image dimensions (relaxed for better UX)
     $tmpPath = $_FILES['cover']['tmp_name'];
-    $validation = validateImageDimensions($tmpPath, 800, 200, 3000, 1000);
+    $imageInfo = getimagesize($tmpPath);
     
-    if (!$validation['valid']) {
-        // Delete uploaded file
+    if ($imageInfo === false) {
+        // Not a valid image
         deleteUploadedFile($uploadResult['path']);
         
         http_response_code(422);
         echo json_encode([
             'success' => false,
-            'error' => $validation['error'],
-            'width' => $validation['width'],
-            'height' => $validation['height']
-        ]);
+            'error' => 'Not a valid image file'
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
+    }
+    
+    $width = $imageInfo[0];
+    $height = $imageInfo[1];
+    
+    // Relaxed validation: min 100x100, max 5000x5000
+    if ($width < 100 || $height < 100) {
+        deleteUploadedFile($uploadResult['path']);
+        
+        http_response_code(422);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Image too small. Minimum 100x100 pixels',
+            'width' => $width,
+            'height' => $height
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
+    }
+    
+    if ($width > 5000 || $height > 5000) {
+        deleteUploadedFile($uploadResult['path']);
+        
+        http_response_code(422);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Image too large. Maximum 5000x5000 pixels',
+            'width' => $width,
+            'height' => $height
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         exit;
     }
     
