@@ -9,8 +9,8 @@
     : 'https://neuralnova.space/backend/api';
   
   const FILE_SERVER = isLocal
-    ? 'http://localhost:3000'
-    : 'http://neuralnova.space:3000';  // HTTP - Allow mixed content in browser
+    ? 'http://localhost:3001'
+    : 'http://160.30.113.26:3001';  // Your VPS file server
   
   console.log('🔧 Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
   console.log('🔗 API Base:', API_BASE);
@@ -93,12 +93,12 @@
     
     try {
       const formData = new FormData();
-      formData.append('cover', file);
+      formData.append('file', file);
       
       console.log('📤 Uploading cover to Node.js server:', file.name, file.size, 'bytes');
       
       // Step 1: Upload to Node.js file server
-      const response = await fetch(`${FILE_SERVER}/upload/cover`, {
+      const response = await fetch(`${FILE_SERVER}/upload?type=covers`, {
         method: 'POST',
         body: formData
       });
@@ -168,12 +168,12 @@
     
     try {
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append('file', file);
       
       console.log('📤 Uploading avatar to Node.js server:', file.name, file.size, 'bytes');
       
       // Step 1: Upload to Node.js file server
-      const response = await fetch(`${FILE_SERVER}/upload/avatar`, {
+      const response = await fetch(`${FILE_SERVER}/upload?type=avatars`, {
         method: 'POST',
         body: formData
       });

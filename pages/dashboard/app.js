@@ -22,8 +22,8 @@
         : 'https://neuralnova.space/backend/api';
     
     const FILE_SERVER = isLocal
-        ? 'http://localhost:3000'
-        : 'http://neuralnova.space:3000';  // HTTP - Allow mixed content in browser
+        ? 'http://localhost:3001'
+        : 'http://160.30.113.26:3001';  // Your VPS file server
 
     // LocalStorage Helpers
     function saveUserToLocalStorage(userData) {
@@ -646,11 +646,25 @@
                         <div class="modal-user-name">${currentUser?.full_name || 'User'}</div>
                     </div>
                     <textarea id="newPostContent" placeholder="What's on your mind?" rows="5" autofocus></textarea>
-                    <div class="modal-image-input">
-                        <label for="newPostImage">
-                            <i class="fas fa-image"></i> Image URL (optional)
-                        </label>
-                        <input type="text" id="newPostImage" placeholder="https://example.com/image.jpg" />
+                    
+                    <!-- Image Upload Section -->
+                    <div class="modal-image-section" style="margin-top: 15px;">
+                        <input type="file" id="modalImageInput" accept="image/*" style="display: none;">
+                        <button type="button" id="uploadImageBtn" style="width: 100%; padding: 10px; border: 2px dashed #ccc; background: #f0f2f5; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-image"></i>
+                            <span>Add Photo</span>
+                        </button>
+                        
+                        <!-- Image Preview -->
+                        <div id="modalImagePreview" style="display: none; margin-top: 10px; position: relative;">
+                            <img id="modalPreviewImg" src="" alt="Preview" style="width: 100%; border-radius: 8px;">
+                            <button type="button" id="removeModalImage" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div id="uploadProgress" style="display: none; margin-top: 8px; font-size: 12px; color: #666;">
+                                <i class="fas fa-spinner fa-spin"></i> Uploading...
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -662,18 +676,99 @@
         
         document.body.appendChild(modal);
         
+        let uploadedImageUrl = null;
+        
         // Focus textarea after modal is added to DOM
         setTimeout(() => {
             const textarea = document.getElementById('newPostContent');
             if (textarea) textarea.focus();
         }, 100);
         
+        // Upload image button
+        const uploadImageBtn = document.getElementById('uploadImageBtn');
+        const modalImageInput = document.getElementById('modalImageInput');
+        const modalImagePreview = document.getElementById('modalImagePreview');
+        const modalPreviewImg = document.getElementById('modalPreviewImg');
+        const removeModalImage = document.getElementById('removeModalImage');
+        const uploadProgress = document.getElementById('uploadProgress');
+        
+        uploadImageBtn.addEventListener('click', () => {
+            modalImageInput.click();
+        });
+        
+        modalImageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                toast('Please select an image file', true);
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                toast('Image too large. Max 10MB', true);
+                return;
+            }
+            
+            try {
+                // Show preview immediately
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    modalPreviewImg.src = e.target.result;
+                    modalImagePreview.style.display = 'block';
+                    uploadImageBtn.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                
+                // Show upload progress
+                uploadProgress.style.display = 'block';
+                
+                // Upload to file server
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                console.log('📤 Uploading post image to file server...');
+                
+                const response = await fetch(`${FILE_SERVER}/upload?type=posts`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                console.log('📦 Upload response:', data);
+                
+                if (data.success && data.file) {
+                    uploadedImageUrl = data.file.url;
+                    uploadProgress.style.display = 'none';
+                    toast('Image uploaded!');
+                } else {
+                    throw new Error(data.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('❌ Upload error:', error);
+                toast('Failed to upload image', true);
+                // Reset
+                modalImagePreview.style.display = 'none';
+                uploadImageBtn.style.display = 'flex';
+                uploadProgress.style.display = 'none';
+                uploadedImageUrl = null;
+            }
+        });
+        
+        // Remove image
+        removeModalImage.addEventListener('click', () => {
+            modalImagePreview.style.display = 'none';
+            uploadImageBtn.style.display = 'flex';
+            modalImageInput.value = '';
+            uploadedImageUrl = null;
+        });
+        
         // Post handler
         const submitBtn = document.getElementById('submitPostBtn');
         if (submitBtn) {
             submitBtn.addEventListener('click', async () => {
                 const content = document.getElementById('newPostContent').value.trim();
-                const imageUrl = document.getElementById('newPostImage').value.trim();
                 
                 if (!content) {
                     toast('Please write something!', true);
@@ -684,7 +779,7 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Posting...';
                 
-                const success = await createPost(content, imageUrl || null);
+                const success = await createPost(content, uploadedImageUrl);
                 
                 if (success) {
                     modal.remove();
@@ -700,7 +795,12 @@
     // Post action buttons
     $$('.post-action').forEach(btn => {
         btn.addEventListener('click', () => {
-            toast('Feature coming soon!');
+            // Open create post modal for Photo button
+            if (btn.id === 'uploadPhotoBtn' || btn.querySelector('.fa-image')) {
+                showCreatePostModal();
+            } else {
+                toast('Feature coming soon!');
+            }
         });
     });
 
