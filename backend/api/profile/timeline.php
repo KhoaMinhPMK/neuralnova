@@ -57,31 +57,40 @@ try {
     $pdo = getDBConnection();
     $userId = $_SESSION['user_id'];
     
-    // Get user's posts with bloom data
-    $stmt = $pdo->prepare("
-        SELECT 
-            p.id,
-            p.caption,
-            p.media_url,
-            p.created_at,
-            p.updated_at,
-            p.species,
-            p.region,
-            p.bloom_window,
-            p.observation_date,
-            p.coordinates
-        FROM posts p 
-        WHERE p.user_id = ? 
-        AND p.species IS NOT NULL 
-        AND p.observation_date IS NOT NULL
-        ORDER BY p.observation_date ASC
-    ");
+    // Check if bloom columns exist
+    $columnsCheck = $pdo->query("SHOW COLUMNS FROM posts LIKE 'species'");
+    $hasBloomColumns = $columnsCheck->rowCount() > 0;
     
-    $stmt->execute([$userId]);
-    $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $timeline = [];
+    
+    if ($hasBloomColumns) {
+        // Get user's posts with bloom data
+        $stmt = $pdo->prepare("
+            SELECT 
+                p.id,
+                p.caption,
+                p.media_url,
+                p.created_at,
+                p.updated_at,
+                p.species,
+                p.region,
+                p.bloom_window,
+                p.observation_date,
+                p.coordinates
+            FROM posts p 
+            WHERE p.user_id = ? 
+            AND p.species IS NOT NULL 
+            AND p.observation_date IS NOT NULL
+            ORDER BY p.observation_date ASC
+        ");
+        
+        $stmt->execute([$userId]);
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $posts = [];
+    }
     
     // Process timeline items
-    $timeline = [];
     foreach ($posts as $post) {
         $isAccurate = false;
         if ($post['bloom_window'] && $post['observation_date']) {
@@ -107,15 +116,17 @@ try {
         'timeline' => $timeline,
         'stats' => $stats,
         'timestamp' => date('Y-m-d H:i:s')
-    ]);
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     
 } catch (Exception $e) {
     error_log("Timeline error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => 'Failed to load timeline'
-    ]);
+        'error' => 'Failed to load timeline',
+        'debug' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 
 function isDateWithinBloomWindow($dateStr, $window) {
@@ -141,6 +152,26 @@ function isDateWithinBloomWindow($dateStr, $window) {
 }
 
 function calculateUserStats($pdo, $userId) {
+    // Check if bloom columns exist
+    $columnsCheck = $pdo->query("SHOW COLUMNS FROM posts LIKE 'species'");
+    $hasBloomColumns = $columnsCheck->rowCount() > 0;
+    
+    if (!$hasBloomColumns) {
+        // Return default stats if columns don't exist
+        $postsStmt = $pdo->prepare("SELECT COUNT(*) as total_posts FROM posts WHERE user_id = ?");
+        $postsStmt->execute([$userId]);
+        $totalPosts = $postsStmt->fetch(PDO::FETCH_ASSOC)['total_posts'] ?? 0;
+        
+        return [
+            'species_count' => 0,
+            'regions_count' => 0,
+            'total_posts' => $totalPosts,
+            'accuracy_rate' => 0,
+            'total_observations' => 0,
+            'accurate_observations' => 0
+        ];
+    }
+    
     // Get species count
     $speciesStmt = $pdo->prepare("
         SELECT COUNT(DISTINCT species) as species_count 

@@ -64,15 +64,17 @@ try {
         'success' => true,
         'badges' => $badges,
         'timestamp' => date('Y-m-d H:i:s')
-    ]);
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     
 } catch (Exception $e) {
     error_log("Badges error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => 'Failed to load badges'
-    ]);
+        'error' => 'Failed to load badges',
+        'debug' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 
 function calculateUserBadges($pdo, $userId) {
@@ -169,27 +171,42 @@ function calculateUserBadges($pdo, $userId) {
 }
 
 function getUserStats($pdo, $userId) {
+    // Check if columns exist first
+    $columnsCheck = $pdo->query("SHOW COLUMNS FROM posts LIKE 'species'");
+    $hasSpeciesColumn = $columnsCheck->rowCount() > 0;
+    
+    $observationCheck = $pdo->query("SHOW COLUMNS FROM posts LIKE 'observation_date'");
+    $hasObservationColumn = $observationCheck->rowCount() > 0;
+    
     // Get species count and first date
-    $speciesStmt = $pdo->prepare("
-        SELECT 
-            COUNT(DISTINCT species) as species_count,
-            MIN(created_at) as first_species_date
-        FROM posts 
-        WHERE user_id = ? AND species IS NOT NULL
-    ");
-    $speciesStmt->execute([$userId]);
-    $speciesData = $speciesStmt->fetch(PDO::FETCH_ASSOC);
+    if ($hasSpeciesColumn) {
+        $speciesStmt = $pdo->prepare("
+            SELECT 
+                COUNT(DISTINCT species) as species_count,
+                MIN(created_at) as first_species_date
+            FROM posts 
+            WHERE user_id = ? AND species IS NOT NULL
+        ");
+        $speciesStmt->execute([$userId]);
+        $speciesData = $speciesStmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        $speciesData = ['species_count' => 0, 'first_species_date' => null];
+    }
     
     // Get regions count and first date
-    $regionsStmt = $pdo->prepare("
-        SELECT 
-            COUNT(DISTINCT region) as regions_count,
-            MIN(created_at) as first_region_date
-        FROM posts 
-        WHERE user_id = ? AND region IS NOT NULL
-    ");
-    $regionsStmt->execute([$userId]);
-    $regionsData = $regionsStmt->fetch(PDO::FETCH_ASSOC);
+    if ($hasSpeciesColumn) {
+        $regionsStmt = $pdo->prepare("
+            SELECT 
+                COUNT(DISTINCT region) as regions_count,
+                MIN(created_at) as first_region_date
+            FROM posts 
+            WHERE user_id = ? AND region IS NOT NULL
+        ");
+        $regionsStmt->execute([$userId]);
+        $regionsData = $regionsStmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        $regionsData = ['regions_count' => 0, 'first_region_date' => null];
+    }
     
     // Get total posts and posts with media
     $postsStmt = $pdo->prepare("
@@ -216,35 +233,41 @@ function getUserStats($pdo, $userId) {
     $reactionsData = $reactionsStmt->fetch(PDO::FETCH_ASSOC);
     
     // Get accuracy rate
-    $accuracyStmt = $pdo->prepare("
-        SELECT 
-            COUNT(*) as total_observations,
-            SUM(CASE 
-                WHEN bloom_window = 'Quanh năm' THEN 1
-                WHEN bloom_window IS NOT NULL AND observation_date IS NOT NULL THEN
-                    CASE 
-                        WHEN bloom_window LIKE '%-%' THEN
-                            CASE 
-                                WHEN SUBSTRING(bloom_window, 1, 2) <= SUBSTRING(bloom_window, 4, 2) THEN
-                                    MONTH(observation_date) BETWEEN SUBSTRING(bloom_window, 1, 2) AND SUBSTRING(bloom_window, 4, 2)
-                                ELSE
-                                    MONTH(observation_date) >= SUBSTRING(bloom_window, 1, 2) OR MONTH(observation_date) <= SUBSTRING(bloom_window, 4, 2)
-                            END
-                        ELSE 0
-                    END
-                ELSE 0
-            END) as accurate_observations
-        FROM posts 
-        WHERE user_id = ? 
-        AND species IS NOT NULL 
-        AND observation_date IS NOT NULL
-    ");
-    $accuracyStmt->execute([$userId]);
-    $accuracyData = $accuracyStmt->fetch(PDO::FETCH_ASSOC);
-    
-    $totalObservations = $accuracyData['total_observations'] ?? 0;
-    $accurateObservations = $accuracyData['accurate_observations'] ?? 0;
-    $accuracyRate = $totalObservations > 0 ? round(($accurateObservations / $totalObservations) * 100) : 0;
+    if ($hasSpeciesColumn && $hasObservationColumn) {
+        $accuracyStmt = $pdo->prepare("
+            SELECT 
+                COUNT(*) as total_observations,
+                SUM(CASE 
+                    WHEN bloom_window = 'Quanh năm' THEN 1
+                    WHEN bloom_window IS NOT NULL AND observation_date IS NOT NULL THEN
+                        CASE 
+                            WHEN bloom_window LIKE '%-%' THEN
+                                CASE 
+                                    WHEN SUBSTRING(bloom_window, 1, 2) <= SUBSTRING(bloom_window, 4, 2) THEN
+                                        MONTH(observation_date) BETWEEN SUBSTRING(bloom_window, 1, 2) AND SUBSTRING(bloom_window, 4, 2)
+                                    ELSE
+                                        MONTH(observation_date) >= SUBSTRING(bloom_window, 1, 2) OR MONTH(observation_date) <= SUBSTRING(bloom_window, 4, 2)
+                                END
+                            ELSE 0
+                        END
+                    ELSE 0
+                END) as accurate_observations
+            FROM posts 
+            WHERE user_id = ? 
+            AND species IS NOT NULL 
+            AND observation_date IS NOT NULL
+        ");
+        $accuracyStmt->execute([$userId]);
+        $accuracyData = $accuracyStmt->fetch(PDO::FETCH_ASSOC);
+        
+        $totalObservations = $accuracyData['total_observations'] ?? 0;
+        $accurateObservations = $accuracyData['accurate_observations'] ?? 0;
+        $accuracyRate = $totalObservations > 0 ? round(($accurateObservations / $totalObservations) * 100) : 0;
+    } else {
+        $totalObservations = 0;
+        $accurateObservations = 0;
+        $accuracyRate = 0;
+    }
     
     // Get user rank (registration order)
     $rankStmt = $pdo->prepare("
