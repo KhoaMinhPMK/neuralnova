@@ -41,7 +41,7 @@ module.exports = {
 
   // Storage
   uploadPath: './uploads',
-  publicUrl: process.env.PUBLIC_URL || 'http://neuralnova.space:3000/uploads',  // HTTP - no SSL
+  publicUrl: process.env.PUBLIC_URL || 'https://neuralnova.space:3000/uploads',  // Direct HTTPS
 
   // Security
   rateLimit: {

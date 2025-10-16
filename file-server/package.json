@@ -5,8 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:https": "node server-https.js",
     "dev": "nodemon server.js",
+    "dev:https": "nodemon server-https.js",
     "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:start:https": "pm2 start server-https.js --name neuralnova-file-server",
     "pm2:stop": "pm2 stop neuralnova-files",
     "pm2:restart": "pm2 restart neuralnova-files",
     "pm2:logs": "pm2 logs neuralnova-files"
