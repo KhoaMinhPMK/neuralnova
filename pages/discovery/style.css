@@ -1411,10 +1411,10 @@ button.tab[data-tab="places"], button.tab[data-tab="blogs"],
   margin-bottom: 4px;
 }
 
-/* Hotspot Navigation Controls - Purple Theme */
+/* Hotspot Navigation Controls - Purple Theme (Top Position) */
 .hotspot-nav-controls {
   position: absolute;
-  bottom: 150px;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -1429,20 +1429,20 @@ button.tab[data-tab="places"], button.tab[data-tab="blogs"],
     0 8px 30px rgba(139, 92, 246, 0.3),
     0 4px 16px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(20px);
-  animation: slideUpBounce 0.5s ease;
+  animation: slideDownBounce 0.5s ease;
 }
 
 .hotspot-nav-controls[hidden] {
   display: none;
 }
 
-@keyframes slideUpBounce {
+@keyframes slideDownBounce {
   0% {
-    transform: translateX(-50%) translateY(50px);
+    transform: translateX(-50%) translateY(-50px);
     opacity: 0;
   }
   70% {
-    transform: translateX(-50%) translateY(-5px);
+    transform: translateX(-50%) translateY(5px);
   }
   100% {
     transform: translateX(-50%) translateY(0);
@@ -1543,7 +1543,7 @@ button.tab[data-tab="places"], button.tab[data-tab="blogs"],
   }
   
   .hotspot-nav-controls {
-    bottom: 120px;
+    top: 70px;
     padding: 10px 16px;
     gap: 12px;
   }
