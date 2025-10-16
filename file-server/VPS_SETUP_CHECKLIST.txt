@@ -1,0 +1,103 @@
+╔══════════════════════════════════════════════════════════════╗
+║  Node.js File Server - VPS Setup Checklist                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+□ STEP 1: SSH vào VPS
+  → ssh user@neuralnova.space
+
+□ STEP 2: Check Node.js
+  → node --version
+  → Nếu < 18 hoặc không có: curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  → sudo apt install -y nodejs
+
+□ STEP 3: Navigate to project
+  → cd /var/www/neuralnova  (hoặc path của bạn)
+
+□ STEP 4: Pull code
+  → git pull origin main
+
+□ STEP 5: Install dependencies
+  → cd file-server
+  → npm install --production
+
+□ STEP 6: Create upload folders
+  → mkdir -p uploads/avatars uploads/covers uploads/posts
+  → chmod -R 755 uploads
+
+□ STEP 7: Install PM2
+  → sudo npm install -g pm2
+
+□ STEP 8: Start server
+  → pm2 start ecosystem.config.js
+  → pm2 list  (check status)
+  → pm2 logs neuralnova-files  (check logs)
+
+□ STEP 9: Setup auto-start
+  → pm2 save
+  → pm2 startup  (follow instructions)
+
+□ STEP 10: Open firewall
+  → sudo ufw allow 3000/tcp
+  → sudo ufw reload
+  → sudo ufw status  (verify)
+
+□ STEP 11: Test từ VPS
+  → curl http://localhost:3000/health
+
+□ STEP 12: Test từ browser
+  → https://neuralnova.space:3000/health
+
+□ STEP 13: Test upload
+  → Upload avatar trên profile page
+  → Check Console logs
+
+╔══════════════════════════════════════════════════════════════╗
+║  TROUBLESHOOTING                                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+❌ Port 3000 timeout:
+  → sudo ufw allow 3000/tcp
+  → Check cloud provider firewall (AWS Security Group, etc.)
+
+❌ PM2 not starting:
+  → pm2 logs neuralnova-files --lines 50
+  → Check error message
+
+❌ Permission denied:
+  → sudo chown -R $USER:$USER /var/www/neuralnova/file-server
+  → chmod -R 755 uploads/
+
+❌ npm install fails:
+  → Clear cache: npm cache clean --force
+  → Try again: npm install --production
+
+╔══════════════════════════════════════════════════════════════╗
+║  EXPECTED RESULTS                                            ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ pm2 list shows:
+   neuralnova-files │ online │ 2 instances
+
+✅ curl localhost:3000/health returns:
+   {"success":true,"status":"healthy"}
+
+✅ Browser https://neuralnova.space:3000/health returns JSON
+
+✅ Profile page upload avatar works:
+   📤 Uploading → 📡 Status: 200 → ✅ Updated!
+
+╔══════════════════════════════════════════════════════════════╗
+║  NOTES                                                       ║
+╚══════════════════════════════════════════════════════════════╝
+
+• File server chạy độc lập với Apache/PHP
+• Port 3000 phải mở trên firewall VPS VÀ cloud provider
+• PM2 auto-restart khi crash hoặc reboot VPS
+• Logs: pm2 logs neuralnova-files
+• Monitor: pm2 monit
+
+═══════════════════════════════════════════════════════════════
+Copy checklist này và làm từng bước!
+Paste output của mỗi step cho tôi để debug nếu có lỗi.
+═══════════════════════════════════════════════════════════════
+
