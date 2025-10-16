@@ -23,7 +23,7 @@
     
     const FILE_SERVER = isLocal
         ? 'http://localhost:3001'
-        : 'http://160.30.113.26:3001';  // Your VPS file server
+        : 'https://neuralnova.space/file-server';  // Via Apache reverse proxy
 
     // LocalStorage Helpers
     function saveUserToLocalStorage(userData) {
