@@ -23,7 +23,7 @@
     
     const FILE_SERVER = isLocal
         ? 'http://localhost:3000'
-        : 'https://neuralnova.space:3000';
+        : 'http://neuralnova.space:3000';  // HTTP - no SSL on port 3000
 
     // LocalStorage Helpers
     function saveUserToLocalStorage(userData) {
