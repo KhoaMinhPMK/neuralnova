@@ -213,79 +213,98 @@
       
       if (profileData.success && profileData.user) {
         const prof = profileData.user;
-        const avatarUrl = prof.avatar_url || '../../assets/images/logo.png';
-        const coverUrl = prof.cover_url || '../../assets/images/nature1.jpg';
         
-        // Update UI
-        document.getElementById('profilePicture').src = avatarUrl;
-        document.getElementById('navAvatar').src = avatarUrl;
-        document.getElementById('createPostAvatar').src = avatarUrl;
-        document.getElementById('coverImg').src = coverUrl;
-        document.getElementById('profileName').textContent = prof.full_name || 'User';
+        // Null-safe checks for all fields
+        const avatarUrl = prof?.avatar_url || '../../assets/images/logo.png';
+        const coverUrl = prof?.cover_url || '../../assets/images/nature1.jpg';
+        const fullName = prof?.full_name || 'User';
+        
+        // Update UI safely
+        const profilePic = document.getElementById('profilePicture');
+        const navAvatar = document.getElementById('navAvatar');
+        const createPostAvatar = document.getElementById('createPostAvatar');
+        const coverImg = document.getElementById('coverImg');
+        const profileName = document.getElementById('profileName');
+        const profileFriends = document.getElementById('profileFriends');
+        
+        if (profilePic) profilePic.src = avatarUrl;
+        if (navAvatar) navAvatar.src = avatarUrl;
+        if (createPostAvatar) createPostAvatar.src = avatarUrl;
+        if (coverImg) coverImg.src = coverUrl;
+        if (profileName) profileName.textContent = fullName;
         
         // Update friends count with posts count
         const friendsCount = prof.stats?.posts || 0;
-        document.getElementById('profileFriends').textContent = `${friendsCount} posts`;
+        if (profileFriends) profileFriends.textContent = `${friendsCount} posts`;
         
-        console.log('✅ Profile loaded:', prof.full_name, 'Posts:', friendsCount);
+        console.log('✅ Profile loaded:', fullName, 'Posts:', friendsCount);
         
-        // Update bio
+        // Update bio safely
         const bioDisplay = document.getElementById('bioDisplay');
-        if (prof.bio) {
-          bioDisplay.textContent = prof.bio;
-        } else {
-          bioDisplay.textContent = '';
+        if (bioDisplay) {
+          bioDisplay.textContent = prof?.bio || '';
         }
         
-        // Update intro details
+        // Update intro details safely
         const introDetails = document.getElementById('introDetails');
-        let detailsHTML = '';
+        if (introDetails) {
+          let detailsHTML = '';
+          
+          if (prof?.interests) {
+            // interests is array from API
+            const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : prof.interests;
+            detailsHTML += `
+              <div class="intro-item">
+                <i class="fas fa-heart"></i>
+                <span>${interests}</span>
+              </div>
+            `;
+          }
+          
+          if (prof?.country) {
+            detailsHTML += `
+              <div class="intro-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${prof.country}</span>
+              </div>
+            `;
+          }
+          
+          if (prof?.email) {
+            detailsHTML += `
+              <div class="intro-item">
+                <i class="fas fa-envelope"></i>
+                <span>${prof.email}</span>
+              </div>
+            `;
+          }
+          
+          introDetails.innerHTML = detailsHTML;
+        }
         
-        if (prof.interests) {
+        // Fill edit form safely
+        const bioInput = document.getElementById('bio');
+        const interestsInput = document.getElementById('interests');
+        const countrySel = document.getElementById('countrySel');
+        
+        if (bioInput) {
+          bioInput.value = prof?.bio || '';
+        }
+        if (interestsInput) {
           // interests is array from API
-          const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : prof.interests;
-          detailsHTML += `
-            <div class="intro-item">
-              <i class="fas fa-heart"></i>
-              <span>${interests}</span>
-            </div>
-          `;
+          const interests = Array.isArray(prof?.interests) ? prof.interests.join(', ') : (prof?.interests || '');
+          interestsInput.value = interests;
         }
-        
-        if (prof.country) {
-          detailsHTML += `
-            <div class="intro-item">
-              <i class="fas fa-map-marker-alt"></i>
-              <span>${prof.country}</span>
-          </div>
-          `;
-        }
-        
-        if (prof.email) {
-          detailsHTML += `
-            <div class="intro-item">
-              <i class="fas fa-envelope"></i>
-              <span>${prof.email}</span>
-        </div>
-          `;
-        }
-        
-        introDetails.innerHTML = detailsHTML;
-        
-        // Fill edit form
-        if (document.getElementById('bio')) {
-          document.getElementById('bio').value = prof.bio || '';
-        }
-        if (document.getElementById('interests')) {
-          // interests is array from API
-          const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : (prof.interests || '');
-          document.getElementById('interests').value = interests;
-        }
-        if (document.getElementById('countrySel')) {
-          document.getElementById('countrySel').value = prof.country || '';
+        if (countrySel) {
+          countrySel.value = prof?.country || '';
         }
       } else {
-        console.error('❌ Profile load failed:', profileData.error || 'No user data');
+        console.error('❌ Profile load failed:', profileData);
+        toast('Failed to load profile. Please refresh the page.');
+        
+        // Set default values
+        const profileName = document.getElementById('profileName');
+        if (profileName) profileName.textContent = 'User';
       }
       
       // Load badges
@@ -298,8 +317,19 @@
       await loadPosts();
       
     } catch (error) {
-      console.error('Load profile error:', error);
-      toast('Failed to load profile');
+      console.error('❌ Load profile error:', error);
+      toast('Failed to load profile. Please refresh the page.');
+      
+      // Set default values to prevent blank page
+      const profileName = document.getElementById('profileName');
+      const profileFriends = document.getElementById('profileFriends');
+      const profilePic = document.getElementById('profilePicture');
+      const navAvatar = document.getElementById('navAvatar');
+      
+      if (profileName) profileName.textContent = 'User';
+      if (profileFriends) profileFriends.textContent = '0 posts';
+      if (profilePic) profilePic.src = '../../assets/images/logo.png';
+      if (navAvatar) navAvatar.src = '../../assets/images/logo.png';
     }
   }
   
