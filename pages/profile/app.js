@@ -10,7 +10,7 @@
   
   const FILE_SERVER = isLocal
     ? 'http://localhost:3000'
-    : 'https://neuralnova.space:3000';  // Direct HTTPS (Windows VPS)
+    : 'http://neuralnova.space:3000';  // HTTP - Allow mixed content in browser
   
   console.log('🔧 Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
   console.log('🔗 API Base:', API_BASE);
