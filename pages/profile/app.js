@@ -10,7 +10,7 @@
   
   const FILE_SERVER = isLocal
     ? 'http://localhost:3001'
-    : 'https://neuralnova.space/file-server';  // Via Apache reverse proxy
+    : 'http://160.30.113.26:3001';  // Direct HTTP - Mixed content allowed by user
   
   console.log('🔧 Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
   console.log('🔗 API Base:', API_BASE);

@@ -93,7 +93,9 @@ try {
         'ip_address' => 'string',  // Alias for ip_display
         'ip_display' => 'string',
         'custom_user_id' => 'string',
-        'full_name' => 'string'
+        'full_name' => 'string',
+        'avatar_url' => 'string',  // Avatar image URL
+        'cover_url' => 'string'    // Cover photo URL
     ];
     
     foreach ($allowedFields as $field => $type) {
