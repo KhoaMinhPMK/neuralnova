@@ -15,8 +15,8 @@ define('API_ACCESS', true);
 // Set headers
 header('Content-Type: application/json');
 
-// CORS: Get origin from request for credentials support
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+// CORS: Dynamic origin for credentials support
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = [
     'http://localhost',
     'http://127.0.0.1',
@@ -24,17 +24,21 @@ $allowedOrigins = [
     'http://neuralnova.space'
 ];
 
-// Check if origin is allowed
+// Check if origin matches allowed list (including ports)
+$originAllowed = false;
 foreach ($allowedOrigins as $allowed) {
-    if (strpos($origin, $allowed) === 0) {
+    if ($origin === $allowed || strpos($origin, $allowed . ':') === 0) {
         header("Access-Control-Allow-Origin: $origin");
+        $originAllowed = true;
         break;
     }
 }
 
-// If no match, allow current origin for development
-if (!headers_sent() && !isset($origin)) {
-    header("Access-Control-Allow-Origin: " . ($_SERVER['HTTP_ORIGIN'] ?? 'http://localhost'));
+// Fallback for development - allow any localhost/127.0.0.1 with any port
+if (!$originAllowed && $origin) {
+    if (strpos($origin, 'http://localhost') === 0 || strpos($origin, 'http://127.0.0.1') === 0) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
 }
 
 header('Access-Control-Allow-Methods: GET, OPTIONS');
