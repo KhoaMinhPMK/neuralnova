@@ -92,6 +92,17 @@
     }
     
     try {
+      // Convert to base64 for localStorage backup
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target.result;
+        // Save to localStorage (không xóa khi logout)
+        localStorage.setItem('nn_cover_cache', base64Image);
+        localStorage.setItem('nn_cover_cache_time', Date.now().toString());
+        console.log('💾 Cover cached to localStorage');
+      };
+      reader.readAsDataURL(file);
+      
       const formData = new FormData();
       formData.append('file', file);
       
@@ -113,6 +124,8 @@
         console.error(text);
         console.error('━'.repeat(80));
         toast('Upload failed - check Console');
+        // Use cached image from localStorage
+        useCachedCover();
         return;
       }
       
@@ -133,19 +146,58 @@
         const saveData = await saveResponse.json();
         
         if (saveData.success) {
-          document.getElementById('coverImg').src = coverUrl;
+          // Update image - try server URL first, fallback to cache
+          updateCoverImage(coverUrl);
           toast('Cover photo updated!');
         } else {
           toast('Failed to save: ' + (saveData.error || 'Unknown error'));
+          // Use cached image
+          useCachedCover();
         }
       } else {
         toast('Upload failed: ' + (data.error || 'Unknown error'));
+        useCachedCover();
       }
     } catch (error) {
       console.error('❌ Cover upload error:', error);
-      toast('Upload failed');
+      toast('Upload failed - using cached image');
+      useCachedCover();
     }
   });
+  
+  // Helper: Update cover image with fallback to cache
+  function updateCoverImage(url) {
+    const coverEl = document.getElementById('coverImg');
+    if (!coverEl) return;
+    
+    // Try loading from URL
+    const img = new Image();
+    img.onload = () => {
+      coverEl.src = url;
+      console.log('✅ Cover loaded from server');
+    };
+    img.onerror = () => {
+      // Fallback to localStorage cache
+      console.warn('⚠️ Server image failed, using cache');
+      const cached = localStorage.getItem('nn_cover_cache');
+      if (cached) {
+        coverEl.src = cached;
+      }
+    };
+    img.src = url;
+  }
+  
+  // Helper: Use cached cover from localStorage
+  function useCachedCover() {
+    const cached = localStorage.getItem('nn_cover_cache');
+    if (cached) {
+      document.getElementById('coverImg').src = cached;
+      toast('Using cached cover');
+      console.log('📂 Loaded cover from localStorage cache');
+    } else {
+      console.warn('⚠️ No cached cover found');
+    }
+  }
 
   // Avatar upload
   const editAvatarBtn = document.querySelector('.edit-avatar-btn');
@@ -167,6 +219,17 @@
     }
     
     try {
+      // Convert to base64 for localStorage backup
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target.result;
+        // Save to localStorage (không xóa khi logout)
+        localStorage.setItem('nn_avatar_cache', base64Image);
+        localStorage.setItem('nn_avatar_cache_time', Date.now().toString());
+        console.log('💾 Avatar cached to localStorage');
+      };
+      reader.readAsDataURL(file);
+      
       const formData = new FormData();
       formData.append('file', file);
       
@@ -188,6 +251,8 @@
         console.error(text);
         console.error('━'.repeat(80));
         toast('Upload failed - check Console');
+        // Use cached image from localStorage
+        useCachedAvatar();
         return;
       }
       
@@ -208,21 +273,67 @@
         const saveData = await saveResponse.json();
         
         if (saveData.success) {
-          document.getElementById('profilePicture').src = avatarUrl;
-          document.getElementById('navAvatar').src = avatarUrl;
-          document.getElementById('createPostAvatar').src = avatarUrl;
+          // Update images - try server URL first, fallback to cache
+          updateAvatarImage(avatarUrl);
           toast('Profile picture updated!');
         } else {
           toast('Failed to save: ' + (saveData.error || 'Unknown error'));
+          // Use cached image
+          useCachedAvatar();
         }
       } else {
         toast('Upload failed: ' + (data.error || 'Unknown error'));
+        useCachedAvatar();
       }
     } catch (error) {
       console.error('❌ Avatar upload error:', error);
-      toast('Upload failed');
+      toast('Upload failed - using cached image');
+      useCachedAvatar();
     }
   });
+  
+  // Helper: Update avatar image with fallback to cache
+  function updateAvatarImage(url) {
+    const avatarElements = [
+      document.getElementById('profilePicture'),
+      document.getElementById('navAvatar'),
+      document.getElementById('createPostAvatar')
+    ];
+    
+    avatarElements.forEach(el => {
+      if (!el) return;
+      
+      // Try loading from URL
+      const img = new Image();
+      img.onload = () => {
+        el.src = url;
+        console.log('✅ Avatar loaded from server');
+      };
+      img.onerror = () => {
+        // Fallback to localStorage cache
+        console.warn('⚠️ Server image failed, using cache');
+        const cached = localStorage.getItem('nn_avatar_cache');
+        if (cached) {
+          el.src = cached;
+        }
+      };
+      img.src = url;
+    });
+  }
+  
+  // Helper: Use cached avatar from localStorage
+  function useCachedAvatar() {
+    const cached = localStorage.getItem('nn_avatar_cache');
+    if (cached) {
+      document.getElementById('profilePicture').src = cached;
+      document.getElementById('navAvatar').src = cached;
+      document.getElementById('createPostAvatar').src = cached;
+      toast('Using cached avatar');
+      console.log('📂 Loaded avatar from localStorage cache');
+    } else {
+      console.warn('⚠️ No cached avatar found');
+    }
+  }
   
   // Edit details modal
   const editModal = document.getElementById('editModal');
