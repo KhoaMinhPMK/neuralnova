@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 } // Max 10MB
 });
@@ -40,8 +40,8 @@ const upload = multer({
 
 // Health check
 app.get('/', (req, res) => {
-    res.json({ 
-        success: true, 
+    res.json({
+        success: true,
         message: 'Server đang chạy!',
         time: new Date().toISOString()
     });
@@ -51,19 +51,21 @@ app.get('/', (req, res) => {
 app.post('/upload', upload.single('file'), (req, res) => {
     try {
         console.log('📥 Nhận request upload từ:', req.ip);
-        
+
         if (!req.file) {
             console.log('❌ Không có file trong request');
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Không có file!' 
+            return res.status(400).json({
+                success: false,
+                message: 'Không có file!'
             });
         }
 
         console.log('✅ Upload thành công:', req.file.filename);
-        
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-        
+
+        // Use production domain (IIS reverse proxy)
+        const baseUrl = process.env.FILE_SERVER_URL || 'https://files.neuralnova.space';
+        const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+
         res.json({
             success: true,
             message: 'Upload thành công!',
@@ -86,14 +88,15 @@ app.post('/upload', upload.single('file'), (req, res) => {
 // Upload nhiều files
 app.post('/upload-multiple', upload.array('files', 10), (req, res) => {
     if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Không có file!' 
+        return res.status(400).json({
+            success: false,
+            message: 'Không có file!'
         });
     }
 
+    const baseUrl = process.env.FILE_SERVER_URL || 'https://files.neuralnova.space';
     const files = req.files.map(file => {
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+        const fileUrl = `${baseUrl}/uploads/${file.filename}`;
         return {
             name: file.filename,
             originalName: file.originalname,
@@ -111,8 +114,9 @@ app.post('/upload-multiple', upload.array('files', 10), (req, res) => {
 
 // Liệt kê files
 app.get('/list', (req, res) => {
+    const baseUrl = process.env.FILE_SERVER_URL || 'https://files.neuralnova.space';
     const files = fs.readdirSync('uploads').map(filename => {
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+        const fileUrl = `${baseUrl}/uploads/${filename}`;
         return {
             name: filename,
             url: fileUrl
@@ -129,17 +133,17 @@ app.get('/list', (req, res) => {
 // Xóa file
 app.delete('/delete/:filename', (req, res) => {
     const filePath = path.join('uploads', req.params.filename);
-    
+
     if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        res.json({ 
-            success: true, 
-            message: 'Đã xóa file!' 
+        res.json({
+            success: true,
+            message: 'Đã xóa file!'
         });
     } else {
-        res.status(404).json({ 
-            success: false, 
-            message: 'File không tồn tại!' 
+        res.status(404).json({
+            success: false,
+            message: 'File không tồn tại!'
         });
     }
 });
