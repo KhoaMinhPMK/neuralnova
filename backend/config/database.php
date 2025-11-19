@@ -17,7 +17,7 @@ if (!defined('API_ACCESS')) {
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'neuralnova');
 define('DB_USER', 'root');  // Thay đổi theo config VPS của bạn
-define('DB_PASS', '');      // Thay đổi theo config VPS của bạn
+define('DB_PASS', '123456');      // Thay đổi theo config VPS của bạn
 define('DB_CHARSET', 'utf8mb4');
 
 /**
