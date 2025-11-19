@@ -20,12 +20,13 @@ async function checkAuth() {
             method: 'GET',
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
-        if (data.success && data.data.user) {
+
+        // API returns: { success: true, authenticated: true/false, user: {...} }
+        if (data.success && data.authenticated && data.user) {
             // User is logged in
-            currentUser = data.data.user;
+            currentUser = data.user;
             updateUIForLoggedInUser();
             console.log('✅ User logged in:', currentUser.full_name);
             return true;
@@ -36,7 +37,7 @@ async function checkAuth() {
             console.log('👤 User not logged in');
             return false;
         }
-        
+
     } catch (error) {
         console.log('Auth check error:', error);
         currentUser = null;
@@ -51,7 +52,7 @@ async function checkAuth() {
 function updateUIForLoggedInUser() {
     const navActions = document.querySelector('.nav-actions');
     if (!navActions) return;
-    
+
     // Replace login buttons with user menu
     navActions.innerHTML = `
         <div class="user-menu">
@@ -78,12 +79,12 @@ function updateUIForLoggedInUser() {
             </div>
         </div>
     `;
-    
+
     // Re-initialize Lucide icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
-    
+
     // Setup dropdown toggle
     setupUserMenu();
 }
@@ -94,7 +95,7 @@ function updateUIForLoggedInUser() {
 function updateUIForGuest() {
     const navActions = document.querySelector('.nav-actions');
     if (!navActions) return;
-    
+
     navActions.innerHTML = `
         <a href="pages/auth/index.html" class="btn btn-login">
             <i data-lucide="log-in"></i>
@@ -105,7 +106,7 @@ function updateUIForGuest() {
             <span>Start Journey</span>
         </a>
     `;
-    
+
     // Re-initialize Lucide icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -118,15 +119,15 @@ function updateUIForGuest() {
 function setupUserMenu() {
     const userMenuBtn = document.getElementById('userMenuBtn');
     const userDropdown = document.getElementById('userDropdown');
-    
+
     if (!userMenuBtn || !userDropdown) return;
-    
+
     userMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const isVisible = userDropdown.style.display === 'block';
         userDropdown.style.display = isVisible ? 'none' : 'block';
     });
-    
+
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
@@ -144,22 +145,22 @@ async function logout() {
             method: 'POST',
             credentials: 'include'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             console.log('✅ Logged out successfully');
             currentUser = null;
             updateUIForGuest();
-            
+
             // Show success message (optional)
             showNotification('Logged out successfully!', 'success');
-            
+
         } else {
             console.error('Logout failed:', data.message);
             showNotification('Logout failed. Please try again.', 'error');
         }
-        
+
     } catch (error) {
         console.error('Logout error:', error);
         showNotification('Logout failed. Please try again.', 'error');
@@ -174,15 +175,15 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `auth-notification ${type}`;
     notification.textContent = message;
-    
+
     // Add to body
     document.body.appendChild(notification);
-    
+
     // Show notification
     setTimeout(() => {
         notification.classList.add('show');
     }, 100);
-    
+
     // Auto hide after 3 seconds
     setTimeout(() => {
         notification.classList.remove('show');
