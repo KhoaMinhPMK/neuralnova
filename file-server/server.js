@@ -12,8 +12,20 @@ if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads', { recursive: true });
 }
 
-// CORS - cho phép mọi nguồn truy cập
-app.use(cors());
+// CORS - cho phép từ neuralnova.space và localhost
+app.use(cors({
+    origin: [
+        'http://localhost',
+        'http://localhost:3000',
+        'http://127.0.0.1',
+        'https://neuralnova.space',
+        'http://neuralnova.space',
+        'https://files.neuralnova.space'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Serve static files (để xem ảnh)
