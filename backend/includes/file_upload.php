@@ -220,6 +220,11 @@ function getFileUrl($relativePath, $baseUrl = null) {
         return null;
     }
     
+    // If the path is already a full URL (starts with http:// or https://), return as-is
+    if (preg_match('/^https?:\/\//', $relativePath)) {
+        return $relativePath;
+    }
+    
     // Auto-detect base URL if not provided
     if ($baseUrl === null) {
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
