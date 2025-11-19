@@ -2,22 +2,22 @@
 (() => {
   // Auto-detect environment
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  
+
   // API Configuration
-  const API_BASE = isLocal 
+  const API_BASE = isLocal
     ? 'http://localhost/neuralnova/backend/api'
     : 'https://neuralnova.space/backend/api';
-  
+
   const FILE_SERVER = isLocal
     ? 'http://localhost:3001'
-    : 'http://160.30.113.26:3001';  // Direct HTTP - Mixed content allowed by user
-  
+    : 'https://files.neuralnova.space';  // Subdomain với SSL
+
   console.log('🔧 Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
   console.log('🔗 API Base:', API_BASE);
   console.log('📁 File Server:', FILE_SERVER);
-  
+
   let currentUser = null;
-  
+
   // Toast notification
   const toast = (msg, duration = 3000) => {
     const toastEl = document.getElementById('toast');
@@ -25,20 +25,20 @@
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), duration);
   };
-  
+
   // User menu dropdown
   const userMenuBtn = document.getElementById('userMenuBtn');
   const userDropdown = document.getElementById('userDropdown');
-  
+
   userMenuBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     userDropdown.classList.toggle('show');
   });
-  
+
   document.addEventListener('click', () => {
     userDropdown.classList.remove('show');
   });
-  
+
   // Logout
   document.getElementById('logoutBtn')?.addEventListener('click', async () => {
     try {
@@ -53,44 +53,44 @@
       window.location.href = '../auth/index.html';
     }
   });
-  
+
   // Tab switching
   const tabs = document.querySelectorAll('.profile-nav-item');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      
+
       const tabName = tab.dataset.tab;
       document.querySelectorAll('.tab-content').forEach(content => {
         content.style.display = 'none';
       });
-      
+
       const activeContent = document.getElementById(`${tabName}Tab`);
       if (activeContent) {
         activeContent.style.display = 'block';
       }
     });
   });
-  
+
   // Cover photo upload
   const editCoverBtn = document.querySelector('.edit-cover-btn');
   const coverInput = document.getElementById('coverInput');
-  
+
   editCoverBtn?.addEventListener('click', () => {
     coverInput.click();
   });
-  
+
   coverInput?.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // Validate file size (max 10MB for cover)
     if (file.size > 10 * 1024 * 1024) {
       toast('File too large. Max 10MB');
       return;
     }
-    
+
     try {
       // Convert to base64 for localStorage backup
       const reader = new FileReader();
@@ -102,20 +102,20 @@
         console.log('💾 Cover cached to localStorage');
       };
       reader.readAsDataURL(file);
-      
+
       const formData = new FormData();
       formData.append('file', file);
-      
+
       console.log('📤 Uploading cover to Node.js server:', file.name, file.size, 'bytes');
-      
+
       // Step 1: Upload to Node.js file server
       const response = await fetch(`${FILE_SERVER}/upload?type=covers`, {
         method: 'POST',
         body: formData
       });
-      
+
       console.log('📡 Cover upload status:', response.status);
-      
+
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -128,13 +128,13 @@
         useCachedCover();
         return;
       }
-      
+
       const data = await response.json();
       console.log('📦 Cover response:', data);
-      
+
       if (data.success && data.file) {
         const coverUrl = data.file.url;
-        
+
         // Step 2: Save URL to database via PHP API
         const saveResponse = await fetch(`${API_BASE}/profile/update.php`, {
           method: 'POST',
@@ -142,9 +142,9 @@
           body: JSON.stringify({ cover_url: coverUrl }),
           headers: { 'Content-Type': 'application/json' }
         });
-        
+
         const saveData = await saveResponse.json();
-        
+
         if (saveData.success) {
           // Update image - try server URL first, fallback to cache
           updateCoverImage(coverUrl);
@@ -164,12 +164,12 @@
       useCachedCover();
     }
   });
-  
+
   // Helper: Update cover image with fallback to cache
   function updateCoverImage(url) {
     const coverEl = document.getElementById('coverImg');
     if (!coverEl) return;
-    
+
     // Try loading from URL
     const img = new Image();
     img.onload = () => {
@@ -186,7 +186,7 @@
     };
     img.src = url;
   }
-  
+
   // Helper: Use cached cover from localStorage
   function useCachedCover() {
     const cached = localStorage.getItem('nn_cover_cache');
@@ -202,22 +202,22 @@
   // Avatar upload
   const editAvatarBtn = document.querySelector('.edit-avatar-btn');
   const avatarInput = document.getElementById('avatarInput');
-  
+
   editAvatarBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     avatarInput.click();
   });
-  
+
   avatarInput?.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // Validate file size (max 5MB for avatar)
     if (file.size > 5 * 1024 * 1024) {
       toast('File too large. Max 5MB');
       return;
     }
-    
+
     try {
       // Convert to base64 for localStorage backup
       const reader = new FileReader();
@@ -229,20 +229,20 @@
         console.log('💾 Avatar cached to localStorage');
       };
       reader.readAsDataURL(file);
-      
+
       const formData = new FormData();
       formData.append('file', file);
-      
+
       console.log('📤 Uploading avatar to Node.js server:', file.name, file.size, 'bytes');
-      
+
       // Step 1: Upload to Node.js file server
       const response = await fetch(`${FILE_SERVER}/upload?type=avatars`, {
         method: 'POST',
         body: formData
       });
-      
+
       console.log('📡 Avatar upload status:', response.status);
-      
+
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -255,13 +255,13 @@
         useCachedAvatar();
         return;
       }
-      
+
       const data = await response.json();
       console.log('📦 Avatar response:', data);
-      
+
       if (data.success && data.file) {
         const avatarUrl = data.file.url;
-        
+
         // Step 2: Save URL to database via PHP API
         const saveResponse = await fetch(`${API_BASE}/profile/update.php`, {
           method: 'POST',
@@ -269,9 +269,9 @@
           body: JSON.stringify({ avatar_url: avatarUrl }),
           headers: { 'Content-Type': 'application/json' }
         });
-        
+
         const saveData = await saveResponse.json();
-        
+
         if (saveData.success) {
           // Update images - try server URL first, fallback to cache
           updateAvatarImage(avatarUrl);
@@ -291,7 +291,7 @@
       useCachedAvatar();
     }
   });
-  
+
   // Helper: Update avatar image with fallback to cache
   function updateAvatarImage(url) {
     const avatarElements = [
@@ -299,10 +299,10 @@
       document.getElementById('navAvatar'),
       document.getElementById('createPostAvatar')
     ];
-    
+
     avatarElements.forEach(el => {
       if (!el) return;
-      
+
       // Try loading from URL
       const img = new Image();
       img.onload = () => {
@@ -320,7 +320,7 @@
       img.src = url;
     });
   }
-  
+
   // Helper: Use cached avatar from localStorage
   function useCachedAvatar() {
     const cached = localStorage.getItem('nn_avatar_cache');
@@ -334,47 +334,47 @@
       console.warn('⚠️ No cached avatar found');
     }
   }
-  
+
   // Edit details modal
   const editModal = document.getElementById('editModal');
   const editDetailsBtn = document.getElementById('editDetailsBtn');
   const closeModal = document.getElementById('closeModal');
   const cancelEdit = document.getElementById('cancelEdit');
   const saveIntro = document.getElementById('saveIntro');
-  
+
   editDetailsBtn?.addEventListener('click', () => {
     editModal.style.display = 'flex';
   });
-  
+
   closeModal?.addEventListener('click', () => {
     editModal.style.display = 'none';
   });
-  
+
   cancelEdit?.addEventListener('click', () => {
     editModal.style.display = 'none';
   });
-  
+
   editModal?.addEventListener('click', (e) => {
     if (e.target === editModal) {
       editModal.style.display = 'none';
     }
   });
-  
+
   saveIntro?.addEventListener('click', async () => {
     try {
       const formData = new FormData();
       formData.append('bio', document.getElementById('bio').value.trim());
       formData.append('interests', document.getElementById('interests').value.trim());
       formData.append('country', document.getElementById('countrySel').value);
-      
+
       const response = await fetch(`${API_BASE}/profile/update.php`, {
         method: 'POST',
         credentials: 'include',
         body: formData
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         toast('Details updated!');
         editModal.style.display = 'none';
@@ -387,7 +387,7 @@
       toast('Update failed');
     }
   });
-  
+
   // Load profile data
   async function loadProfile() {
     try {
@@ -396,30 +396,30 @@
         credentials: 'include'
       });
       const authData = await authResponse.json();
-      
+
       if (!authData.success || !authData.authenticated) {
         window.location.href = '../auth/index.html';
         return;
       }
-      
+
       currentUser = authData.user;
-      
+
       // Load profile
       const profileResponse = await fetch(`${API_BASE}/profile/get.php`, {
         credentials: 'include'
       });
       const profileData = await profileResponse.json();
-      
+
       console.log('📦 Profile data:', profileData);
-      
+
       if (profileData.success && profileData.user) {
         const prof = profileData.user;
-        
+
         // Null-safe checks for all fields
         const avatarUrl = prof?.avatar_url || '../../assets/images/logo.png';
         const coverUrl = prof?.cover_url || '../../assets/images/nature1.jpg';
         const fullName = prof?.full_name || 'User';
-        
+
         // Update UI safely
         const profilePic = document.getElementById('profilePicture');
         const navAvatar = document.getElementById('navAvatar');
@@ -427,30 +427,30 @@
         const coverImg = document.getElementById('coverImg');
         const profileName = document.getElementById('profileName');
         const profileFriends = document.getElementById('profileFriends');
-        
+
         if (profilePic) profilePic.src = avatarUrl;
         if (navAvatar) navAvatar.src = avatarUrl;
         if (createPostAvatar) createPostAvatar.src = avatarUrl;
         if (coverImg) coverImg.src = coverUrl;
         if (profileName) profileName.textContent = fullName;
-        
+
         // Update friends count with posts count
         const friendsCount = prof.stats?.posts || 0;
         if (profileFriends) profileFriends.textContent = `${friendsCount} posts`;
-        
+
         console.log('✅ Profile loaded:', fullName, 'Posts:', friendsCount);
-        
+
         // Update bio safely
         const bioDisplay = document.getElementById('bioDisplay');
         if (bioDisplay) {
           bioDisplay.textContent = prof?.bio || '';
         }
-        
+
         // Update intro details safely
         const introDetails = document.getElementById('introDetails');
         if (introDetails) {
           let detailsHTML = '';
-          
+
           if (prof?.interests) {
             // interests is array from API
             const interests = Array.isArray(prof.interests) ? prof.interests.join(', ') : prof.interests;
@@ -461,7 +461,7 @@
         </div>
             `;
           }
-          
+
           if (prof?.country) {
             detailsHTML += `
               <div class="intro-item">
@@ -470,7 +470,7 @@
           </div>
             `;
           }
-          
+
           if (prof?.email) {
             detailsHTML += `
               <div class="intro-item">
@@ -479,15 +479,15 @@
         </div>
             `;
           }
-          
+
           introDetails.innerHTML = detailsHTML;
         }
-        
+
         // Fill edit form safely
         const bioInput = document.getElementById('bio');
         const interestsInput = document.getElementById('interests');
         const countrySel = document.getElementById('countrySel');
-        
+
         if (bioInput) {
           bioInput.value = prof?.bio || '';
         }
@@ -502,45 +502,45 @@
       } else {
         console.error('❌ Profile load failed:', profileData);
         toast('Failed to load profile. Please refresh the page.');
-        
+
         // Set default values
         const profileName = document.getElementById('profileName');
         if (profileName) profileName.textContent = 'User';
       }
-      
+
       // Load badges
       await loadBadges();
-      
+
       // Load stats
       await loadStats();
-      
+
       // Load posts
       await loadPosts();
-      
+
     } catch (error) {
       console.error('❌ Load profile error:', error);
       toast('Failed to load profile. Please refresh the page.');
-      
+
       // Set default values to prevent blank page
       const profileName = document.getElementById('profileName');
       const profileFriends = document.getElementById('profileFriends');
       const profilePic = document.getElementById('profilePicture');
       const navAvatar = document.getElementById('navAvatar');
-      
+
       if (profileName) profileName.textContent = 'User';
       if (profileFriends) profileFriends.textContent = '0 posts';
       if (profilePic) profilePic.src = '../../assets/images/logo.png';
       if (navAvatar) navAvatar.src = '../../assets/images/logo.png';
     }
   }
-  
+
   // Load badges
   async function loadBadges() {
     try {
       const response = await fetch(`${API_BASE}/profile/badges.php`, {
         credentials: 'include'
       });
-      
+
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -550,9 +550,9 @@
         console.error('━'.repeat(80));
         return;
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.badges) {
         const badgesEl = document.getElementById('badges');
         if (badgesEl) {
@@ -568,14 +568,14 @@
       console.error('❌ Badges error:', error);
     }
   }
-  
+
   // Load stats
   async function loadStats() {
     try {
       const response = await fetch(`${API_BASE}/profile/timeline.php`, {
         credentials: 'include'
       });
-      
+
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -585,9 +585,9 @@
         console.error('━'.repeat(80));
         return;
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.stats) {
         const statsDisplay = document.getElementById('statsDisplay');
         if (statsDisplay) {
@@ -615,7 +615,7 @@
       console.error('❌ Stats error:', error);
     }
   }
-  
+
   // Load posts
   async function loadPosts() {
     try {
@@ -623,28 +623,28 @@
         console.log('⚠️ No currentUser, skipping posts load');
         return;
       }
-      
+
       const url = `${API_BASE}/posts/feed.php?user_id=${currentUser.id}&limit=50`;
       console.log('🔄 Loading posts from:', url);
-      
+
       const response = await fetch(url, {
         credentials: 'include'
       });
-      
+
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
         console.error('❌ Backend error:', text.substring(0, 500));
         return;
       }
-      
+
       const data = await response.json();
       console.log('📦 Posts data:', data);
-      
+
       if (data.success && data.posts) {
         console.log('✅ Loaded', data.posts.length, 'posts');
         renderPosts(data.posts);
-        
+
         // Update photos grid
         const photos = data.posts.filter(p => p.image_url).slice(0, 9);
         renderPhotos(photos);
@@ -657,7 +657,7 @@
       renderPosts([]);
     }
   }
-  
+
   // Render posts
   function renderPosts(posts) {
     const postsFeed = document.getElementById('postsFeed');
@@ -665,14 +665,14 @@
       console.log('⚠️ postsFeed element not found');
       return;
     }
-    
+
     console.log('🎨 Rendering', posts.length, 'posts');
-    
+
     if (!posts || posts.length === 0) {
       postsFeed.innerHTML = '<div class="card"><p style="text-align:center;color:#b0b3b8;padding:40px 20px;">No posts yet. Create your first post!</p></div>';
       return;
     }
-    
+
     postsFeed.innerHTML = posts.map(post => `
       <div class="post-card">
         <div class="post-header">
@@ -702,24 +702,24 @@
       </div>
     `).join('');
   }
-  
+
   // Render photos
   function renderPhotos(photos) {
     const photosGrid = document.getElementById('photosGrid');
     if (!photosGrid) return;
-    
+
     if (!photos || photos.length === 0) {
       photosGrid.innerHTML = '<div class="photo-placeholder">No photos yet</div>';
       return;
     }
-    
+
     photosGrid.innerHTML = photos.map(photo => `
       <div class="photo-item">
         <img src="${photo.image_url}" alt="Photo">
       </div>
     `).join('');
   }
-  
+
   // Initialize
   loadProfile();
 })();

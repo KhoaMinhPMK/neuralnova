@@ -16,14 +16,14 @@
 
     // Auto-detect environment
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+
     const API_BASE = isLocal
         ? 'http://localhost/neuralnova/backend/api'
         : 'https://neuralnova.space/backend/api';
-    
+
     const FILE_SERVER = isLocal
         ? 'http://localhost:3001'
-        : 'http://160.30.113.26:3001';  // Direct HTTP - Mixed content allowed by user
+        : 'https://files.neuralnova.space';  // Subdomain với SSL
 
     // LocalStorage Helpers
     function saveUserToLocalStorage(userData) {
@@ -39,18 +39,18 @@
         try {
             const userStr = localStorage.getItem('neuralnova_user');
             const authTime = localStorage.getItem('neuralnova_auth_time');
-            
+
             if (!userStr || !authTime) {
                 return null;
             }
-            
+
             // Check if auth is older than 7 days
             const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
             if (Date.now() - parseInt(authTime) > sevenDaysMs) {
                 clearUserFromLocalStorage();
                 return null;
             }
-            
+
             return JSON.parse(userStr);
         } catch (error) {
             console.error('Failed to get user from localStorage:', error);
@@ -146,7 +146,7 @@
                 if (data.success) {
                     // Clear localStorage
                     clearUserFromLocalStorage();
-                    
+
                     toast('Logged out successfully');
                     setTimeout(() => {
                         window.location.href = '../../index.html';
@@ -171,14 +171,14 @@
     async function loadPosts() {
         try {
             console.log('🔄 Fetching posts from:', `${API_BASE}/posts/feed.php`);
-            
+
             const res = await fetch(`${API_BASE}/posts/feed.php?limit=20&offset=0`, {
                 credentials: 'include'
             });
-            
+
             console.log('📡 Response status:', res.status);
             console.log('📡 Response headers:', res.headers.get('content-type'));
-            
+
             // Check if response is JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
@@ -187,25 +187,25 @@
                 console.error('━'.repeat(80));
                 console.error(text.substring(0, 1000)); // Show first 1000 chars
                 console.error('━'.repeat(80));
-                
+
                 postsData = [];
                 renderPosts();
                 toast('Backend error - check Console for details', true);
                 return;
             }
-            
+
             const data = await res.json();
 
             if (data.success) {
                 // Backend success - posts might be empty array
                 postsData = data.posts || [];
-                
+
                 if (postsData.length === 0) {
                     console.log('📭 No posts in database yet. Create your first post!');
                 } else {
                     console.log(`✅ Loaded ${postsData.length} posts from database`);
                 }
-                
+
                 renderPosts();
             } else {
                 // Backend error
@@ -229,7 +229,7 @@
         const date = new Date(dateString);
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
-        
+
         if (seconds < 60) return 'just now';
         const minutes = Math.floor(seconds / 60);
         if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
@@ -347,9 +347,9 @@
                     reaction_type: 'like'
                 })
             });
-            
+
             const data = await res.json();
-            
+
             if (data.success) {
                 // Update local state
                 const post = postsData.find(p => p.id === postId);
@@ -361,19 +361,19 @@
                         post.total_reactions = (post.total_reactions || 0) + 1;
                         post.user_reaction = 'like';
                     }
-                    
+
                     // Update UI
                     const postCard = $(`.post-card[data-post-id="${postId}"]`);
                     if (postCard) {
                         const likeBtn = postCard.querySelector('.like-btn');
                         const likesSpan = postCard.querySelector('.post-reactions span');
-                        
+
                         if (isCurrentlyLiked) {
                             likeBtn.classList.remove('active');
                         } else {
                             likeBtn.classList.add('active');
                         }
-                        
+
                         likesSpan.textContent = post.total_reactions;
                     }
                 }
@@ -405,11 +405,11 @@
                 e.preventDefault();
                 const postId = parseInt(btn.dataset.postId);
                 const commentsSection = $(`#comments-${postId}`);
-                
+
                 if (commentsSection) {
                     const isVisible = commentsSection.style.display !== 'none';
                     commentsSection.style.display = isVisible ? 'none' : 'block';
-                    
+
                     if (!isVisible) {
                         // Load comments when opening
                         await loadComments(postId);
@@ -426,7 +426,7 @@
                 credentials: 'include'
             });
             const data = await res.json();
-            
+
             if (data.success && data.comments) {
                 renderComments(postId, data.comments);
             }
@@ -439,12 +439,12 @@
     function renderComments(postId, comments) {
         const commentsList = $(`#comments-list-${postId}`);
         if (!commentsList) return;
-        
+
         if (comments.length === 0) {
             commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
             return;
         }
-        
+
         commentsList.innerHTML = comments.map(comment => `
             <div class="comment-item">
                 <img src="${comment.user_avatar || '../../assets/images/logo.png'}" alt="${comment.user_name}" class="comment-avatar">
@@ -464,14 +464,14 @@
                 e.preventDefault();
                 const postId = parseInt(btn.dataset.postId);
                 const input = $(`.comment-input[data-post-id="${postId}"]`);
-                
+
                 if (input && input.value.trim()) {
                     await submitComment(postId, input.value.trim());
                     input.value = '';
                 }
             });
         });
-        
+
         // Also submit on Enter key
         $$('.comment-input').forEach(input => {
             input.addEventListener('keypress', async (e) => {
@@ -488,7 +488,7 @@
     async function submitComment(postId, content) {
         try {
             console.log('💬 Adding comment:', { postId, content });
-            
+
             const res = await fetch(`${API_BASE}/comments/add.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -498,9 +498,9 @@
                     comment_text: content  // Backend expects 'comment_text'
                 })
             });
-            
+
             console.log('📡 Comment response status:', res.status);
-            
+
             // Check if response is JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
@@ -512,16 +512,16 @@
                 toast('Backend error - check console', true);
                 return;
             }
-            
+
             const data = await res.json();
             console.log('📦 Comment response:', data);
-            
+
             if (data.success) {
                 // Update comment count
                 const post = postsData.find(p => p.id === postId);
                 if (post) {
                     post.total_comments = (post.total_comments || 0) + 1;
-                    
+
                     const postCard = $(`.post-card[data-post-id="${postId}"]`);
                     if (postCard) {
                         const countEl = postCard.querySelector('.post-comments-count');
@@ -530,7 +530,7 @@
                         }
                     }
                 }
-                
+
                 // Reload comments
                 await loadComments(postId);
                 toast('Comment added!');
@@ -547,40 +547,40 @@
     async function createPost(content, imageUrl = null) {
         try {
             console.log('📝 Creating post with:', { content, imageUrl });
-            
+
             // Validate content
             if (!content || content.trim() === '') {
                 toast('Please write something!', true);
                 return false;
             }
-            
+
             // Create FormData (backend expects POST data, not JSON for this endpoint)
             const formData = new FormData();
             formData.append('caption', content.trim());
-            
+
             if (imageUrl && imageUrl.trim()) {
                 formData.append('media_url', imageUrl.trim());
                 console.log('📎 Added image URL:', imageUrl.trim());
             }
-            
+
             formData.append('is_public', '1');
-            
+
             // Log FormData contents
             console.log('📤 FormData contents:');
             for (let [key, value] of formData.entries()) {
                 console.log(`  ${key}:`, value);
             }
-            
+
             console.log('🌐 Sending to:', `${API_BASE}/posts/create.php`);
-            
+
             const res = await fetch(`${API_BASE}/posts/create.php`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData
             });
-            
+
             console.log('📡 Response status:', res.status);
-            
+
             // Check if response is JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
@@ -592,17 +592,17 @@
                 toast('Backend error - check console', true);
                 return false;
             }
-            
+
             const data = await res.json();
             console.log('📦 Response:', data);
-            
+
             if (data.success) {
                 // Check if content was saved
                 if (!data.post.content) {
                     console.warn('⚠️ Post created but content is NULL!');
                     console.warn('Backend may not have received caption field');
                 }
-                
+
                 toast('Post created!');
                 // Reload posts
                 await loadPosts();
@@ -673,17 +673,17 @@
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
-        
+
         let uploadedImageUrl = null;
-        
+
         // Focus textarea after modal is added to DOM
         setTimeout(() => {
             const textarea = document.getElementById('newPostContent');
             if (textarea) textarea.focus();
         }, 100);
-        
+
         // Upload image button
         const uploadImageBtn = document.getElementById('uploadImageBtn');
         const modalImageInput = document.getElementById('modalImageInput');
@@ -691,26 +691,26 @@
         const modalPreviewImg = document.getElementById('modalPreviewImg');
         const removeModalImage = document.getElementById('removeModalImage');
         const uploadProgress = document.getElementById('uploadProgress');
-        
+
         uploadImageBtn.addEventListener('click', () => {
             modalImageInput.click();
         });
-        
+
         modalImageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            
+
             // Validate file
             if (!file.type.startsWith('image/')) {
                 toast('Please select an image file', true);
                 return;
             }
-            
+
             if (file.size > 10 * 1024 * 1024) {
                 toast('Image too large. Max 10MB', true);
                 return;
             }
-            
+
             try {
                 // Show preview immediately
                 const reader = new FileReader();
@@ -720,24 +720,24 @@
                     uploadImageBtn.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
-                
+
                 // Show upload progress
                 uploadProgress.style.display = 'block';
-                
+
                 // Upload to file server
                 const formData = new FormData();
                 formData.append('file', file);
-                
+
                 console.log('📤 Uploading post image to file server...');
-                
+
                 const response = await fetch(`${FILE_SERVER}/upload?type=posts`, {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
                 console.log('📦 Upload response:', data);
-                
+
                 if (data.success && data.file) {
                     uploadedImageUrl = data.file.url;
                     uploadProgress.style.display = 'none';
@@ -755,7 +755,7 @@
                 uploadedImageUrl = null;
             }
         });
-        
+
         // Remove image
         removeModalImage.addEventListener('click', () => {
             modalImagePreview.style.display = 'none';
@@ -763,24 +763,24 @@
             modalImageInput.value = '';
             uploadedImageUrl = null;
         });
-        
+
         // Post handler
         const submitBtn = document.getElementById('submitPostBtn');
         if (submitBtn) {
             submitBtn.addEventListener('click', async () => {
                 const content = document.getElementById('newPostContent').value.trim();
-                
+
                 if (!content) {
                     toast('Please write something!', true);
                     return;
                 }
-                
+
                 // Disable button during submission
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Posting...';
-                
+
                 const success = await createPost(content, uploadedImageUrl);
-                
+
                 if (success) {
                     modal.remove();
                 } else {
@@ -807,7 +807,7 @@
     // Initialize - Load real data from backend
     console.log('🔗 API Base:', API_BASE);
     console.log('📊 Dashboard initializing with REAL backend data...');
-    
+
     checkAuth().then(() => {
         console.log('✅ Auth checked, loading posts from database...');
         loadPosts();
